@@ -32,5 +32,7 @@ jobs:
         uses: sbt/setup-sbt@v1
 
       - name: Build and test
+#        env:
+#          _JAVA_OPTIONS: "-Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw"
         shell: bash
         run: sbt -v +test
