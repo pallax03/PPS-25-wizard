@@ -3,17 +3,27 @@ package unibo.pps.wizard.view
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
+import unibo.pps.wizard.model.Card
+import scala.compiletime.uninitialized
 
 object ViewManager extends JFXApp3 {
 
-  private var mainScene: Scene = _
+  private var mainScene: Scene = uninitialized
 
   override def start(): Unit = {
 
+    // Esempio di una mano di carte reale
+    val myHand = List(
+      Card(Card.Color.Red, Card.Rank.Ten), // 10 Rosso
+      Card.wizard, // Un Mago
+      Card(Card.Color.Blue, Card.Rank.Thirteen), // 13 Blu
+      Card.jester // Un Giullare
+    )
+    
     // Funzione di orchestrazione: toglie la Home e mette il Tavolo da Gioco
     def handleStartGame(playerName: String, opponentCount: Int): Unit = {
       // Istanziamo la classe indipendente GameBoard
-      mainScene.root = new GameBoardView(playerName, opponentCount)
+      mainScene.root = new GameBoardView(playerName, opponentCount, myHand)
     }
 
     // Inizializzazione della scena con la HomeView

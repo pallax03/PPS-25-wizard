@@ -2,22 +2,57 @@ package unibo.pps.wizard.view
 
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
+import scalafx.scene.image.ImageView
 import scalafx.scene.layout.{BorderPane, HBox, StackPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
+import unibo.pps.wizard.model.Card
 
-class GameBoardView(humanName: String, opponentCount: Int) extends BorderPane {
+class GameBoardView(humanName: String, opponentCount: Int, hand: List[Card]) extends BorderPane {
 
   // Configurazione del BorderPane principale del tavolo
   padding = Insets(20)
   style = "-fx-background-color: #1c1c18;"
 
-  // --- Sotto-componenti interni ---
-  private def createCardPlaceholder(value: String): StackPane = new StackPane {
-    children = Seq(
-      new Rectangle { width = 60; height = 90; fill = Color.White; stroke = Color.DarkGray; arcWidth = 8; arcHeight = 8 },
-      new Label(value) { style = "-fx-text-fill: black; -fx-font-weight: bold; -fx-font-size: 14px;" }
-    )
+  // --- Mappatura Colori Modello -> Colori Grafici (JavaFX) ---
+  private def mapColor(modelColor: Card.Color): Color = modelColor match {
+    case Card.Color.Red => Color.LightCoral
+    case Card.Color.Blue => Color.LightSkyBlue
+    case Card.Color.Green => Color.LightGreen
+    case Card.Color.Yellow => Color.Khaki
+  }
+
+  // --- Nuovo metodo per creare la carta partendo dal Modello ---
+  private def createCardNode(card: Card): StackPane = {
+    try {
+      // Otteniamo l'immagine tramite l'utility
+      val cardImage = CardImageLoader.getImageForCard(card)
+
+      new StackPane {
+        children = Seq(
+          new ImageView(cardImage) {
+            fitWidth = 120 // Scegli la larghezza che preferisci
+            fitHeight = 170 // Mantiene le proporzioni della carta (es. 2:3)
+            preserveRatio = true
+            smooth = true
+          }
+        )
+      }
+    } catch {
+      case e: Exception =>
+        // Fallback: se l'immagine manca, mostra un rettangolo di errore per non crashare
+        println(s"Errore caricamento carta: ${e.getMessage}")
+        new StackPane {
+          children = Seq(
+            new Rectangle {
+              width = 70; height = 105; fill = Color.Red
+            },
+            new Label("Err") {
+              style = "-fx-text-fill: white;"
+            }
+          )
+        }
+    }
   }
 
   private def createOpponentSlot(name: String): VBox = new VBox {
@@ -32,7 +67,7 @@ class GameBoardView(humanName: String, opponentCount: Int) extends BorderPane {
   // --- Composizione del Layout ---
 
   // 1. Avversari in alto
-  val opponents = (1 to opponentCount).map(i => createOpponentSlot(s"Computer $i"))
+  private val opponents = (1 to opponentCount).map(i => createOpponentSlot(s"Computer $i"))
   top = new HBox(40) {
     alignment = Pos.Center
     padding = Insets(10)
@@ -60,7 +95,7 @@ class GameBoardView(humanName: String, opponentCount: Int) extends BorderPane {
       },
       new HBox(10) {
         alignment = Pos.Center
-        children = Seq(createCardPlaceholder("A♠"), createCardPlaceholder("10♦"), createCardPlaceholder("K♣"))
+        children = hand.map(card => createCardNode(card))
       }
     )
   }
