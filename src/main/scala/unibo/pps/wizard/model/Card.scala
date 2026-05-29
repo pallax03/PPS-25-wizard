@@ -13,6 +13,9 @@ package unibo.pps.wizard.model
  */
 sealed trait Card
 
+sealed trait SpecialCard extends Card:
+  def id: Int
+
 object Card:
   enum Color:
     case Blue, Green, Red, Yellow
@@ -36,9 +39,9 @@ object Card:
     case Thirteen extends Rank(13)
 
   final case class Standard(color: Color, rank: Rank) extends Card
-  case object Wizard extends Card
-  case object Jester extends Card
+  final case class Wizard(id: Int) extends SpecialCard
+  final case class Jester(id: Int) extends SpecialCard
 
   def apply(color: Color, rank: Rank): Card = Standard(color, rank)
-  def wizard: Card = Wizard
-  def jester: Card = Jester
+  def wizard(id: Int): Card = Wizard(id)
+  def jester(id: Int): Card = Jester(id)
