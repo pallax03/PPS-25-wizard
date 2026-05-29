@@ -15,11 +15,17 @@ object CardImageLoader {
         val colorInit = color.toString.substring(0, 1).toUpperCase // "B", "R", etc.
         s"/cards/$colorDir/$colorInit${rank.value}.webp"
 
-      case Card.Wizard =>
-        "/cards/yellow/YW.webp" // Assumi questa posizione per le speciali
+      case Card.Wizard(id) => id match
+        case 0 => "/cards/blue/BW.webp"
+        case 1 => "/cards/green/GW.webp"
+        case 2 => "/cards/red/RW.webp"
+        case 3 => "/cards/yellow/YW.webp"
 
-      case Card.Jester =>
-        "/cards/red/RJ.webp"
+      case Card.Jester(id) => id match
+        case 0 => "/cards/blue/BJ.webp"
+        case 1 => "/cards/green/GJ.webp"
+        case 2 => "/cards/red/RJ.webp"
+        case 3 => "/cards/red/YJ.webp"
     }
 
     // Carica la risorsa dalla cartella src/main/resources

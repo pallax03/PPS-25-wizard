@@ -15,9 +15,9 @@ object ViewManager extends JFXApp3 {
     // Esempio di una mano di carte reale
     val myHand = List(
       Card(Card.Color.Red, Card.Rank.Ten), // 10 Rosso
-      Card.wizard, // Un Mago
+      Card.wizard(1), // Un Mago
       Card(Card.Color.Blue, Card.Rank.Thirteen), // 13 Blu
-      Card.jester // Un Giullare
+      Card.jester(2) // Un Giullare
     )
     
     // Funzione di orchestrazione: toglie la Home e mette il Tavolo da Gioco
