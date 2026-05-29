@@ -1,13 +1,14 @@
 # Backlogs
-Ciascuno sprint aveva cadenza settimanale. Il venerdì di ciascuna settimana si passava ad una nuova fase di sprint.
 
 # Product Backlog:
-| Product Id | Item                                              | Initial Size Est. | Real Size |
-| ---------- | ------------------------------------------------- | ----------------- | --------- |
-| P1         | Organizzazione del progetto                       | 4                 | -         |
-| P2         | Configurazione del progetto                       | 4                 | -         |
-| P3         | Implementazione delle Funzionalità Basilari       | 14                | -         |
-| P4         | Implementazione delle Funzionalità Core del gioco | 14                | -         |
-| P5         |                                                   | -                 | -         |
-| P6         |                                                   | -                 | -         |
-| P7         |                                                   | -                 | -         |
+| Product Id | Item                                                                      | Initial Size Est. | Real Size |
+|------------|---------------------------------------------------------------------------|:-----------------:|:---------:|
+| P1         | Organizzazione del progetto.                                              |         2         |     -     |
+| P2         | Configurazione del progetto.                                              |         2         |     -     |
+| P3         | Implementazione delle Funzionalità Basilari. (Deck, Cards, Players)       |         8         |     -     |
+| P4         | L'utente deve poter effettuare un primo turno. (Trick, Table)             |         8         |     -     |
+| P5         | L'utente deve poter giocare una partita completa. (Round, Bidding, Score) |        10         |     -     |
+| P6         | DSL per la Modellazione del Game Engine                                   |         8         |     -     |
+| P7         | L'utente può unirsi ad una partita e giocare contro i bot. (Lobby, Bot)   |        14         |     -     |
+| P8         | Quality Assurance e Refactoring                                           |         8         |     -     |
+| P9         | Stesura della relazione                                                   |         6         |     -     |
