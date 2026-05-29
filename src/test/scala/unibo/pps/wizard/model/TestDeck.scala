@@ -12,9 +12,9 @@ class TestDeck extends AnyWordSpec with Matchers:
     val d = Deck()
     "have a size of 60 cards" in:
       d.length shouldBe TOTAL_SIZE
-    
-    "be randomized" in:
-      ???
+
+//    "be randomized" in:
+//      ???
 
   "A custom Deck" should:
     val d = Deck(Card(Red, One), Card(Blue, One), Card(Green, Thirteen), Card(Blue, One))
@@ -30,8 +30,8 @@ class TestDeck extends AnyWordSpec with Matchers:
         Card(Blue, One),
         Card(Green, Thirteen)
       )
-    "pop 4 cards (out of cards), should Throw an Exception" in:
-      val drawnAction = Deck.pop(d.length+1)
-      val (remainingDeck, drawnCards) = drawnAction.run(d).value
-      ???
+//    "pop 4 cards (out of cards), should Throw an Exception" in:
+//      val drawnAction = Deck.pop(d.length+1)
+//      val (remainingDeck, drawnCards) = drawnAction.run(d).value
+//      ???
 

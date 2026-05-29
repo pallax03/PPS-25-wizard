@@ -26,7 +26,7 @@ object Deck:
 
   extension (d: Deck)
     def length: Int = d.length
-    
+
 
   /**
    * @param n -> number of cards you want to receive from main deck.
@@ -45,11 +45,10 @@ object Deck:
     def create(): Deck =
       val standards = (Card.Color.values.toList, Card.Rank.values.toList).mapN(Card(_, _))
 
-//      val wizards = (0 until TOTAL_WIZARD).map(Card.Wizard(_)).toList
-//      val jesters = (0 until TOTAL_JESTER).map(Card.Jester(_)).toList
+      val wizards = (0 until TOTAL_WIZARD).map(Card.Wizard(_)).toList
+      val jesters = (0 until TOTAL_JESTER).map(Card.Jester(_)).toList
 
-//      Random.shuffle(standards |+| wizards |+| jesters)
-      Random.shuffle(standards)
+      Random.shuffle(standards |+| wizards |+| jesters)
 
   @main
   def tryDeck(): Unit =
