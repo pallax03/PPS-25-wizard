@@ -27,7 +27,6 @@ object Deck:
   extension (d: Deck)
     def length: Int = d.length
 
-
   /**
    * @param n -> number of cards you want to receive from main deck.
    *  * From an FP point of view analyzing pop function,
@@ -39,6 +38,7 @@ object Deck:
    */
   def pop(n: Int = 1): State[Deck, List[Card]] =
     State: (currentDeck: Deck) =>
+      require(currentDeck.length >= n)
       currentDeck.splitAt(n).swap
 
   private object DeckFactory:
