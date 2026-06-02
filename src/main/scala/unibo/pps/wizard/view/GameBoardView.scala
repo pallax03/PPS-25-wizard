@@ -1,6 +1,7 @@
 package unibo.pps.wizard.view
 
-import scalafx.animation.ScaleTransition
+import scalafx.Includes.jfxMouseEvent2sfx
+import scalafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
 import scalafx.scene.image.ImageView
@@ -65,7 +66,50 @@ class GameBoardView(humanName: String, opponentCount: Int, hand: List[Card]) ext
         scaleAnimation.play()
       }
 
-      cardContainer // Ritorna il nodo configurato con le sue animazioni
+      // --- CONFIGURAZIONE DRAG AND DROP MANUALE ---
+
+      // Variabili di supporto per salvare il punto esatto del click sulla carta
+      var dragContextX = 0.0
+      var dragContextY = 0.0
+
+      cardContainer.onMousePressed = event => {
+        // Memorizziamo l'offset iniziale tra il cursore e l'origine della carta
+        dragContextX = event.sceneX - cardContainer.translateX.value
+        dragContextY = event.sceneY - cardContainer.translateY.value
+
+        // Rende la carta "unmanaged" in modo che l'HBox smetta di forzarne la posizione statica
+        cardContainer.managed = false
+        cardContainer.toFront()
+      }
+
+      cardContainer.onMouseDragged = event => {
+        // Aggiorna la posizione della carta seguendo il mouse in tempo reale
+        cardContainer.translateX = event.sceneX - dragContextX
+        cardContainer.translateY = event.sceneY - dragContextY
+      }
+
+      cardContainer.onMouseReleased = _ => {
+        // Animazione di ritorno automatico alla mano se la carta viene rilasciata
+        val returnMove = new TranslateTransition(Duration(200), cardContainer) {
+          toX = 0
+          toY = 0
+        }
+        val returnScale = new ScaleTransition(Duration(200), cardContainer) {
+          toX = 1.0
+          toY = 1.0
+        }
+
+        val returnAnimation = new ParallelTransition(cardContainer, Seq(returnMove, returnScale))
+
+        returnAnimation.onFinished = _ => {
+          // Quando l'animazione finisce, restituiamo il controllo della carta all'HBox
+          cardContainer.managed = true
+        }
+
+        returnAnimation.play()
+      }
+
+      cardContainer // Ritorna il nodo configurato
 
     } catch {
       case e: Exception =>
