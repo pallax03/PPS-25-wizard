@@ -1,11 +1,13 @@
 package unibo.pps.wizard.view
 
+import scalafx.animation.ScaleTransition
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout.{BorderPane, HBox, StackPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
+import scalafx.util.Duration
 import unibo.pps.wizard.model.Card
 
 class GameBoardView(humanName: String, opponentCount: Int, hand: List[Card]) extends BorderPane {
@@ -25,31 +27,53 @@ class GameBoardView(humanName: String, opponentCount: Int, hand: List[Card]) ext
   // --- Nuovo metodo per creare la carta partendo dal Modello ---
   private def createCardNode(card: Card): StackPane = {
     try {
-      // Otteniamo l'immagine tramite l'utility
       val cardImage = CardImageLoader.getImageForCard(card)
 
-      new StackPane {
+      // Creiamo lo StackPane che fa da contenitore alla carta
+      val cardContainer = new StackPane {
         children = Seq(
           new ImageView(cardImage) {
-            fitWidth = 120 // Scegli la larghezza che preferisci
-            fitHeight = 170 // Mantiene le proporzioni della carta (es. 2:3)
+            fitWidth = 120
+            fitHeight = 170
             preserveRatio = true
             smooth = true
           }
         )
       }
+
+      // --- CONFIGURAZIONE ANIMAZIONE DI HOVER ---
+
+      // Creiamo la transizione di scala sul contenitore della carta
+      val scaleAnimation = new ScaleTransition {
+        duration = Duration(150) // Durata dell'effetto in millisecondi (veloce e reattivo)
+        node = cardContainer     // Il bersaglio dell'animazione
+      }
+
+      // Quando il mouse ENTRA nell'area della carta
+      cardContainer.onMouseEntered = _ => {
+        scaleAnimation.stop() // Ferma eventuali animazioni in corso per evitare scatti
+        scaleAnimation.toX = 1.15  // Ingrandisce del 15% in larghezza
+        scaleAnimation.toY = 1.15  // Ingrandisce del 15% in altezza
+        scaleAnimation.play()
+      }
+
+      // Quando il mouse ESCE dall'area della carta
+      cardContainer.onMouseExited = _ => {
+        scaleAnimation.stop()
+        scaleAnimation.toX = 1.0   // Ritorna alla dimensione originale
+        scaleAnimation.toY = 1.0
+        scaleAnimation.play()
+      }
+
+      cardContainer // Ritorna il nodo configurato con le sue animazioni
+
     } catch {
       case e: Exception =>
-        // Fallback: se l'immagine manca, mostra un rettangolo di errore per non crashare
         println(s"Errore caricamento carta: ${e.getMessage}")
         new StackPane {
           children = Seq(
-            new Rectangle {
-              width = 70; height = 105; fill = Color.Red
-            },
-            new Label("Err") {
-              style = "-fx-text-fill: white;"
-            }
+            new Rectangle { width = 70; height = 105; fill = Color.Red },
+            new Label("Err") { style = "-fx-text-fill: white;" }
           )
         }
     }

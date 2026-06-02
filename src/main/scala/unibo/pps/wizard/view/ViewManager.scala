@@ -17,7 +17,8 @@ object ViewManager extends JFXApp3 {
       Card(Card.Color.Red, Card.Rank.Ten), // 10 Rosso
       Card.wizard(1), // Un Mago
       Card(Card.Color.Blue, Card.Rank.Thirteen), // 13 Blu
-      Card.jester(2) // Un Giullare
+      Card.jester(2), // Un Giullare
+      Card(Card.Color.Green, Card.Rank.Two), // 2 Verde
     )
     
     // Funzione di orchestrazione: toglie la Home e mette il Tavolo da Gioco
