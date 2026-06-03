@@ -1,4 +1,4 @@
-package unibo.pps.wizard.view
+package it.unibo.pps.wizard.view
 
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.{Button, ComboBox, Label, TextField}

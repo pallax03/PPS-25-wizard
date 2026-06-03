@@ -1,9 +1,9 @@
-package unibo.pps.wizard.view
+package it.unibo.pps.wizard.view
 
+import it.unibo.pps.wizard.model.Card
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
-import unibo.pps.wizard.model.Card
 import scala.compiletime.uninitialized
 
 object ViewManager extends JFXApp3 {

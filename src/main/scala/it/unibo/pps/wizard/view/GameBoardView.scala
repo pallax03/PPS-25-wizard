@@ -1,5 +1,6 @@
-package unibo.pps.wizard.view
+package it.unibo.pps.wizard.view
 
+import it.unibo.pps.wizard.model.Card
 import scalafx.Includes.jfxMouseEvent2sfx
 import scalafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import scalafx.geometry.{Insets, Pos}
@@ -9,7 +10,6 @@ import scalafx.scene.layout.{BorderPane, HBox, StackPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
 import scalafx.util.Duration
-import unibo.pps.wizard.model.Card
 
 class GameBoardView(humanName: String, opponentCount: Int, hand: List[Card]) extends BorderPane {
 

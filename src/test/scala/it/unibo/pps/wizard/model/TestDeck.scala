@@ -1,9 +1,9 @@
-package unibo.pps.wizard.model
+package it.unibo.pps.wizard.model
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import unibo.pps.wizard.model.Card.Color.*
-import unibo.pps.wizard.model.Card.Rank.*
+import Card.Color.*
+import Card.Rank.*
 
 
 class TestDeck extends AnyWordSpec with Matchers:

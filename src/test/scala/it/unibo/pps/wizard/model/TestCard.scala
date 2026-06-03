@@ -1,4 +1,4 @@
-package unibo.pps.wizard.model
+package it.unibo.pps.wizard.model
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
