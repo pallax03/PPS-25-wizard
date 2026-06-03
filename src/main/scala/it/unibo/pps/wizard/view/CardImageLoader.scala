@@ -1,6 +1,6 @@
-package unibo.pps.wizard.view
+package it.unibo.pps.wizard.view
 
-import unibo.pps.wizard.model.Card
+import it.unibo.pps.wizard.model.Card
 import scalafx.scene.image.Image
 
 object CardImageLoader {

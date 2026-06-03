@@ -1,4 +1,4 @@
-package unibo.pps.wizard.model
+package it.unibo.pps.wizard.model
 
 import cats.data.State
 import cats.implicits.{catsSyntaxSemigroup, catsSyntaxTuple2Semigroupal}
@@ -36,7 +36,7 @@ object Deck:
    *
    * @return  State[Deck, drawnCards]
    */
-  def pop(n: Int = 1): State[Deck, List[Card]] =
+  def pop(n: Int): State[Deck, List[Card]] =
     State: (currentDeck: Deck) =>
       require(currentDeck.length >= n)
       currentDeck.splitAt(n).swap
@@ -49,7 +49,3 @@ object Deck:
       val jesters = (0 until TOTAL_JESTER).map(Card.Jester(_)).toList
 
       Random.shuffle(standards |+| wizards |+| jesters)
-
-  @main
-  def tryDeck(): Unit =
-    print(Deck())
