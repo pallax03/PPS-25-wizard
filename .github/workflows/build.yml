@@ -2,9 +2,6 @@ name: Project Build and Test
 # https://github.com/sbt/setup-sbt
 
 on:
-  push:
-    branches:
-      - develop
   pull_request:
     branches:
       - master
