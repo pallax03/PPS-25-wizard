@@ -8,8 +8,8 @@ class TestPlayer extends AnyWordSpec with Matchers:
   import Card.Rank.*
 
   "A Player" should:
-    val p = Player.human(0, "Alice")
     val initialValue = 0
+    val p = Player.human(initialValue, "Alice")
     "have the correct name and id" in:
       p.name shouldBe "Alice"
       p.id shouldBe initialValue

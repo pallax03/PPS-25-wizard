@@ -14,12 +14,12 @@ import scala.util.Random
  *  Each Round a new Deck need to be initialized.
  *  This deck need to contain 60 unique cards, and every player cannot receive a duplicate.
  */
-object Deck:
-  final val TOTAL_WIZARD: Int = 4
-  final val TOTAL_JESTER: Int = 4
-  final val TOTAL_SIZE: Int = TOTAL_JESTER + TOTAL_WIZARD + (Card.Rank.values.length * Card.Color.values.length)
+opaque type Deck = List[Card]
 
-  opaque type Deck = List[Card]
+object Deck:
+  private final val TOTAL_WIZARD: Int = 4
+  private final val TOTAL_JESTER: Int = 4
+  final val TOTAL_SIZE: Int = TOTAL_JESTER + TOTAL_WIZARD + (Card.Rank.values.length * Card.Color.values.length)
 
   def apply(cards: Card*): Deck = cards.toList.distinct
   def apply(): Deck = DeckFactory.create()

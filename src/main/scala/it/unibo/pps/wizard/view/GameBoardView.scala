@@ -18,7 +18,7 @@ class GameBoardView(humanName: String, opponentCount: Int, hand: List[Card]) ext
   style = "-fx-background-color: #1c1c18;"
 
   // --- Mappatura Colori Modello -> Colori Grafici (JavaFX) ---
-  private def mapColor(modelColor: Card.Color): Color = modelColor match {
+  def mapColor(modelColor: Card.Color): Color = modelColor match {
     case Card.Color.Red => Color.LightCoral
     case Card.Color.Blue => Color.LightSkyBlue
     case Card.Color.Green => Color.LightGreen
