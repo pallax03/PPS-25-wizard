@@ -1,4 +1,4 @@
-# Backlogs
+# Retrospettiva:
 
 # Product Backlog:
 | Product Id | Item                                                                      | Initial Size Est. | Real Size |
@@ -12,3 +12,7 @@
 | P7         | L'utente può unirsi ad una partita e giocare contro i bot. (Lobby, Bot)   |        14         |     -     |
 | P8         | Quality Assurance e Refactoring                                           |         8         |     -     |
 | P9         | Stesura della relazione                                                   |         6         |     -     |
+
+## Sprint Backlog:
+- [Sprint 1](./sprints/first_sprint.md)
+- [Sprint 2](./sprints/second_sprint.md)
