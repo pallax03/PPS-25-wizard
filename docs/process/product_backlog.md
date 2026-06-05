@@ -8,7 +8,6 @@
 | P3         | Implementazione delle Funzionalità Basilari. (Deck, Cards, Players)       |         8         |     -     |
 | P4         | L'utente deve poter effettuare un primo turno. (Trick, Table)             |         8         |     -     |
 | P5         | L'utente deve poter giocare una partita completa. (Round, Bidding, Score) |        10         |     -     |
-| P6         | DSL per la Modellazione del Game Engine                                   |         8         |     -     |
 | P7         | L'utente può unirsi ad una partita e giocare contro i bot. (Lobby, Bot)   |        14         |     -     |
 | P8         | Quality Assurance e Refactoring                                           |         8         |     -     |
 | P9         | Stesura della relazione                                                   |         6         |     -     |
