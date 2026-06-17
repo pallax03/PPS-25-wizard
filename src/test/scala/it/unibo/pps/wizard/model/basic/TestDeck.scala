@@ -1,9 +1,10 @@
-package it.unibo.pps.wizard.model
+package it.unibo.pps.wizard.model.basic
 
+import it.unibo.pps.wizard.model.basic.Card.Color.*
+import it.unibo.pps.wizard.model.basic.Card.Rank.*
+import it.unibo.pps.wizard.model.basic.{Card, Deck}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import Card.Color.*
-import Card.Rank.*
 
 
 class TestDeck extends AnyWordSpec with Matchers:

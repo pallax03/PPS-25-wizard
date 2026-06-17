@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.model
+package it.unibo.pps.wizard.model.basic
 
 import cats.data.State
 import cats.implicits.{catsSyntaxSemigroup, catsSyntaxTuple2Semigroupal}

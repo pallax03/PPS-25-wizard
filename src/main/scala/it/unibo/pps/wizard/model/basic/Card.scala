@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.model
+package it.unibo.pps.wizard.model.basic
 
 /**
  * A card in the Wizard game.
@@ -45,3 +45,5 @@ object Card:
   def apply(color: Color, rank: Rank): Card = Standard(color, rank)
   def wizard(id: Int): Card = Wizard(id)
   def jester(id: Int): Card = Jester(id)
+
+export Card.*

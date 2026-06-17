@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.model
+package it.unibo.pps.wizard.model.basic
 
 /**
  * Represent the hand of a player
