@@ -1,6 +1,6 @@
-package it.unibo.pps.wizard.model.rules
+package it.unibo.pps.wizard.engine.model.rules
 
-import it.unibo.pps.wizard.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.*
 
 opaque type Trump = (Card, Option[Card.Color])
 opaque type Round = Int

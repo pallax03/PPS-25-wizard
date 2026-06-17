@@ -1,8 +1,8 @@
-package it.unibo.pps.wizard.model.basic
+package it.unibo.pps.wizard.engine.model.basic
 
-import it.unibo.pps.wizard.model.basic.Card.Color.*
-import it.unibo.pps.wizard.model.basic.Card.Rank.*
-import it.unibo.pps.wizard.model.basic.{Card, Deck}
+import it.unibo.pps.wizard.engine.model.basic.Card.Color.*
+import it.unibo.pps.wizard.engine.model.basic.Card.Rank.*
+import it.unibo.pps.wizard.engine.model.basic.{Card, Deck}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

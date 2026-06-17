@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.model.rules
+package it.unibo.pps.wizard.engine.model.rules
 
 trait GameEngine:
   def processAction(state: GameState, action: GameAction): Either[GameError, GameState] = (state, action) match

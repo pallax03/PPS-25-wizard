@@ -1,6 +1,6 @@
-package it.unibo.pps.wizard.model.basic
+package it.unibo.pps.wizard.engine.model.basic
 
-import it.unibo.pps.wizard.model.basic.{Card, Hand, Player}
+import it.unibo.pps.wizard.engine.model.basic.{Card, Hand, Player}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
