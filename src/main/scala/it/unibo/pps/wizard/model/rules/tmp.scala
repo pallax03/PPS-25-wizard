@@ -1,7 +1,6 @@
 package it.unibo.pps.wizard.model.rules
 
-import it.unibo.pps.wizard.model.*
-import it.unibo.pps.wizard.model.basic.{Card, Deck, Player, PlayerId}
+import it.unibo.pps.wizard.model.basic.*
 
 opaque type Trump = (Card, Option[Card.Color])
 opaque type Round = Int
