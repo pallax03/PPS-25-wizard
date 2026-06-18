@@ -1,6 +1,6 @@
 package it.unibo.pps.wizard.view
 
-import it.unibo.pps.wizard.model.basic.Card
+import it.unibo.pps.wizard.engine.model.basic.Card
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color

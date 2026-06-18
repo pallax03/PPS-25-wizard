@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.model.basic
+package it.unibo.pps.wizard.engine.model.basic
 
 /**
  * A card in the Wizard game.

@@ -1,6 +1,4 @@
-package it.unibo.pps.wizard.model.basic
-
-import it.unibo.pps.wizard.model.basic.{Card, PlayerId}
+package it.unibo.pps.wizard.engine.model.basic
 
 object Table:
 

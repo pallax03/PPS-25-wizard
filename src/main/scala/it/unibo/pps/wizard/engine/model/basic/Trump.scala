@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.model.basic
+package it.unibo.pps.wizard.engine.model.basic
 
 enum Trump:
   case Absent

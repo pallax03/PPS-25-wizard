@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.model.basic
+package it.unibo.pps.wizard.engine.model.basic
 
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
@@ -15,10 +15,10 @@ class TestTable extends AnyWordSpec with Matchers:
       val card1 = Card.wizard(1)
       val card2 = Card(Color.Red, Rank.Ten)
       "contain the card" in:
-        val newTable = t.addCard(1, card1)
+        val newTable = t.addCard(PlayerId(1), card1)
         newTable.playedCards should contain only card1
       "preserve the exact order of play" in:
         val newTable = t
-          .addCard(1, card1)
-          .addCard(2, card2)
+          .addCard(PlayerId(1), card1)
+          .addCard(PlayerId(2), card2)
         newTable.playedCards shouldEqual List(card1, card2)

@@ -1,6 +1,6 @@
 package it.unibo.pps.wizard.view
 
-import it.unibo.pps.wizard.model.basic.Card
+import it.unibo.pps.wizard.engine.model.basic.Card
 import scalafx.Includes.jfxMouseEvent2sfx
 import scalafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import scalafx.geometry.{Insets, Pos}

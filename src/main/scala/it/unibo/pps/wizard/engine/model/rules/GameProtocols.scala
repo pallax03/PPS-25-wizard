@@ -1,6 +1,6 @@
-package it.unibo.pps.wizard.model.rules
+package it.unibo.pps.wizard.engine.model.rules
 
-import it.unibo.pps.wizard.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.*
 
 
 case class CoreState(
