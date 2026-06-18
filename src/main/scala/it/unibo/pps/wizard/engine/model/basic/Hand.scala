@@ -1,9 +1,8 @@
 package it.unibo.pps.wizard.engine.model.basic
 
+opaque type Hand = List[Card]
+opaque type Hands = Map[PlayerId, Hand]
 object Hand:
-  opaque type Hand = List[Card]
-  opaque type Hands = Map[PlayerId, Hand]
-
   def empty: Hand = List.empty
   def apply(cards: Card*): Hand = cards.toList
   def fromList(cards: List[Card]): Hand = cards

@@ -5,26 +5,27 @@ import it.unibo.pps.wizard.engine.model.basic.*
 
 case class CoreState(
                       players: List[Player],
+                      hands: Hands,
                       deck: Deck,
                       round: Round,
-                      dealerId: PlayerId
+                      dealerId: PlayerId,
+                      scoreboard: Scoreboard
                     )
 
 sealed trait GameState
 object GameState:
   case class Dealing(core: CoreState) extends GameState
   case class Bidding(core: CoreState,
-                     trump: Option[Trump],
+                     trump: Trump,
                      currentBids: BidsCollection,
                      currentPlayer: PlayerId) extends GameState
   case class Playing(
                       core: CoreState,
-                      trump: Option[Trump],
+                      trump: Trump,
                       bids: BidsCollection,
                       table: Table,
                       currentPlayerTurn: PlayerId,
                       tricksWon: TricksWon,
-                      leadPlayer: PlayerId
                     ) extends GameState
   case class Scoring(core: CoreState,
                      bids: BidsCollection,
@@ -34,7 +35,7 @@ sealed trait GameAction
 
 object GameAction:
   case class PlaceBid(playerId: PlayerId, bid: Bid) extends GameAction
-  case class chooseTrump(playerId: PlayerId, color: Card.Color) extends GameAction
+  case class ChooseTrump(playerId: PlayerId, color: Card.Color) extends GameAction
   case class PlayCard(playerId: PlayerId, card: Card) extends GameAction
 
 enum GameError:
