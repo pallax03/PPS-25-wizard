@@ -1,6 +1,6 @@
 package it.unibo.pps.wizard.view
 
-import it.unibo.pps.wizard.model.Card
+import it.unibo.pps.wizard.engine.model.basic.Card
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
@@ -35,8 +35,8 @@ object ViewManager extends JFXApp3 {
 
     stage = new JFXApp3.PrimaryStage {
       title = "PPS Card Game - Wizard"
-      width = 900
-      height = 650
+      width = 1200
+      height = 800
       scene = mainScene
     }
   }
