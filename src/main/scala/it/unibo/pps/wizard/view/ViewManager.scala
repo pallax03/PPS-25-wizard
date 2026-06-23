@@ -35,8 +35,8 @@ object ViewManager extends JFXApp3 {
 
     stage = new JFXApp3.PrimaryStage {
       title = "PPS Card Game - Wizard"
-      width = 900
-      height = 650
+      width = 1200
+      height = 800
       scene = mainScene
     }
   }
