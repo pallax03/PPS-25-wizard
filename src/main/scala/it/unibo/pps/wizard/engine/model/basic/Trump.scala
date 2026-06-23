@@ -11,3 +11,10 @@ enum Trump:
     case Standard(c)              => Some(c.color)
     case WizardResolved(_, color) => Some(color)
     case _                        => None
+
+
+object Trump:
+  def apply(c: Card): Trump = c match
+    case j: Card.Jester => Trump.Jester(j)
+    case w: Card.Wizard => Trump.WizardUnresolved(w)
+    case s: Card.Standard => Trump.Standard(s)
