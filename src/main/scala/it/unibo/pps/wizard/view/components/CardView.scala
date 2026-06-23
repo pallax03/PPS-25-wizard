@@ -1,16 +1,19 @@
-package it.unibo.pps.wizard.view
+package it.unibo.pps.wizard.view.components
 
 import it.unibo.pps.wizard.engine.model.basic.Card
-import scalafx.scene.layout.StackPane
-import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.shape.Rectangle
-import scalafx.scene.paint.Color
-import scalafx.scene.text.{Text, Font, FontWeight}
-import scalafx.scene.effect.DropShadow
 import scalafx.geometry.Pos
+import scalafx.scene.effect.DropShadow
+import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.layout.StackPane
+import scalafx.scene.paint.Color
+import scalafx.scene.shape.Rectangle
+import scalafx.scene.text.{Font, FontWeight, Text}
 
 class CardView(val card: Card) extends StackPane:
   alignment = Pos.Center
+
+  minWidth = 0
+  minHeight = 0
 
   private val imagePath = getImagePath(card)
   private val cardImage = Option(getClass.getResourceAsStream(imagePath)).map(stream => new Image(stream))
@@ -21,8 +24,8 @@ class CardView(val card: Card) extends StackPane:
         preserveRatio = true
         smooth = true
 
-      imageView.fitWidth <== this.width
-      imageView.fitHeight <== this.height
+      imageView.fitWidth <== this.prefWidth
+      imageView.fitHeight <== this.prefHeight
 
       children = imageView
 

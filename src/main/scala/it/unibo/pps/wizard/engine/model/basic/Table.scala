@@ -7,8 +7,8 @@ object Table:
   extension (t: Table)
     def addCard(player: PlayerId, card: Card): Table = t :+ (player, card)
     def playedCards: List[Card] = t.map((_, card) => card)
-    def leaderColor: Option[Card.Color] = t.playedCards.collectFirst:
-        case Card.Standard (color, _) => color
+    def leaderCard: Option[Card.Standard] = t.playedCards.collectFirst:
+      case s: Card.Standard => s
     def playerOf(card: Card): Option[PlayerId] = t.find((_, c) => c == card).map((player, _) => player)
 
 export Table.*

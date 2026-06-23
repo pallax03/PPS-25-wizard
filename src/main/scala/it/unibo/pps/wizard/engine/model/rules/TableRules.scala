@@ -26,7 +26,7 @@ object TableRules:
     override def evaluateTrickWinner(table: Table, trump: Trump): PlayerId =
       val cards = table.playedCards
       val trumpColor = trump.effectiveColor
-      val leaderColor = table.leaderColor
+      val leaderColor: Option[Color] = table.leaderCard.map(_.color)
 
       def highestOf(targetColor: Option[Card.Color]): Option[Card] =
         cards.collect:

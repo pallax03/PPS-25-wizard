@@ -1,43 +1,36 @@
 package it.unibo.pps.wizard.view
 
-import it.unibo.pps.wizard.engine.model.basic.Card
+import cats.data.State
+import it.unibo.pps.wizard.engine.model.basic.{Card, Deck, Hand, PlayerId, Table, Trump}
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
+
 import scala.compiletime.uninitialized
 
-object ViewManager extends JFXApp3 {
+object ViewManager extends JFXApp3:
 
   private var mainScene: Scene = uninitialized
 
-  override def start(): Unit = {
+  override def start(): Unit =
 
-    // Esempio di una mano di carte reale
-    val myHand = List(
-      Card(Card.Color.Red, Card.Rank.Ten), // 10 Rosso
-      Card.wizard(1), // Un Mago
-      Card(Card.Color.Blue, Card.Rank.Thirteen), // 13 Blu
-      Card.jester(2), // Un Giullare
-      Card(Card.Color.Green, Card.Rank.Two), // 2 Verde
-    )
-    
-    // Funzione di orchestrazione: toglie la Home e mette il Tavolo da Gioco
-    def handleStartGame(playerName: String, opponentCount: Int): Unit = {
-      // Istanziamo la classe indipendente GameBoard
-      mainScene.root = new GameBoardView(playerName, opponentCount, myHand)
-    }
+    val drawAction: State[Deck, (List[Card], Option[Card])] = for
+      player1Cards <- Deck.pop(6)
+      trumpCard <- Deck.pop(1)
+    yield (player1Cards, trumpCard.headOption)
 
-    // Inizializzazione della scena con la HomeView
-    mainScene = new Scene {
+    val deck = Deck()
+    val (playerCards1, trumpCard) = drawAction.runA(deck).value
+
+    def handleStartGame(): Unit =
+      mainScene.root = new GameBoardView(Hand.fromList(playerCards1), Table.empty, Trump(trumpCard.head))
+
+    mainScene = new Scene:
       fill = Color.rgb(28, 28, 28)
       root = new HomeView(handleStartGame)
-    }
 
-    stage = new JFXApp3.PrimaryStage {
+    stage = new JFXApp3.PrimaryStage:
       title = "PPS Card Game - Wizard"
       width = 1200
       height = 800
       scene = mainScene
-    }
-  }
-}
