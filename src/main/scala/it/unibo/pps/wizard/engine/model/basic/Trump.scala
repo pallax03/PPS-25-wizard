@@ -12,6 +12,13 @@ enum Trump:
     case WizardResolved(_, color) => Some(color)
     case _                        => None
 
+  def getCard: Option[Card] = this match
+    case Trump.Absent => None
+    case Trump.Jester(card) => Some(card)
+    case Trump.Standard(card) => Some(card)
+    case Trump.WizardUnresolved(card) => Some(card)
+    case Trump.WizardResolved(card, color) => Some(card)
+
 
 object Trump:
   def apply(c: Card): Trump = c match

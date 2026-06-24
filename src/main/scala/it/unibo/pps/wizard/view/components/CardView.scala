@@ -50,7 +50,7 @@ class CardView(val card: Card) extends StackPane:
   def setGlow(glowColor: Color): Unit =
     this.effect = new DropShadow:
       this.color = glowColor
-      radius = 20
+      radius = 15
       spread = 0.5
 
   def removeGlow(): Unit =
@@ -67,16 +67,19 @@ class CardView(val card: Card) extends StackPane:
     case 2 => s"/cards/red/R$name.webp"
     case 3 => s"/cards/green/G$name.webp"
 
-  private def getFallbackColor(c: Card): Color = c match
-    case Card.Standard(color, _) => color match
-      case Card.Color.Red => Color.FireBrick
-      case Card.Color.Blue => Color.DodgerBlue
-      case Card.Color.Green => Color.ForestGreen
-      case Card.Color.Yellow => Color.Goldenrod
-    case Card.Wizard(_) => Color.Purple
-    case Card.Jester(_) => Color.Orange
+  private def getFallbackColor(card: Card): Color = card match
+    case Card.Jester(_) => Color.Purple
+    case Card.Wizard(_) => Color.Aquamarine
+    case Card.Standard(color, _) => CardView.fxColor(color)
 
   private def getFallbackText(c: Card): String = c match
     case Card.Standard(_, rank) => rank.value.toString
     case Card.Wizard(_) => "W"
     case Card.Jester(_) => "J"
+
+object CardView:
+  def fxColor(color: Card.Color): Color = color match
+    case Card.Color.Blue => Color.DodgerBlue
+    case Card.Color.Green => Color.ForestGreen
+    case Card.Color.Red => Color.FireBrick
+    case Card.Color.Yellow => Color.Goldenrod
