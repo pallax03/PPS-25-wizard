@@ -1,7 +1,6 @@
 package it.unibo.pps.wizard.view.components
 
 import it.unibo.pps.wizard.engine.model.basic.{Card, Table}
-import scalafx.Includes.jfxMouseDragEvent2sfx
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.control.Label
 import scalafx.geometry.{Insets, Pos}
@@ -33,14 +32,14 @@ class TableView(table: Table) extends HBox:
   padding = Insets(20)
   spacing = 15.0
 
-  private val normalStyle = "-fx-background-color: rgba(43, 92, 63, 0.85); -fx-background-radius: 20;"
-  private val hoverStyle = "-fx-background-color: rgba(60, 120, 80, 0.95); -fx-background-radius: 20;"
+  private val normalStyle = "-fx-background-color: rgba(43, 92, 63, 0.85); -fx-background-radius: 15;"
+  private val hoverStyle = "-fx-background-color: rgba(60, 120, 80, 0.95); -fx-background-radius: 15;"
 
   style = normalStyle
 
-  val dummyData = table.playedCards.map(c => (c, "Player" + table.playerOf(c), false))
-  children = dummyData.map { case (card, playerName, leaderCard: table.leaderCard) =>
-    val wrapper = new PlayedCardWrapper(card, playerName, card == leaderCard)
+  val dummyData = table.playedCards.map(c => (c, "Player" + table.playerOf(c), c == table.leaderCard))
+  children = dummyData.map { case (card, playerName, isLeader) =>
+    val wrapper = new PlayedCardWrapper(card, playerName, isLeader)
     wrapper.prefWidth <== (this.width - 40 - (5 * spacing.value)) / 6
     wrapper
   }

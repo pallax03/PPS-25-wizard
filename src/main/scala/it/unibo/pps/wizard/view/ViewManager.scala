@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard.view
 
 import cats.data.State
-import it.unibo.pps.wizard.engine.model.basic.{Card, Deck, Hand, PlayerId, Table, Trump}
+import it.unibo.pps.wizard.engine.model.basic.{Card, Deck, Hand, Table, Trump}
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color

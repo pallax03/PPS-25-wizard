@@ -14,7 +14,7 @@ object TableRules:
 
     override def validateCard(table: Table, hand: Hand, cardPlayed: Card, trump: Trump): Either[GameError, Unit] =
       if !hand.contains(cardPlayed) then return Left(GameError.CardNotAllowed)
-      val leaderColorOption = table.leaderColor
+      val leaderColorOption = table.leaderCard.map(_.color)
       (leaderColorOption, cardPlayed) match
         case (Some(leaderColor), Card.Standard(c, _)) if c != leaderColor =>
           val hasLeaderColor = hand.toList.exists:
