@@ -12,7 +12,7 @@ class TestTable extends AnyWordSpec with Matchers:
       "have no played cards" in:
         t.playedCards shouldBe empty
       "have no leader color" in:
-        t.leaderColor shouldBe empty
+        t.leaderCard shouldBe empty
     "adding cards" should:
       val card1 = Card.wizard(1)
       val card2 = Card(Color.Red, Rank.Ten)

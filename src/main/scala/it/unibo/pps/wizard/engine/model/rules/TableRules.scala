@@ -14,7 +14,7 @@ object TableRules:
 
     override def validateCard(table: Table, hand: Hand, cardPlayed: Card, trump: Trump): Either[GameError, Unit] =
       if !hand.contains(cardPlayed) then return Left(GameError.CardNotAllowed)
-      val leaderColorOption = table.leaderColor
+      val leaderColorOption = table.leaderCard.map(_.color)
       (leaderColorOption, cardPlayed) match
         case (Some(leaderColor), Card.Standard(c, _)) if c != leaderColor =>
           val hasLeaderColor = hand.toList.exists:
@@ -26,7 +26,7 @@ object TableRules:
     override def evaluateTrickWinner(table: Table, trump: Trump): PlayerId =
       val cards = table.playedCards
       val trumpColor = trump.effectiveColor
-      val leaderColor = table.leaderColor
+      val leaderColor: Option[Color] = table.leaderCard.map(_.color)
 
       def highestOf(targetColor: Option[Card.Color]): Option[Card] =
         cards.collect:

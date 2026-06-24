@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard.engine.model.basic
 
 import cats.data.State
-import cats.implicits.{catsSyntaxSemigroup, catsSyntaxTuple2Semigroupal}
+import cats.implicits.*
 
 import scala.util.Random
 

@@ -6,7 +6,7 @@ import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight}
 
-class HomeView(onStartGame: (String, Int) => Unit) extends VBox {
+class HomeView(onStartGame: () => Unit) extends VBox {
 
   // Configurazione del layout principale della Home
   alignment = Pos.Center
@@ -55,7 +55,8 @@ class HomeView(onStartGame: (String, Int) => Unit) extends VBox {
     """
 
     // Quando viene cliccato, lancia la funzione di callback passando i dati inseriti
-    onAction = _ => onStartGame(nameField.text.value, opponentsCombo.value.value)
+    onAction = _ => onStartGame()
+    // TODO: insert here if need other parameters
   }
 
   // Aggiungiamo tutti gli elementi al VBox della HomeView
