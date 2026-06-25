@@ -1,10 +1,10 @@
-package it.unibo.pps.wizard.view
+package it.unibo.pps.wizard.application.gui.pages
 
 import cats.data.State
-import it.unibo.pps.wizard.engine.model.basic.{Card, Deck, Hand, Table, Trump}
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
+import it.unibo.pps.wizard.engine.model.basic.*
 
 import scala.compiletime.uninitialized
 

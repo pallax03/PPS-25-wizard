@@ -1,6 +1,7 @@
-package it.unibo.pps.wizard.view.components
+package it.unibo.pps.wizard.application.gui.components
 
 import it.unibo.pps.wizard.engine.model.basic.Card
+
 import scalafx.geometry.Pos
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.{Image, ImageView}

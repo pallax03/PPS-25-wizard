@@ -1,10 +1,10 @@
-package it.unibo.pps.wizard.view
+package it.unibo.pps.wizard.application.gui.pages
 
+import it.unibo.pps.wizard.application.gui.components.{HandView, TableView, TrumpView}
+import it.unibo.pps.wizard.engine.model.basic.{Hand, Table, Trump}
 import scalafx.scene.layout.{BorderPane, StackPane, VBox}
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos
-import it.unibo.pps.wizard.engine.model.basic.{Hand, Table, Trump}
-import it.unibo.pps.wizard.view.components.{HandView, TableView, TrumpView}
 
 class GameBoardView(
                     playerHand: Hand,
@@ -15,12 +15,12 @@ class GameBoardView(
   style = "-fx-background-color: #1e1e1e;"
   padding = Insets(20)
 
-  val tableView = new TableView(currentTable)
+  private val tableView = new TableView(currentTable)
   center = new StackPane:
     padding = Insets(20)
     children = tableView
 
-  val handView = new HandView(playerHand,
+  private val handView = new HandView(playerHand,
     onCardDragged = (mouseX, mouseY) =>
       tableView.setHighlight(tableView.isOver(mouseX, mouseY)),
     onCardDropped = (card, mouseX, mouseY) =>
@@ -33,7 +33,7 @@ class GameBoardView(
     padding = Insets(20, 0, 0, 0)
     children = handView
 
-  val trumpHolder = new TrumpView(trump)
+  private val trumpHolder = new TrumpView(trump)
   left = new VBox:
     alignment = Pos.Center
     padding = Insets(0, 20, 0, 0)
