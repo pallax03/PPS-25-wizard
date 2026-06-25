@@ -4,7 +4,7 @@ import io.vertx.core.Vertx
 import io.vertx.core.eventbus.MessageConsumer
 import it.unibo.pps.wizard.engine.events.Event
 import it.unibo.pps.wizard.engine.events.Event.addressOf
-import it.unibo.pps.wizard.engine.events.WizardEvent.{ActionFailed, GameStarted}
+import it.unibo.pps.wizard.engine.events.WizardEvent.{ActionFailed, GameStarted, generatedEvents}
 import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
 import it.unibo.pps.wizard.engine.model.core.GameAction
@@ -17,34 +17,34 @@ import scala.concurrent.Future
 import scala.reflect.ClassTag
 
 class WizardGame(private val vertx: Vertx) extends WizardPort:
-  private var state: WizardGameState = WizardGameState.NotConfigured
+  private var currentState: WizardGameState = WizardGameState.NotConfigured
   private val verticleExecutor: VerticleExecutor = VerticleExecutor(this.vertx)
   private var subscriptions: Map[String, MessageConsumer[?]] = Map.empty
 
   override def getState: Future[WizardGameState] =
     runOnVerticle("State Retrieval"):
-      this.state
+      this.currentState
 
   override def startGame(players: Players, config: GameConfiguration): Future[Unit] =
     runOnVerticle("Game Start"):
-      this.state match
+      this.currentState match
         case WizardGameState.NotConfigured =>
           val initialState = GameEngine.initializeGame(Players.create(players, config.numberOfBots))
-          this.state = WizardGameState.Running(initialState)
+          this.currentState = WizardGameState.Running(initialState)
           this.publish(GameStarted(initialState))
         case _ =>
 
   override def submitAction(action: GameAction): Future[Unit] =
     runOnVerticle("Action Submission"):
-      this.state match
-        case WizardGameState.Running(state) =>
-          GameEngine.processAction(state, action) match
+      this.currentState match
+        case WizardGameState.Running(oldState) =>
+          GameEngine.processAction(oldState, action) match
             case Left(error) =>
               println(s"Error processing action: $error")
               this.publish(ActionFailed(action.playerId, error.toString))
             case Right(newState) =>
-              this.state = WizardGameState.Running(newState)
-              this.publish(GameStarted(newState))
+              this.currentState = WizardGameState.Running(newState)
+              this.publishAll(generatedEvents(action, oldState, newState))
         case _ =>
 
   override def subscribe[T <: Event : ClassTag](handler: T => Unit): Future[String] =
@@ -64,6 +64,7 @@ class WizardGame(private val vertx: Vertx) extends WizardPort:
           consumer.unregister()
           this.subscriptions -= subscriptionId
 
+  private def publishAll[T <: List[Event] : ClassTag](eventList: T): Unit = eventList.foreach(publish(_))
 
   private def publish[T <: Event : ClassTag](event: T): Unit =
     println(s"Publishing event: $event")
