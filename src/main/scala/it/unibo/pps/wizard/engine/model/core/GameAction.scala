@@ -2,9 +2,15 @@ package it.unibo.pps.wizard.engine.model.core
 
 import it.unibo.pps.wizard.engine.model.basic.*
 
-sealed trait GameAction:
+/**
+ * Represents an explicit command or intention submitted by a player.
+ * * GameActions are the only acceptable inputs that the [[GameEngine]] can process
+ * to advance the state of the game. They represent attempts to alter the game state
+ * (e.g., playing a card, placing a bid) and can be rejected if they violate game rules.
+ */
+enum GameAction:
   def playerId: PlayerId
-object GameAction:
-  case class PlaceBid(playerId: PlayerId, bid: Bid) extends GameAction
-  case class ChooseTrump(playerId: PlayerId, color: Card.Color) extends GameAction
-  case class PlayCard(playerId: PlayerId, card: Card) extends GameAction
+
+  case PlaceBid(playerId: PlayerId, bid: Bid)
+  case ChooseTrump(playerId: PlayerId, color: Card.Color)
+  case PlayCard(playerId: PlayerId, card: Card)
