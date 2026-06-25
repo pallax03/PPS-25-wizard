@@ -11,6 +11,7 @@ import it.unibo.pps.wizard.engine.model.core.GameAction
 import it.unibo.pps.wizard.engine.ports.WizardPort
 import it.unibo.pps.wizard.util.vertx.VerticleExecutor
 import it.unibo.pps.wizard.engine.model.core.GameEngine
+import it.unibo.pps.wizard.util.Id
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
@@ -21,12 +22,11 @@ class WizardGame(private val vertx: Vertx) extends WizardPort:
   private var subscriptions: Map[String, MessageConsumer[?]] = Map.empty
 
   override def getState: Future[WizardGameState] =
-    runOnVerticle("getState") {
+    runOnVerticle("State Retrieval"):
       this.state
-    }
 
   override def startGame(players: Players, config: GameConfiguration): Future[Unit] =
-    runOnVerticle("startGame"):
+    runOnVerticle("Game Start"):
       this.state match
         case WizardGameState.NotConfigured =>
           val initialState = GameEngine.initializeGame(Players.create(players, config.numberOfBots))
@@ -35,7 +35,7 @@ class WizardGame(private val vertx: Vertx) extends WizardPort:
         case _ =>
 
   override def submitAction(action: GameAction): Future[Unit] =
-    runOnVerticle("submitAction"):
+    runOnVerticle("Action Submission"):
       this.state match
         case WizardGameState.Running(state) =>
           GameEngine.processAction(state, action) match
@@ -47,9 +47,22 @@ class WizardGame(private val vertx: Vertx) extends WizardPort:
               this.publish(GameStarted(newState))
         case _ =>
 
-  override def subscribe[T <: Event : ClassTag](handler: T => Unit): Future[String] = ???
+  override def subscribe[T <: Event : ClassTag](handler: T => Unit): Future[String] =
+    val subscriptionId: String = Id()
+    runOnVerticle(s"Subscription to ${addressOf[T]} {#${subscriptionId}}"):
+      this.subscriptions +=
+        subscriptionId ->
+          this.vertx
+            .eventBus()
+            .consumer[T](addressOf[T], message => handler(message.body))
+      subscriptionId
 
-  override def unsubscribe(subscriptionIds: String*): Future[Unit] = ???
+  override def unsubscribe(subscriptionIds: String*): Future[Unit] =
+    runOnVerticle(s"Unsubscription from ${subscriptionIds.mkString(", ")}"):
+      subscriptionIds.foreach: subscriptionId =>
+        this.subscriptions.get(subscriptionId).foreach: consumer =>
+          consumer.unregister()
+          this.subscriptions -= subscriptionId
 
 
   private def publish[T <: Event : ClassTag](event: T): Unit =
