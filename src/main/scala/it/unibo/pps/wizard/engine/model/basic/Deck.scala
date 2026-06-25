@@ -21,8 +21,8 @@ object Deck:
   private final val TOTAL_JESTER: Int = 4
   final val TOTAL_SIZE: Int = TOTAL_JESTER + TOTAL_WIZARD + (Card.Rank.values.length * Card.Color.values.length)
 
-  def apply(cards: Card*): Deck = cards.toList.distinct
-  def apply(): Deck = DeckFactory.create()
+  def create(cards: Card*): Deck = cards.toList.distinct
+  def create: Deck = DeckFactory.create()
 
   extension (d: Deck)
     def length: Int = d.length

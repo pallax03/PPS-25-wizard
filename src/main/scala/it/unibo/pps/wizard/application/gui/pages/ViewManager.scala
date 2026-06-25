@@ -19,7 +19,7 @@ object ViewManager extends JFXApp3:
       trumpCard <- Deck.pop(1)
     yield (player1Cards, trumpCard.headOption)
 
-    val deck = Deck()
+    val deck = Deck.create
     val (playerCards1, trumpCard) = drawAction.runA(deck).value
 
     def handleStartGame(): Unit =

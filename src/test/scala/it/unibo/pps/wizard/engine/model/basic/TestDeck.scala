@@ -10,11 +10,11 @@ import org.scalatest.wordspec.AnyWordSpec
 class TestDeck extends AnyWordSpec with Matchers:
   import Deck.*
   "A new randomized Deck" should:
-    val d = Deck()
+    val d = Deck.create
     "have a size of 60 cards" in:
       d.length shouldBe TOTAL_SIZE
   "A custom Deck" should:
-    val d = Deck(Card(Red, One), Card(Blue, One), Card(Green, Thirteen), Card(Blue, One))
+    val d = Deck.create(Card(Red, One), Card(Blue, One), Card(Green, Thirteen), Card(Blue, One))
     val nCards: Int = 3
     "have a size of 3 cards, checking for duplicates" in:
       d.length shouldBe nCards

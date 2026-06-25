@@ -1,9 +1,9 @@
 package it.unibo.pps.wizard.engine.model.core
 
 import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.rules.*
 
 sealed trait GameState
+
 object GameState:
   case class Dealing(core: CoreState) extends GameState
   case class Bidding(core: CoreState,
