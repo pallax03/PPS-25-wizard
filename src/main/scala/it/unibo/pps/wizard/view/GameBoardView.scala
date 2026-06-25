@@ -26,7 +26,7 @@ class GameBoardView(
     onCardDropped = (card, mouseX, mouseY) =>
       tableView.setHighlight(false)
       if tableView.isOver(mouseX, mouseY) then
-        println(card)
+        println(card) // todo: controller.play
   )
   bottom = new VBox:
     alignment = Pos.Center

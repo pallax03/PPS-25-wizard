@@ -13,10 +13,10 @@ class HandView(hand: Hand, onCardDragged: (Double, Double) => Unit, onCardDroppe
   padding = Insets(10)
   maxHeight = 320
 
-  val cards = hand.toList
-  val cardCount = math.max(1, cards.size)
-  val maxCardsPerRow = if (cardCount > 10) math.ceil(cardCount / 2.0).toInt else cardCount
-  val overlapRatio = if (cardCount > 10) -0.03 else -0.01
+  val cards: List[Card] = hand.toList
+  private val cardCount: Int = math.max(1, cards.size)
+  private val maxCardsPerRow: Double = if (cardCount > 10) math.ceil(cardCount / 2.0).toInt else cardCount
+  private val overlapRatio: Double = if (cardCount > 10) -0.03 else -0.01
 
   hgap <== this.width * overlapRatio
   vgap = 5.0
