@@ -1,6 +1,7 @@
-package it.unibo.pps.wizard.view.components
+package it.unibo.pps.wizard.application.gui.components
 
 import it.unibo.pps.wizard.engine.model.basic.Trump
+
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
 import scalafx.scene.layout.HBox

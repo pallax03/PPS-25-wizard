@@ -4,6 +4,7 @@ import io.vertx.core.Vertx
 import io.vertx.core.eventbus.MessageConsumer
 import it.unibo.pps.wizard.engine.events.Event
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
+import it.unibo.pps.wizard.engine.model.core.GameAction
 import it.unibo.pps.wizard.engine.ports.WizardPort
 import it.unibo.pps.wizard.util.vertx.VerticleExecutor
 
@@ -17,10 +18,10 @@ class WizardGame(private val vertx: Vertx) extends WizardPort:
 
   override def getState: Future[WizardGameState] = ???
 
-  override def startGame(gameConfiguration: GameConfiguration): Future[Unit] = ???
-
-  override def applyMove: Future[Unit] = ???
-
   override def subscribe[T <: Event : ClassTag](handler: T => Unit): Future[String] = ???
 
   override def unsubscribe(subscriptionIds: String*): Future[Unit] = ???
+
+  override def startGame(config: GameConfiguration): Future[Unit] = ???
+
+  override def submitAction(action: GameAction): Future[Unit] = ???
