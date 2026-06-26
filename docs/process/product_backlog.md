@@ -9,7 +9,7 @@
 | P4         | L'utente deve poter effettuare un turno.                   |         8         |     -     |
 | P5         | L'utente deve poter giocare una partita completa.          |        10         |     -     |
 | P6         | L'utente può unirsi ad una partita e giocare contro i bot. |        14         |     -     |
-| P7         | Quality Assurance e Refactoring                            |         8         |     -     |
+| P7         | Quality Assurance e DSL                                    |        12         |     -     |
 
 ## Sprint Backlog:
 - [Sprint 1](./sprints/first_sprint.md)
