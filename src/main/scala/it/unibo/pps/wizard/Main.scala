@@ -2,7 +2,6 @@ package it.unibo.pps.wizard
 
 import io.vertx.core.{Future, Promise, Vertx}
 import it.unibo.pps.wizard.application.gui.pages.ViewManager
-import it.unibo.pps.wizard.application.proxy.LocalWizardProxy
 import it.unibo.pps.wizard.engine.services.WizardService
 
 @main
