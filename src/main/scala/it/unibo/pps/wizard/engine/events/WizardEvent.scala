@@ -10,7 +10,7 @@ object WizardEvent:
   case class GameEnded(finalScores: Scoreboard) extends WizardEvent
 
   private case class CardPlayed(playerId: PlayerId, card: Card) extends WizardEvent
-  private case class TrumpSelected(playerId: PlayerId, color: Color) extends WizardEvent
+  private case class TrumpSelected(playerId: PlayerId, color: Card.Color) extends WizardEvent
   private case class BidPlaced(playerId: PlayerId, bid: Bid) extends WizardEvent
   private case class TrickWon(winnerId: PlayerId, trickedCards: List[Card]) extends WizardEvent
 
