@@ -4,7 +4,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import scala.language.postfixOps
 
-class TestHand extends AnyWordSpec with Matchers:
+class TestHands extends AnyWordSpec with Matchers:
   import Hand.*
   import Card.*
   "A Hand" when:
