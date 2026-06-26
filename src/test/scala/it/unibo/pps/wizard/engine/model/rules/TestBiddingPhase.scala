@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.core.GameError
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -12,7 +13,7 @@ class TestBiddingPhase extends AnyWordSpec with Matchers:
   val p3Id: PlayerId = PlayerId(3)
 
   val totalPlayers = 3
-  val currentRound: Round = Round(2)
+  val currentRound: Round = Round.start.next.next
 
   "The BiddingRules" when {
 

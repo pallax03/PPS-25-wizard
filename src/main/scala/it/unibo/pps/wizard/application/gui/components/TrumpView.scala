@@ -1,6 +1,7 @@
-package it.unibo.pps.wizard.view.components
+package it.unibo.pps.wizard.application.gui.components
 
 import it.unibo.pps.wizard.engine.model.basic.Trump
+
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
 import scalafx.scene.layout.HBox
@@ -11,7 +12,7 @@ class TrumpView(trump: Trump) extends HBox:
   spacing = 0
 
 //  style = "-fx-background-color: #A0A2A180; -fx-background-radius: 15;"
-  trump.getCard match
+  trump.card match
     case Some(card) =>
       val cardView = new CardView(card)
       val ch = 240.0

@@ -7,5 +7,5 @@ object Scoreboard:
 
   extension (sb: Scoreboard)
     def getPoints(p: PlayerId): Int = sb.getOrElse(p, 0)
-    def updateScore(p: PlayerId, roundPoints: Int): Scoreboard =
+    def updateScore(p: PlayerId, roundPoints: Int): Scoreboard = 
       sb.updated(p, sb.getPoints(p) + roundPoints)

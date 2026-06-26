@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.core.GameError
 
 trait BiddingRules:
   def processBid(bid: Bid, currentBids: BidsCollection, currentPlayer: PlayerId, round: Round, totalPlayers: Int): Either[GameError, BidsCollection]

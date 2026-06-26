@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.core.GameError
 
 trait RoundManager:
     def nextPlayer(current: PlayerId, players: List[Player]): Either[GameError, PlayerId]
@@ -29,7 +30,7 @@ object RoundManager:
     override def nextPlayer(current: PlayerId, players: List[Player]): Either[GameError, PlayerId] =
       val index = players.indexWhere(_.id == current)
       if index == -1 then
-        Left(GameError.PlayerNotFound)
+        Left(GameError.NotYourTurn)
       else
         Right(players((index + 1) % players.size).id)
 

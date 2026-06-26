@@ -27,7 +27,7 @@ object ScoringRules:
       }
 
     private def calculatePlayerScore(bid: Bid, won: Int): Int = {
-      val bidVal = bid.toInt
+      val bidVal = bid.value
       if bidVal == won then
         BASE_WIN_POINTS + (won * POINTS_PER_TRICK)
       else

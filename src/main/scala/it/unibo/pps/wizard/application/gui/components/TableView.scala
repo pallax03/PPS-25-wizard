@@ -1,12 +1,11 @@
-package it.unibo.pps.wizard.view.components
+package it.unibo.pps.wizard.application.gui.components
 
 import it.unibo.pps.wizard.engine.model.basic.{Card, Table}
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.control.Label
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.paint.Color
 
-
+// todo: refactoring of this helper
 class PlayedCardWrapper(val card: Card, playerName: String, isLeader: Boolean) extends VBox:
   alignment = Pos.Center
   spacing = 8
@@ -16,14 +15,16 @@ class PlayedCardWrapper(val card: Card, playerName: String, isLeader: Boolean) e
   cardView.prefWidth <== this.width
   cardView.prefHeight <== cardView.prefWidth * 1.4
 
-  val nameLabel = new Label(playerName):
+  val nameLabel: Label = new Label(playerName):
     style = "-fx-text-fill: #e0e0e0; -fx-font-weight: bold; -fx-font-size: 11px;"
 
-  val statusLabel = new Label(if isLeader then "Leader Card" else ""):
+  private val statusLabel = new Label(if isLeader then "Following Card" else ""):
     style = "-fx-text-fill: gold; -fx-font-weight: bold; -fx-font-size: 12px;"
     minHeight = 15
 
-  if isLeader then cardView.setGlow(Color.Gold)
+  if isLeader then card match
+    case Card.Standard(color, rank) => cardView.setGlow(CardView.fxColor(color))
+    case _ =>
 
   children = Seq(statusLabel, cardView, nameLabel)
 
@@ -37,7 +38,10 @@ class TableView(table: Table) extends HBox:
 
   style = normalStyle
 
-  val dummyData = table.playedCards.map(c => (c, "Player" + table.playerOf(c), c == table.leaderCard))
+  val check: (c: Card) => Boolean = (c) => table.followingCard match
+    case Some(value) if c == value => true
+    case _ => false
+  private val dummyData = table.playedCards.map(c => (c, "Player " + table.playerOf(c).get, check(c)))
   children = dummyData.map { case (card, playerName, isLeader) =>
     val wrapper = new PlayedCardWrapper(card, playerName, isLeader)
     wrapper.prefWidth <== (this.width - 40 - (5 * spacing.value)) / 6

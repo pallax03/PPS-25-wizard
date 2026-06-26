@@ -1,10 +1,10 @@
-package it.unibo.pps.wizard.view
+package it.unibo.pps.wizard.application.gui.pages
 
 import cats.data.State
-import it.unibo.pps.wizard.engine.model.basic.{Card, Deck, Hand, Table, Trump}
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
+import it.unibo.pps.wizard.engine.model.basic.*
 
 import scala.compiletime.uninitialized
 
@@ -19,11 +19,11 @@ object ViewManager extends JFXApp3:
       trumpCard <- Deck.pop(1)
     yield (player1Cards, trumpCard.headOption)
 
-    val deck = Deck()
+    val deck = Deck.create
     val (playerCards1, trumpCard) = drawAction.runA(deck).value
 
     def handleStartGame(): Unit =
-      mainScene.root = new GameBoardView(Hand.fromList(playerCards1), Table.empty, Trump(trumpCard.head))
+      mainScene.root = new GameBoardView(Hand(playerCards1), Table.empty, Trump(trumpCard.head))
 
     mainScene = new Scene:
       fill = Color.rgb(28, 28, 28)

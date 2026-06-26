@@ -1,11 +1,14 @@
 package it.unibo.pps.wizard
 
 import io.vertx.core.{Future, Promise, Vertx}
+import it.unibo.pps.wizard.application.gui.pages.ViewManager
 import it.unibo.pps.wizard.engine.services.WizardService
 
 @main
 def main(): Unit =
   deployServiceLocally()
+    .map:
+      deployApplicationLocally
     .onFailure: error =>
       error.printStackTrace()
       System.exit(1)
@@ -24,3 +27,10 @@ def deployServiceLocally(): Future[WizardService] =
       println("Failed to deploy wizard engine service.")
       serviceDeployed.fail(error)
   serviceDeployed.future()
+
+def deployApplicationLocally(service: WizardService): Unit =
+  service.localAdapter.foreach { localAdapter =>
+    println("Deploying wizard application...")
+    ViewManager.start()
+    println("Wizard application deployed.")
+  }
