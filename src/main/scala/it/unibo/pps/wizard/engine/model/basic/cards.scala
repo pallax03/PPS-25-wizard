@@ -1,7 +1,5 @@
 package it.unibo.pps.wizard.engine.model.basic
 
-import it.unibo.pps.wizard.engine.model.basic.Card.{Color}
-
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -76,13 +74,12 @@ object Card:
 opaque type Deck = List[Card]
 object Deck:
   import cats.data.State
-  import cats.implicits.*
 
   private final val TOTAL_WIZARD: Int = 4
   private final val TOTAL_JESTER: Int = 4
   final val TOTAL_SIZE: Int = TOTAL_JESTER + TOTAL_WIZARD + (Card.Rank.values.length * Card.Color.values.length)
 
-  def create(cards: Card*): Deck = cards.toList.distinct
+  def create(cards: List[Card]): Deck = cards.toList.distinct
   def create: Deck = DeckFactory.create()
 
   extension (d: Deck)
@@ -104,14 +101,17 @@ object Deck:
 
   private object DeckFactory:
     import scala.util.Random
+    import Card.*
     def create(): Deck =
-//      val standards = (Card.Rank.values.toList, Card.Color.values.toList).mapN((r, c) => r.c)
+      val standards = for
+        color <- Color.values.toList
+        rank <- Rank.values.toList
+      yield rank.value of color
 
-//      val wizards = (0 until TOTAL_WIZARD).map(wizard).toList
-//      val jesters = (0 until TOTAL_JESTER).map(jester).toList
+      val wizards = List.fill(TOTAL_WIZARD)(wizard)
+      val jesters = List.fill(TOTAL_JESTER)(jester)
 
-//      Random.shuffle(standards |+| wizards |+| jesters)
-      List.empty
+      Random.shuffle(standards ++ wizards ++ jesters)
 
 opaque type Hand = List[Card]
 object Hand:
