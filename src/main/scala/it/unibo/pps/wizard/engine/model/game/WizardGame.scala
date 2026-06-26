@@ -2,16 +2,14 @@ package it.unibo.pps.wizard.engine.model.game
 
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.MessageConsumer
-import it.unibo.pps.wizard.engine.events.Event
-import it.unibo.pps.wizard.engine.events.Event.addressOf
-import it.unibo.pps.wizard.engine.events.WizardEvent.{ActionFailed, GameStarted, generatedEvents}
+import it.unibo.pps.wizard.engine.events.*
+import it.unibo.pps.wizard.engine.events.WizardEvent.*
 import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
-import it.unibo.pps.wizard.engine.model.core.GameAction
+import it.unibo.pps.wizard.engine.model.core.{GameAction, GameEngine}
 import it.unibo.pps.wizard.engine.ports.WizardPort
-import it.unibo.pps.wizard.util.vertx.VerticleExecutor
-import it.unibo.pps.wizard.engine.model.core.GameEngine
 import it.unibo.pps.wizard.util.Id
+import it.unibo.pps.wizard.util.vertx.VerticleExecutor
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
@@ -44,7 +42,13 @@ class WizardGame(private val vertx: Vertx) extends WizardPort:
               this.publish(ActionFailed(action.playerId, error.toString))
             case Right(newState) =>
               this.currentState = WizardGameState.Running(newState)
-              this.publishAll(generatedEvents(action, oldState, newState))
+              this.publishAll(
+                composeEvents(
+                  mapActionToEvent(action),
+                  oldState,
+                  newState
+                )
+              )
         case _ =>
 
   override def subscribe[T <: Event : ClassTag](handler: T => Unit): Future[String] =
@@ -64,7 +68,7 @@ class WizardGame(private val vertx: Vertx) extends WizardPort:
           consumer.unregister()
           this.subscriptions -= subscriptionId
 
-  private def publishAll[T <: List[Event] : ClassTag](eventList: T): Unit = eventList.foreach(publish(_))
+  private def publishAll(eventList: List[WizardEvent]): Unit = eventList.foreach(publish(_))
 
   private def publish[T <: Event : ClassTag](event: T): Unit =
     println(s"Publishing event: $event")
