@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger
 sealed trait Card
 sealed trait SpecialCard extends Card:
   def id: Int
-
 object Card:
   enum Color:
     case Blue, Green, Red, Yellow
@@ -116,15 +115,19 @@ object Deck:
 opaque type Hand = List[Card]
 object Hand:
   def empty: Hand = List.empty
-  def apply(cards: Card*): Hand = cards.toList
-  def fromList(cards: List[Card]): Hand = cards
+  def apply(cards: List[Card]): Hand = cards
 
+  extension (card: Card)
+    def asHand: Hand = List(card)
+  
   extension (h: Hand)
+    def size: Int = h.size
     def isEmpty: Boolean = h.isEmpty
     def contains(card: Card): Boolean = h.contains(card)
-    def receive(newCards: List[Card]): Hand = h ++ newCards
-    def play(card: Card): Hand = h.filterNot(_ == card)
     def toList: List[Card] = h
+    infix def +(card: Card): Hand = h :+ card
+    infix def ++(cards: List[Card]): Hand = h ++ cards
+    infix def -(card: Card): Hand = h.filterNot(_ == card)
 
 opaque type Hands = Map[PlayerId, Hand]
 object Hands:
@@ -132,3 +135,4 @@ object Hands:
 
   extension (hands: Hands)
     def getHand(player: PlayerId): Option[Hand] = hands.get(player)
+    infix def +(entry: (PlayerId, Hand)): Hands = hands + entry

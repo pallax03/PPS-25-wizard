@@ -23,7 +23,7 @@ object ViewManager extends JFXApp3:
     val (playerCards1, trumpCard) = drawAction.runA(deck).value
 
     def handleStartGame(): Unit =
-      mainScene.root = new GameBoardView(Hand.fromList(playerCards1), Table.empty, Trump(trumpCard.head))
+      mainScene.root = new GameBoardView(Hand(playerCards1), Table.empty, Trump(trumpCard.head))
 
     mainScene = new Scene:
       fill = Color.rgb(28, 28, 28)
