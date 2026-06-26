@@ -1,5 +1,9 @@
 package it.unibo.pps.wizard.engine.model.basic
 
+import it.unibo.pps.wizard.engine.model.basic.Card.{Color}
+
+import java.util.concurrent.atomic.AtomicInteger
+
 /**
  * A card in the Wizard game.
  *
@@ -18,6 +22,8 @@ sealed trait SpecialCard extends Card:
 object Card:
   enum Color:
     case Blue, Green, Red, Yellow
+  export Color.*
+
   /**
    * Rank in the standard color cards. Values 1..13 (1 is low, 13 is high).
    */
@@ -40,9 +46,23 @@ object Card:
   final case class Wizard(id: Int) extends SpecialCard
   final case class Jester(id: Int) extends SpecialCard
 
-  def apply(color: Color, rank: Rank): Card = Standard(color, rank)
-  def wizard(id: Int): Card = Wizard(id)
-  def jester(id: Int): Card = Jester(id)
+  private val specialIdGenWizard = new AtomicInteger(0)
+  def wizard: Card = Wizard(specialIdGenWizard.incrementAndGet())
+  private val specialIdGenJester = new AtomicInteger(0)
+  def jester: Card = Jester(specialIdGenJester.incrementAndGet())
+
+  extension (value: Int)
+    infix def of(color: Color): Card = Standard(color, Rank.values.find(_.value == value).get)
+    def red: Card = value of Red
+    def blue: Card = value of Blue
+    def green: Card = value of Green
+    def yellow: Card = value of Yellow
+
+  extension (c: Card)
+    infix def -(other: Card): List[Card] = List(c, other)
+
+  extension (cards: List[Card])
+    infix def -(other: Card): List[Card] = cards :+ other
 
 /**
  *  Functional Object to create a shuffled Deck for Wizard, Composed of:
@@ -85,12 +105,13 @@ object Deck:
   private object DeckFactory:
     import scala.util.Random
     def create(): Deck =
-      val standards = (Card.Color.values.toList, Card.Rank.values.toList).mapN(Card(_, _))
+//      val standards = (Card.Rank.values.toList, Card.Color.values.toList).mapN((r, c) => r.c)
 
-      val wizards = (0 until TOTAL_WIZARD).map(Card.Wizard(_)).toList
-      val jesters = (0 until TOTAL_JESTER).map(Card.Jester(_)).toList
+//      val wizards = (0 until TOTAL_WIZARD).map(wizard).toList
+//      val jesters = (0 until TOTAL_JESTER).map(jester).toList
 
-      Random.shuffle(standards |+| wizards |+| jesters)
+//      Random.shuffle(standards |+| wizards |+| jesters)
+      List.empty
 
 opaque type Hand = List[Card]
 object Hand:
