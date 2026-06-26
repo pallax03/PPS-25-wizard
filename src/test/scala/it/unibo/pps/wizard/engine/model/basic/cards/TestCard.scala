@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.engine.model.basic
+package it.unibo.pps.wizard.engine.model.basic.cards
 
 import it.unibo.pps.wizard.engine.model.basic.Card
 import it.unibo.pps.wizard.engine.model.basic.Card.Wizard

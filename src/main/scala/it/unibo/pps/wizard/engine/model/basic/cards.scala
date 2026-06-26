@@ -119,7 +119,10 @@ object Hand:
 
   extension (card: Card)
     def asHand: Hand = List(card)
-  
+
+  extension (cards: List[Card])
+    def asHand: Hand = cards
+
   extension (h: Hand)
     def size: Int = h.size
     def isEmpty: Boolean = h.isEmpty

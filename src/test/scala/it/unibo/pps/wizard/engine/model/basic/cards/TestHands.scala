@@ -1,12 +1,15 @@
-package it.unibo.pps.wizard.engine.model.basic
+package it.unibo.pps.wizard.engine.model.basic.cards
 
+import it.unibo.pps.wizard.engine.model.basic.Card.{jester, wizard}
+import it.unibo.pps.wizard.engine.model.basic.{Card, Hand, Hands, PlayerId}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+
 import scala.language.postfixOps
 
 class TestHands extends AnyWordSpec with Matchers:
-  import Hand.*
   import Card.*
+  import Hand.*
   "A Hand" when:
     "created empty" should:
       val emptyHand = Hand.empty

@@ -1,5 +1,7 @@
-package it.unibo.pps.wizard.engine.model.basic
+package it.unibo.pps.wizard.engine.model.basic.gameplay
 
+import it.unibo.pps.wizard.engine.model.basic.Card.wizard
+import it.unibo.pps.wizard.engine.model.basic.{Card, PlayerId, Table}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

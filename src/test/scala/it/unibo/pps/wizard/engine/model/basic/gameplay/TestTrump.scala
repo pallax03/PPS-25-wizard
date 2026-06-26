@@ -1,13 +1,16 @@
-package it.unibo.pps.wizard.engine.model.basic
+package it.unibo.pps.wizard.engine.model.basic.gameplay
 
+import it.unibo.pps.wizard.engine.model.basic.Card.Color.{Blue, Red}
+import it.unibo.pps.wizard.engine.model.basic.Card.{jester, wizard}
+import it.unibo.pps.wizard.engine.model.basic.{Card, Trump}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.language.postfixOps
 
 class TestTrump extends AnyWordSpec with Matchers:
-  import Trump.*
   import Card.*
+  import Trump.*
   "A Trump" when:
     "Absent" should:
       val trump = Trump.Absent
