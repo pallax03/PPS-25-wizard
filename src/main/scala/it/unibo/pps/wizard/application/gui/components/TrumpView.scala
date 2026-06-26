@@ -12,7 +12,7 @@ class TrumpView(trump: Trump) extends HBox:
   spacing = 0
 
 //  style = "-fx-background-color: #A0A2A180; -fx-background-radius: 15;"
-  trump.getCard match
+  trump.card match
     case Some(card) =>
       val cardView = new CardView(card)
       val ch = 240.0

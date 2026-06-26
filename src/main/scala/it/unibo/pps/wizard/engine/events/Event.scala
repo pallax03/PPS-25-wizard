@@ -6,3 +6,5 @@ trait Event
   
 object Event:
   def addressOf[T <: Event: ClassTag]: String = classTag[T].runtimeClass.getSimpleName
+  
+export Event.*
