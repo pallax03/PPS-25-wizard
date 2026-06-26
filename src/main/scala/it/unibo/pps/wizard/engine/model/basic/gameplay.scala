@@ -15,13 +15,14 @@ object Table:
     def playedCards: List[Card] = t.map(_._2)
     def playerOf(card: Card): Option[PlayerId] = t.find(_._2 == card).map(_._1)
 
-    def leaderCard: Option[Card.Standard] =
+    def followingCard: Option[Card.Standard] =
       t.playedCards
         .dropWhile(_.isInstanceOf[Card.Jester])
         .headOption
         .collect { case s: Card.Standard => s }
 
-    private[model] infix def +(play: (PlayerId, Card)): Table = t :+ play
+    infix def +(play: (PlayerId, Card)): Table = t :+ play
+//    todo: removed from +, for testing gui: private[model]
 
 enum Trump:
   case Absent

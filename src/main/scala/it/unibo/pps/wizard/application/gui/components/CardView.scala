@@ -63,10 +63,11 @@ class CardView(val card: Card) extends StackPane:
     case Card.Jester(id) => specialCardsImages(getFallbackText(c), id)
 
   private def specialCardsImages(name: String, id: Int): String = id match
-    case 0 => s"/cards/yellow/Y$name.webp"
-    case 1 => s"/cards/blue/B$name.webp"
-    case 2 => s"/cards/red/R$name.webp"
-    case 3 => s"/cards/green/G$name.webp"
+    case 1 => s"/cards/yellow/Y$name.webp"
+    case 2 => s"/cards/blue/B$name.webp"
+    case 3 => s"/cards/red/R$name.webp"
+    case 4 => s"/cards/green/G$name.webp"
+    case _ => s"/cards/green/G$name.webp" //todo
 
   private def getFallbackColor(card: Card): Color = card match
     case Card.Jester(_) => Color.Purple

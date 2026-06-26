@@ -19,7 +19,7 @@ object TableRules:
       cardPlayed match
         case _: SpecialCard => Right(())
         case Card.Standard(playedColor, _) =>
-          table.leaderCard match
+          table.followingCard match
             case None => Right(())
             case Some(Card.Standard(leaderColor, _)) =>
               if playedColor == leaderColor then Right(())
@@ -30,7 +30,7 @@ object TableRules:
     def evaluateTrickWinner(trump: Trump): PlayerId =
       val cards = table.playedCards
       val trumpColor = trump.effectiveColor
-      val leaderColor = table.leaderCard.map(_.color)
+      val leaderColor = table.followingCard.map(_.color)
 
       def highestOf(targetColor: Option[Card.Color]): Option[Card] =
         cards.collect { case c @ Card.Standard(color, rank) if targetColor.contains(color) => c }
