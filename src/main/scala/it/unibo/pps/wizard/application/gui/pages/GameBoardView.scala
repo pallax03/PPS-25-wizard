@@ -6,6 +6,7 @@ import scalafx.scene.layout.{BorderPane, StackPane, VBox}
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos
 
+// todo: need to be passed a controller
 class GameBoardView(
                     playerHand: Hand,
                     currentTable: Table,

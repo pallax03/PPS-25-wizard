@@ -78,6 +78,7 @@ class CardView(val card: Card) extends StackPane:
     case Card.Wizard(_) => "W"
     case Card.Jester(_) => "J"
 
+// todo: refactoring of this helper
 object CardView:
   def fxColor(color: Card.Color): Color = color match
     case Card.Color.Blue => Color.DodgerBlue

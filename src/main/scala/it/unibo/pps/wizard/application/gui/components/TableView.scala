@@ -7,6 +7,7 @@ import scalafx.scene.control.Label
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.paint.Color
 
+// todo: refactoring of this helper
 class PlayedCardWrapper(val card: Card, playerName: String, isLeader: Boolean) extends VBox:
   alignment = Pos.Center
   spacing = 8
