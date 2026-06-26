@@ -43,3 +43,4 @@ enum GameError:
   case InvalidBid
   case CardNotAllowed
   case InvalidAction
+  case PlayerNotFound
