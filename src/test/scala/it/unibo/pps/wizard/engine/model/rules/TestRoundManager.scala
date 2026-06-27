@@ -2,63 +2,78 @@ package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.core.GameError
-import org.scalatest.wordspec.AnyWordSpec
+import cats.data.State
+import org.scalatest.OptionValues.convertOptionToValuable
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 class TestRoundManager extends AnyWordSpec with Matchers:
-  val roundManager: RoundManager = RoundManager()
 
-  val p1Id: PlayerId = PlayerId(1)
-  val p2Id: PlayerId = PlayerId(2)
-  val p3Id: PlayerId = PlayerId(3)
+  import RoundManager.*
+  import Round.*
 
-  val mockPlayers: List[Player] = List(
-    Player.human(p1Id),
-    Player.human(p2Id),
-    Player.human(p3Id)
-  )
-  val totalPlayers: Int = mockPlayers.size
+  "RoundRules" when :
+    val players = List(PlayerId(1), PlayerId(2), PlayerId(3)).map(Player.human)
 
-  "The RoundManager" when {
+    "managing turn order" should :
+      "find the next player correctly" in :
+        players.nextAfter(PlayerId(1)) shouldBe Right(PlayerId(2))
+        players.nextAfter(PlayerId(3)) shouldBe Right(PlayerId(1))
 
-    "validating a bidding turn" should {
+      "fail if current player is not in the list" in :
+        players.nextAfter(PlayerId(99)) shouldBe Left(GameError.NotYourTurn)
 
-      "accept the action if the action player is the one whose turn it currently is" in {
-        val result = roundManager.validateBiddingTurn(actionPlayer = p1Id, currentPlayerTurn = p1Id)
-        result shouldBe Right(())
-      }
+    "determining the first player of a round" should :
+      "rotate correctly based on the round number" in :
+        val round = Round.start
+        round.firstPlayer(players) shouldBe PlayerId(1)
+        round.next.firstPlayer(players) shouldBe PlayerId(2)
+        round.next.next.firstPlayer(players) shouldBe PlayerId(3)
+        round.next.next.next.firstPlayer(players) shouldBe PlayerId(1)
 
-      "reject the action with NotYourTurn if a player tries to bid out of order" in {
-        val result = roundManager.validateBiddingTurn(actionPlayer = p2Id, currentPlayerTurn = p1Id)
-        result shouldBe Left(GameError.NotYourTurn)
-      }
-    }
+    "checking round completion" should :
+      "return true if current trick count matches the round number" in :
+        Round.start.isComplete(1) shouldBe true
+        Round.start.next.isComplete(2) shouldBe true
 
-    "checking if the bidding phase is complete" should {
+      "return false if current trick count is less than the round number" in :
+        Round.start.isComplete(0) shouldBe false
 
-      "return false if the number of recorded bids is less than the total number of players" in {
-        val incompleteBids = BidsCollection.empty + (p1Id -> Bid(1)) + (p2Id -> Bid(0))
+    "dealing cards" should :
+      "distribute the correct amount of cards based on the round" in :
+        val initialDeck = Deck.create
+        val round = Round.start
+        val (deckAfter, (hands, trump)) = round.deal(players).run(initialDeck).value
 
-        roundManager.isBiddingPhaseComplete(incompleteBids, totalPlayers) shouldBe false
-      }
+        hands.getHand(PlayerId(1)).size shouldBe 1
+        hands.getHand(PlayerId(2)).size shouldBe 1
+        trump shouldBe defined
+        deckAfter.length shouldBe (Deck.TOTAL_SIZE - 3 - 1)
 
-      "return true when every player in the game has submitted a bid" in {
-        val completeBids = BidsCollection.empty + (p1Id -> Bid(1)) + (p2Id -> Bid(0)) + (p3Id -> Bid(2))
+      "handle deals where no cards are left for the trump card" in :
+        val initialDeck = Deck.create
+        val maxRound = (1 until 20).foldLeft(Round.start)((r, _) => r.next)
 
-        roundManager.isBiddingPhaseComplete(completeBids, totalPlayers) shouldBe true
-      }
-    }
+        val (deckAfter, (hands, trump)) = maxRound.deal(players).run(initialDeck).value
 
-    "calculating the next player's turn" should {
+        hands.getHand(PlayerId(1)).value.size shouldBe 20
+        trump shouldBe empty
+        deckAfter.length shouldBe 0
 
-      "advance sequentially to the next player in the list" in {
-        val next = roundManager.nextPlayer(current = p1Id, players = mockPlayers)
-        next shouldBe Right(p2Id)
-      }
+    "validating the turn of a player" should :
+      "succeed if the action player matches the expected player" in :
+        val expected = PlayerId(2)
+        expected.validateTurnOf(PlayerId(2)) shouldBe Right(())
 
-      "correctly wrap around to the first player when the last player finishes their turn" in {
-        val next = roundManager.nextPlayer(current = p3Id, players = mockPlayers)
-        next shouldBe Right(p1Id)
-      }
-    }
-  }
+      "fail with NotYourTurn if the action player is different" in :
+        val expected = PlayerId(2)
+        expected.validateTurnOf(PlayerId(1)) shouldBe Left(GameError.NotYourTurn)
+
+    "checking bidding phase completion" should :
+      "return true when the number of bids matches total players" in :
+        val bidsCount = 3
+        bidsCount.isBiddingPhaseComplete(3) shouldBe true
+
+      "return false when the number of bids is less than total players" in :
+        val bidsCount = 1
+        bidsCount.isBiddingPhaseComplete(3) shouldBe false

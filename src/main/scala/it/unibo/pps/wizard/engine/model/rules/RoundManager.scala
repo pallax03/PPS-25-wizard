@@ -1,45 +1,40 @@
 package it.unibo.pps.wizard.engine.model.rules
 
+import cats.data.State
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.core.GameError
 
-trait RoundManager:
-    def nextPlayer(current: PlayerId, players: List[Player]): Either[GameError, PlayerId]
-    def firstPlayerOfRound(roundNumber: Int, players: List[Player]): PlayerId
-
-    def dealCards(deck: Deck, roundNumber: Int, players: List[Player]): (Map[PlayerId, Hand], Deck, Option[Card])
-
-    def validateBiddingTurn(actionPlayer: PlayerId, currentPlayerTurn: PlayerId): Either[GameError, Unit]
-    def isBiddingPhaseComplete(bids: BidsCollection, totalPlayers: Int): Boolean
-
-    def validatePlayingTurn(actionPlayer: PlayerId, currentPlayerTurn: PlayerId): Either[GameError, Unit]
-    def isTrickComplete(table: Table, totalPlayers: Int): Boolean
-    def isRoundComplete(currentTrickNumber: Int, totalTricksForRound: Int): Boolean
-
 object RoundManager:
-  def apply(): RoundManager = new StandardRoundManager
 
-  private class StandardRoundManager extends RoundManager:
-    override def validateBiddingTurn(actionPlayer: PlayerId, currentPlayerTurn: PlayerId): Either[GameError, Unit] =
-      if actionPlayer == currentPlayerTurn then Right(())
-      else Left(GameError.NotYourTurn)
+  extension (players: List[Player])
+    def nextAfter(current: PlayerId): Either[GameError, PlayerId] =
+      val idx = players.indexWhere(_.id == current)
+      Either.cond(idx >= 0, players((idx + 1) % players.size).id, GameError.NotYourTurn)
 
-    override def isBiddingPhaseComplete(bids: BidsCollection, totalPlayers: Int): Boolean =
-      bids.size == totalPlayers
+  extension (round: Round)
+    def firstPlayer(players: List[Player]): PlayerId =
+      players((round.toInt - 1) % players.size).id
 
-    override def nextPlayer(current: PlayerId, players: List[Player]): Either[GameError, PlayerId] =
-      val index = players.indexWhere(_.id == current)
-      if index == -1 then
-        Left(GameError.NotYourTurn)
-      else
-        Right(players((index + 1) % players.size).id)
+    def isComplete(currentTrickCount: Int): Boolean =
+      currentTrickCount == round.toInt
 
-    override def firstPlayerOfRound(roundNumber: Int, players: List[Player]): PlayerId = ???
+    def deal(players: List[Player]): State[Deck, (Hands, Option[Card])] =
+      val cardsPerPlayer = round.toInt
+      for
+        drawn <- Deck.pop(cardsPerPlayer * players.size)
+        hands = Hands(players.map(_.id).zip(drawn.grouped(cardsPerPlayer).map(Hand(_)).toList).toMap)
+        currentDeck <- State.get[Deck]
+        trump <- if currentDeck.length > 0 then Deck.pop(1).map(_.headOption) else State.pure[Deck, Option[Card]](None)
+      yield (hands, trump)
 
-    override def dealCards(deck: Deck, roundNumber: Int, players: List[Player]): (Map[PlayerId, Hand], Deck, Option[Card]) = ???
+  extension (expectedPlayer: PlayerId)
+    def validateTurnOf(actionPlayer: PlayerId): Either[GameError, Unit] =
+      Either.cond(actionPlayer == expectedPlayer, (), GameError.NotYourTurn)
 
-    override def validatePlayingTurn(actionPlayer: PlayerId, currentPlayerTurn: PlayerId): Either[GameError, Unit] = ???
+  extension (bidsCount: Int)
+    def isBiddingPhaseComplete(totalPlayers: Int): Boolean =
+      bidsCount == totalPlayers
 
-    override def isTrickComplete(table: Table, totalPlayers: Int): Boolean = ???
-
-    override def isRoundComplete(currentTrickNumber: Int, totalTricksForRound: Int): Boolean = ???
+//  extension (table: Table)
+//    def isTrickComplete(totalPlayers: Int): Boolean =
+//      table.size == totalPlayers
