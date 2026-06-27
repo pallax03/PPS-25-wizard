@@ -6,13 +6,12 @@ import it.unibo.pps.wizard.engine.model.basic.{Deck, Hands, PlayerId, Players, R
 
 object GameEngine:
   def processAction(state: GameState, action: GameAction): Either[GameError, GameState] = (state, action) match
-    case (GameState.Dealing, _) => ???
     case (GameState.Bidding, GameAction.PlaceBid) => ???
     case (GameState.Bidding, GameAction.ChooseTrump) => ???
 
     case (GameState.Playing, GameAction.PlayCard) => ???
 
-    case (GameState.Scoring, _) => ???
+    case (GameState.Ended, _) => ???
     case (_, _) => Left(InvalidAction)
 
   def initializeGame(players: Players): GameState =
@@ -24,4 +23,5 @@ object GameEngine:
       dealerId = PlayerId(0),
       scoreboard = Scoreboard.empty
     )
-    GameState.Dealing(core)
+//    GameState.Bidding(core)
+    ???

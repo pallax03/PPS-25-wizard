@@ -15,7 +15,6 @@ import it.unibo.pps.wizard.engine.model.basic.*
 sealed trait GameState
 
 object GameState:
-  case class Dealing(core: CoreState) extends GameState
   case class Bidding(core: CoreState,
                      trump: Trump,
                      currentBids: BidsCollection,
@@ -28,6 +27,4 @@ object GameState:
                       currentPlayerTurn: PlayerId,
                       tricksWon: TricksWon,
                     ) extends GameState
-  case class Scoring(core: CoreState,
-                     bids: BidsCollection,
-                     bidsWon: BidsCollection) extends GameState
+  case class Ended(scoreboard: Scoreboard) extends GameState
