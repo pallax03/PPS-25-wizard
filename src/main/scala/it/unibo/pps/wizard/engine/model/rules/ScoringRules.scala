@@ -2,35 +2,25 @@ package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
 
-trait ScoringRules:
-  def processScores(players: List[Player], bids: BidsCollection, tricksWon: TricksWon, currentScoreboard: Scoreboard): Scoreboard
-
 object ScoringRules:
+  // Official Wizard rules scoring constants
+  private final val BASE_WIN_POINTS = 20
+  private final val POINTS_PER_TRICK = 10
 
-  def apply(): ScoringRules = new StandardWizardScoringRules
+  def compute(players: List[Player], bids: Bids, tricks: Tricks, scoreboard: Scoreboard): Scoreboard =
+    players.foldLeft(scoreboard): (sb, player) =>
+      val points = bids(player.id).scoreAgainst(tricks(player.id))
+      sb.updateScore(player.id, points)
 
-  private class StandardWizardScoringRules extends ScoringRules:
+  extension (bid: Bid)
+    def scoreAgainst(tricksWon: Int): Int =
+      if bid.value == tricksWon
+      then BASE_WIN_POINTS + (tricksWon * POINTS_PER_TRICK)
+      else -Math.abs(bid.value - tricksWon) * POINTS_PER_TRICK
 
-    // Official Wizard rules scoring constants
-    private final val BASE_WIN_POINTS = 20
-    private final val POINTS_PER_TRICK = 10
-    private final val PENALTY_PER_TRICK_DIFF = 10
-
-    override def processScores(players: List[Player], bids: BidsCollection, tricksWon: TricksWon, currentScoreboard: Scoreboard): Scoreboard =
-      players.foldLeft(currentScoreboard) { (sb, player) =>
-        val playerId = player.id
-        val bid = bids.getBid(playerId).getOrElse(Bid.zero)
-        val won = tricksWon.getTricks(playerId)
-        val roundPoints = calculatePlayerScore(bid, won)
-
-        sb.updateScore(playerId, roundPoints)
-      }
-
-    private def calculatePlayerScore(bid: Bid, won: Int): Int = {
-      val bidVal = bid.value
-      if bidVal == won then
-        BASE_WIN_POINTS + (won * POINTS_PER_TRICK)
-      else
-        val difference = Math.abs(bidVal - won)
-        -(difference * PENALTY_PER_TRICK_DIFF)
-    }
+// DSL SE ScoringRules OPERASSE SOLO DA CALCOLATORE DI PUNTI E LASCIASSE LA LOGICA DI AGGIORNAMENTO DELLO SCOREBOARD A ROUND MANAGER, SI POTREBBE FARE COSI':
+//extension (bid: Bid)
+//  def calculatePointsFor(tricksWon: Int): Int =
+//    if bid.value == tricksWon
+//    then BASE_WIN_POINTS + (tricksWon * POINTS_PER_TRICK)
+//    else -Math.abs(bid.value - tricksWon) * POINTS_PER_TRICK

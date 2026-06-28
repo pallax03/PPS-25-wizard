@@ -3,26 +3,38 @@ package it.unibo.pps.wizard.engine.model.rules
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.core.GameError
 
-trait BiddingRules:
-  def processBid(bid: Bid, currentBids: BidsCollection, currentPlayer: PlayerId, round: Round, totalPlayers: Int): Either[GameError, BidsCollection]
-
 object BiddingRules:
 
-  def apply(): BiddingRules = new StandardWizardBiddingRules
+  def processBid(bid: Bid, currentBids: Bids, currentPlayer: PlayerId, round: Round, totalPlayers: Int): Either[GameError, Bids] =
+    bid.validateBid(round, currentBids, totalPlayers)
+      .map(_ => currentBids + (currentPlayer -> bid))
 
-  private class StandardWizardBiddingRules extends BiddingRules:
+  extension (bid: Bid)
+    def validateBid(round: Round, currentBids: Bids, totalPlayers: Int): Either[GameError, Unit] =
+      if !bid.isWithinBounds(round) then
+        Left(GameError.InvalidBid)
+      else if bid.isLastPlayerInvalid(round, currentBids, totalPlayers) then
+        Left(GameError.InvalidBid)
+      else
+        Right(())
 
-    override def processBid(bid: Bid, currentBids: BidsCollection, currentPlayer: PlayerId, round: Round, totalPlayers: Int): Either[GameError, BidsCollection] =
-      if isBidValid(bid, round, currentBids, totalPlayers)
-      then
-        val updatedBids = currentBids + (currentPlayer -> bid)
-        Right(updatedBids)
-      else Left(GameError.InvalidBid)
+    private def isWithinBounds(round: Round): Boolean =
+      bid >= Bid.zero && bid.isValid(round)
 
-    private def isBidValid(bid: Bid, round: Round, currentBids: BidsCollection, totalPlayers: Int): Boolean =
-      val isWithinBounds = bid >= Bid.zero && bid <= round
-      val isLastPlayer = currentBids.size == totalPlayers - 1
+    private def isLastPlayerInvalid(round: Round, currentBids: Bids, totalPlayers: Int): Boolean =
+      val isLastPlayer = currentBids.isComplete(totalPlayers - 1)
+      isLastPlayer && (currentBids.total + bid) == round
 
-      val isHookValid = !isLastPlayer || (currentBids.sum + bid) != round
-
-      isWithinBounds && isHookValid
+//  DSL SE BiddingRules OPERASSE SOLO DA VALIDATORE E LASCIASSE LA LOGICA DI AGGIORNAMENTO DEI BIDS A ROUND MANAGER, SI POTREBBE FARE COSI:
+//      extension (bid: Bid)
+//        def validate(round: Round, bids: Bids, totalPlayers: Int): Either[GameError, Unit] =
+//          if bid.isInvalidBounds(round) then Left(GameError.InvalidBid)
+//          else if bid.isForbiddenTotal(round, bids, totalPlayers) then Left(GameError.InvalidBid)
+//          else Right(())
+//
+//        private def isInvalidBounds(round: Round): Boolean =
+//          !(bid >= Bid.zero && bid.isValid(round))
+//
+//        private def isForbiddenTotal(round: Round, bids: Bids, totalPlayers: Int): Boolean =
+//          val isLastPlayer = bids.isComplete(totalPlayers - 1)
+//          isLastPlayer && (bids.total + bid) == round

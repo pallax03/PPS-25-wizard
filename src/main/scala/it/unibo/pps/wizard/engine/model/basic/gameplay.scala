@@ -60,5 +60,5 @@ object Round:
   def start: Round = 0
 
   extension (r: Round)
-    def toInt: Int = r
+    def value: Int = r
     def next: Round = r + 1

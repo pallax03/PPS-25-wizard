@@ -13,13 +13,13 @@ object RoundManager:
 
   extension (round: Round)
     def firstPlayer(players: List[Player]): PlayerId =
-      players((round.toInt - 1) % players.size).id
+      players((round.value - 1) % players.size).id
 
     def isComplete(currentTrickCount: Int): Boolean =
-      currentTrickCount == round.toInt
+      currentTrickCount == round.value
 
     def deal(players: List[Player]): State[Deck, (Hands, Option[Card])] =
-      val cardsPerPlayer = round.toInt
+      val cardsPerPlayer = round.value
       for
         drawn <- Deck.pop(cardsPerPlayer * players.size)
         hands = Hands(players.map(_.id).zip(drawn.grouped(cardsPerPlayer).map(Hand(_)).toList).toMap)

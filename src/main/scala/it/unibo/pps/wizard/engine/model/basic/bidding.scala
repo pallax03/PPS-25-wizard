@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.model.basic
 
 opaque type Bid = Int
+
 object Bid:
   def apply(value: Int): Bid = value
 
@@ -8,27 +9,30 @@ object Bid:
 
   extension (b: Bid)
     def value: Int = b
-    def +(other: Bid): Bid = b + other
+    infix def +(other: Bid): Bid = b + other
     def >=(other: Bid): Boolean = (b: Int) >= (other: Int)
-    def <=(round: Round): Boolean = b <= round.toInt
+    def isValid(round: Round): Boolean = b <= round.value
 
-opaque type BidsCollection = Map[PlayerId, Bid]
-object BidsCollection:
-  def empty: BidsCollection = Map.empty
+opaque type Bids = Map[PlayerId, Bid]
 
-  extension (bc: BidsCollection)
-    def +(elem: (PlayerId, Bid)): BidsCollection = bc + elem
-    def size: Int = bc.size
-    def getBid(p: PlayerId): Option[Bid] = bc.get(p)
-    def sum: Bid = bc.values.foldLeft(Bid(0))(_ + _)
+object Bids:
+  def empty: Bids = Map.empty
+
+  extension (b: Bids)
+    def apply(p: PlayerId): Bid = b.getOrElse(p, Bid.zero)
+    infix def +(entry: (PlayerId, Bid)): Bids = b + entry
+    def isComplete(totalPlayers: Int): Boolean = b.size == totalPlayers
+    def total: Bid = b.values.foldLeft(Bid.zero)(_ + _)
 
 
-opaque type TricksWon = BidsCollection
-object TricksWon:
-  def apply(tricks: Map[PlayerId, Int]): TricksWon = tricks
+opaque type Tricks = Bids
 
-  def initialize(players: List[Player]): TricksWon =
+object Tricks:
+  def apply(tricks: Map[PlayerId, Int]): Tricks = tricks
+  def initialize(players: List[Player]): Tricks =
     players.map(_.id -> 0).toMap
+  def empty: Tricks = Map.empty
 
-  extension (tw: TricksWon)
-    def getTricks(p: PlayerId): Int = tw.getOrElse(p, 0)
+  extension (t: Tricks)
+    def apply(p: PlayerId): Int = t.getOrElse(p, 0)
+    def addTrickTo(p: PlayerId): Tricks = t.updated(p, t(p) + 1)

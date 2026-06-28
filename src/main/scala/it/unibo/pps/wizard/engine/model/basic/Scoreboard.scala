@@ -6,6 +6,6 @@ object Scoreboard:
   def empty: Scoreboard = Map.empty
 
   extension (sb: Scoreboard)
-    def getPoints(p: PlayerId): Int = sb.getOrElse(p, 0)
-    def updateScore(p: PlayerId, roundPoints: Int): Scoreboard = 
-      sb.updated(p, sb.getPoints(p) + roundPoints)
+    def apply(p: PlayerId): Int = sb.getOrElse(p, 0)
+    def updateScore(p: PlayerId, roundPoints: Int): Scoreboard =
+      sb.updated(p, Scoreboard.apply(sb)(p) + roundPoints)
