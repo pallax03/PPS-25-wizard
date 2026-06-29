@@ -57,7 +57,7 @@ object Trump:
 
 opaque type Round = Int
 object Round:
-  def start: Round = 0
+  def start: Round = 1
 
   extension (r: Round)
     def value: Int = r

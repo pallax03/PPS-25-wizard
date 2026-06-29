@@ -12,7 +12,7 @@ class TestRoundManager extends AnyWordSpec with Matchers:
   import RoundManager.*
   import Round.*
 
-  "RoundRules" when :
+  "RoundManager" when :
     val players = List(PlayerId(1), PlayerId(2), PlayerId(3)).map(Player.human)
 
     "managing turn order" should :
