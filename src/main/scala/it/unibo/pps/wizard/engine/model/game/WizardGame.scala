@@ -8,8 +8,7 @@ import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameEngine}
 import it.unibo.pps.wizard.engine.ports.WizardPort
-import it.unibo.pps.wizard.util.Id
-import it.unibo.pps.wizard.util.vertx.VerticleExecutor
+import it.unibo.pps.wizard.util.{Id, VerticleExecutor}
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
