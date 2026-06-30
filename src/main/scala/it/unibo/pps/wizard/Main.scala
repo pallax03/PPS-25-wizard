@@ -1,7 +1,8 @@
 package it.unibo.pps.wizard
 
 import io.vertx.core.{Future, Promise, Vertx}
-import it.unibo.pps.wizard.application.gui.pages.ViewManager
+import it.unibo.pps.wizard.application.WizardApplication
+import it.unibo.pps.wizard.application.proxy.LocalWizardProxy
 import it.unibo.pps.wizard.engine.services.WizardService
 
 @main
@@ -29,8 +30,7 @@ def deployServiceLocally(): Future[WizardService] =
   serviceDeployed.future()
 
 def deployApplicationLocally(service: WizardService): Unit =
-  service.localAdapter.foreach { localAdapter =>
+  service.localAdapter.foreach: localAdapter =>
     println("Deploying wizard application...")
-    ViewManager.start()
+    WizardApplication.launch(LocalWizardProxy(localAdapter.port))(Array.empty)
     println("Wizard application deployed.")
-  }

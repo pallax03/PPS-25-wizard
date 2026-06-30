@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.util.vertx
 
 import io.vertx.core.Vertx
+import it.unibo.pps.wizard.util.VerticleExecutor
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
