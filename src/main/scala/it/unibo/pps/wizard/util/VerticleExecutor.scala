@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.util.vertx
+package it.unibo.pps.wizard.util
 
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.Message
@@ -9,7 +9,7 @@ import scala.util.Try
 
 class VerticleExecutor(private val vertx: Vertx):
   import it.unibo.pps.wizard.util.Id
-  import it.unibo.pps.wizard.util.vertx.VerticleExecutor.*
+  import VerticleExecutor.*
 
   private val address: String = Id()
   private val pendingTasks: Map[TaskId, PendingTask[?]] = TrieMap.empty
