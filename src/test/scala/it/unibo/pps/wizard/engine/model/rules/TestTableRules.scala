@@ -55,11 +55,11 @@ class TestTableRules extends AnyWordSpec with Matchers:
 
     "award the trick to the highest trump (no Wizard)" in:
       val table = Table.empty + (p1 plays 10.blue) + (p2 plays 2.red) + (p3 plays 5.red)
-      table.evaluateTrickWinner(1.red.asTrump) shouldBe p3
+      table.evaluateTrickWinner(Trump(1.red)) shouldBe p3
 
     "award the trick to the highest following card (no Trump and no Wizard)" in:
       val table = Table.empty + (p1 plays 5.blue) + (p2 plays 10.blue) + (p3 plays 2.yellow)
-      val trump = 1.green.asTrump // trump color differ from played cards
+      val trump = Trump(1.green) // trump color differ from played cards
       table.evaluateTrickWinner(trump) shouldBe p2
 
     "award the trick to the first played Jester if ONLY Jesters are on table" in:

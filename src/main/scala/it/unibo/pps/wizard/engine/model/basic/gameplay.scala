@@ -48,8 +48,10 @@ object Trump:
     case w: Card.Wizard   => Trump.WizardUnresolved(w)
     case s: Card.Standard => Trump.Standard(s)
 
-  extension (c: Card)
-    def asTrump: Trump = Trump(c)
+  extension (optCard: Option[Card])
+    def asTrump: Trump = optCard match
+      case Some(card) => Trump(card)
+      case None => Trump.Absent
 
   extension (t: Trump.WizardUnresolved)
     infix def resolvedAs(color: Card.Color): Trump.WizardResolved =
