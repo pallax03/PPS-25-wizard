@@ -19,7 +19,7 @@ class TestTrump extends AnyWordSpec with Matchers:
         trump.effectiveColor shouldBe None
 
     "created from a Standard card" should:
-      val trump = 5.red.asTrump
+      val trump = Trump(5.red)
       "extract color and card natively" in:
         trump shouldBe a [Trump.Standard]
         trump.effectiveColor shouldBe Some(Red)
@@ -27,7 +27,7 @@ class TestTrump extends AnyWordSpec with Matchers:
 
     "created from a Jester" should:
       val j = jester
-      val trump = j.asTrump
+      val trump = Trump(j)
       "behave like Absent but remember the physical card" in:
         trump shouldBe a [Trump.Jester]
         trump.effectiveColor shouldBe None
@@ -35,7 +35,7 @@ class TestTrump extends AnyWordSpec with Matchers:
 
     "created from a Wizard" should:
       val w = wizard
-      val trump = w.asTrump
+      val trump = Trump(w)
       "initialized as Unresolved" in:
         trump shouldBe a [Trump.WizardUnresolved]
         trump.effectiveColor shouldBe None
@@ -46,3 +46,20 @@ class TestTrump extends AnyWordSpec with Matchers:
         resolvedTrump shouldBe a [Trump.WizardResolved]
         resolvedTrump.effectiveColor shouldBe Some(Blue)
         resolvedTrump.card shouldBe Some(w)
+
+    "from Option" should :
+      "Absent if Option is empty" in:
+        val trump = Option.empty.asTrump
+        trump shouldBe Trump.Absent
+
+      "Standard if Option is a Trump.Standard" in:
+        val trump = Option(5.red).asTrump
+        trump shouldBe a [Trump.Standard]
+
+      "Jester if Option is a Trump.Jester" in :
+        val trump = Option(jester).asTrump
+        trump shouldBe a[Trump.Jester]
+
+      "Wizard if Option is a Trump.WizardUnresolved" in :
+        val trump = Option(wizard).asTrump
+        trump shouldBe a[Trump.WizardUnresolved]

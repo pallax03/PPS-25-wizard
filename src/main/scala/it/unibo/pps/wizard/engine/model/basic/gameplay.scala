@@ -48,17 +48,19 @@ object Trump:
     case w: Card.Wizard   => Trump.WizardUnresolved(w)
     case s: Card.Standard => Trump.Standard(s)
 
-  extension (c: Card)
-    def asTrump: Trump = Trump(c)
+  extension (optCard: Option[Card])
+    def asTrump: Trump = optCard match
+      case Some(card) => Trump(card)
+      case None => Trump.Absent
 
   extension (t: Trump.WizardUnresolved)
     infix def resolvedAs(color: Card.Color): Trump.WizardResolved =
       Trump.WizardResolved(t.c, color)
 
-//todo: DSL and refactoring waiting for RoundManager
 opaque type Round = Int
 object Round:
-  def start: Round = 0
-  extension (round: Round)
-    def value: Int = round
-    def increment: Round = round + 1
+  def start: Round = 1
+
+  extension (r: Round)
+    def value: Int = r
+    def next: Round = r + 1
