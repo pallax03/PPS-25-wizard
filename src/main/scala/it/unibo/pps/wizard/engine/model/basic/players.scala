@@ -16,6 +16,8 @@ object Player:
 opaque type Players = List[Player]
 
 object Players:
+  def apply(players: List[Player]): Players = players
+
   private def generateComputers(numberOfComputers: Int): Players = (1 to numberOfComputers).map(id => Player.computer(PlayerId(id))).toList
   def create(players: Players, numberOfComputers: Int): Players = players ++ generateComputers(numberOfComputers)
 

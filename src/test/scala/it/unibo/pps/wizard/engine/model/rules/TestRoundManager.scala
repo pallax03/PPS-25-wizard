@@ -1,8 +1,7 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.core.GameError
-import cats.data.State
+import it.unibo.pps.wizard.engine.model.core.{CoreState, GameError, GameState}
 import org.scalatest.OptionValues.convertOptionToValuable
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -77,3 +76,45 @@ class TestRoundManager extends AnyWordSpec with Matchers:
       "return false when the number of bids is less than total players" in :
         val bidsCount = 1
         bidsCount.isBiddingPhaseComplete(3) shouldBe false
+
+    "initializing a new round" should :
+      "correctly transition to Bidding state with distributed hands and trump" in :
+        val initialDeck = Deck.create
+        val round = Round.start
+        val core = CoreState(
+          players = Players(players),
+          hands = Hands.empty,
+          deck = initialDeck,
+          round = round,
+          dealerId = PlayerId(1),
+          scoreboard = Scoreboard.empty
+        )
+
+        val (finalCore, biddingState) = round.initialize.run(core).value
+
+        biddingState shouldBe a[GameState.Bidding]
+        finalCore.hands.getHand(PlayerId(1)).value.size shouldBe 1
+        finalCore.deck.length shouldBe (Deck.TOTAL_SIZE - 4)
+        biddingState.currentPlayer shouldBe PlayerId(1)
+        biddingState.trump should not be Trump.Absent
+
+      "correctly transition to Bidding state for Round 4" in :
+        val initialDeck = Deck.create
+        val round3 = Round.start.next.next.next
+        val core = CoreState(
+          players = Players(players),
+          hands = Hands.empty,
+          deck = initialDeck,
+          round = round3,
+          dealerId = PlayerId(3),
+          scoreboard = Scoreboard.empty
+        )
+
+        val (finalCore, biddingState) = round3.initialize.run(core).value
+
+        biddingState shouldBe a[GameState.Bidding]
+        finalCore.hands.getHand(PlayerId(1)).value.size shouldBe 4
+        finalCore.deck.length shouldBe (Deck.TOTAL_SIZE - 13)
+
+        biddingState.currentPlayer shouldBe PlayerId(1)
+        biddingState.trump should not be Trump.Absent

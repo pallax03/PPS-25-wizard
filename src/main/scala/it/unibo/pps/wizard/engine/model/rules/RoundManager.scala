@@ -2,7 +2,7 @@ package it.unibo.pps.wizard.engine.model.rules
 
 import cats.data.State
 import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.core.GameError
+import it.unibo.pps.wizard.engine.model.core.{CoreState, GameError, GameState}
 
 object RoundManager:
 
@@ -26,6 +26,28 @@ object RoundManager:
         currentDeck <- State.get[Deck]
         trump <- if currentDeck.length > 0 then Deck.pop(1).map(_.headOption) else State.pure[Deck, Option[Card]](None)
       yield (hands, trump)
+
+    def initialize: State[CoreState, GameState.Bidding] =
+      for
+        core <- State.get[CoreState]
+
+        (remainingDeck, (hands, maybeTrump)) = round.deal(core.players.toList).run(core.deck).value
+
+        firstPlayer = round.firstPlayer(core.players.toList)
+
+        newCore = core.copy(
+          hands = hands,
+          deck = remainingDeck
+        )
+
+        _ <- State.set(newCore)
+
+      yield GameState.Bidding(
+        core = newCore,
+        trump = Trump.asTrump(maybeTrump),
+        currentBids = Bids.empty,
+        currentPlayer = firstPlayer
+      )
 
   extension (expectedPlayer: PlayerId)
     def validateTurnOf(actionPlayer: PlayerId): Either[GameError, Unit] =
