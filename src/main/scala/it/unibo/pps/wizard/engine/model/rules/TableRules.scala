@@ -30,7 +30,7 @@ object TableRules:
     def evaluateTrickWinner(trump: Trump): PlayerId =
       val cards = table.playedCards
       val trumpColor = trump.effectiveColor
-      val leaderColor = table.followingCard.map(_.color)
+      val followingColor = table.followingCard.map(_.color)
 
       def highestOf(targetColor: Option[Card.Color]): Option[Card] =
         cards.collect { case c @ Card.Standard(color, rank) if targetColor.contains(color) => c }
@@ -38,7 +38,7 @@ object TableRules:
 
       val winningCard = cards.find(_.isInstanceOf[Card.Wizard])
         .orElse(highestOf(trumpColor))
-        .orElse(highestOf(leaderColor))
+        .orElse(highestOf(followingColor))
         .getOrElse(cards.head)
 
       table.playerOf(winningCard).get
