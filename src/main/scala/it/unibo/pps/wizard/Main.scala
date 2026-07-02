@@ -2,6 +2,7 @@ package it.unibo.pps.wizard
 
 import io.vertx.core.{Future, Promise, Vertx}
 import it.unibo.pps.wizard.application.WizardApplication
+import it.unibo.pps.wizard.application.bots.BotManagerVerticle
 import it.unibo.pps.wizard.application.proxy.LocalWizardProxy
 import it.unibo.pps.wizard.engine.services.WizardService
 
@@ -23,6 +24,8 @@ def deployServiceLocally(): Future[WizardService] =
     .deployVerticle(service)
     .onSuccess: _ =>
       println("Wizard engine service deployed.")
+      service.localAdapter.foreach: adapter =>
+        vertx.deployVerticle(new BotManagerVerticle(adapter.port))
       serviceDeployed.complete(service)
     .onFailure: error =>
       println("Failed to deploy wizard engine service.")
