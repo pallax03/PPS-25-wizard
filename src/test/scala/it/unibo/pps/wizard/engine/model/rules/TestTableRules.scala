@@ -13,7 +13,6 @@ class TestTableRules extends AnyWordSpec with Matchers:
   import Card.*
   import Hand.*
   import Table.*
-  import Trump.*
   import TableRules.*
 
   "TableRules Validation" when:
