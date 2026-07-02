@@ -23,5 +23,5 @@ object GameEngine:
       dealerId = PlayerId(0),
       scoreboard = Scoreboard.empty
     )
-//    GameState.Bidding(core)
-    ???
+
+    GameState.Ended(Scoreboard.empty)
