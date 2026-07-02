@@ -3,10 +3,11 @@ package it.unibo.pps.wizard.engine.model.game
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.MessageConsumer
 import it.unibo.pps.wizard.engine.events.*
-import it.unibo.pps.wizard.engine.events.WizardEvent.*
+import it.unibo.pps.wizard.engine.events.FailureEvent.ActionFailed
+import it.unibo.pps.wizard.engine.events.LifecycleEvent.GameStarted
 import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
-import it.unibo.pps.wizard.engine.model.core.{GameAction, GameEngine}
+import it.unibo.pps.wizard.engine.model.core.{GameAction, GameEngine, GameState}
 import it.unibo.pps.wizard.engine.ports.WizardPort
 import it.unibo.pps.wizard.util.{Id, VerticleExecutor}
 
@@ -29,6 +30,7 @@ class WizardGame(private val vertx: Vertx) extends WizardPort:
           val initialState = GameEngine.initializeGame(Players.create(players, config.numberOfBots))
           this.currentState = WizardGameState.Running(initialState)
           this.publish(GameStarted(initialState))
+          this.publishInvitationEvent(initialState)
         case _ =>
 
   override def submitAction(action: GameAction): Future[Unit] =
@@ -42,12 +44,9 @@ class WizardGame(private val vertx: Vertx) extends WizardPort:
             case Right(newState) =>
               this.currentState = WizardGameState.Running(newState)
               this.publishAll(
-                composeEvents(
-                  mapActionToEvent(action),
-                  oldState,
-                  newState
-                )
+                ActionEvent.from(action) +: ProgressEvent.fromTransition(oldState, newState)
               )
+              this.publishInvitationEvent(newState)
         case _ =>
 
   override def subscribe[T <: Event : ClassTag](handler: T => Unit): Future[String] =
@@ -67,13 +66,26 @@ class WizardGame(private val vertx: Vertx) extends WizardPort:
           consumer.unregister()
           this.subscriptions -= subscriptionId
 
-  private def publishAll(eventList: List[WizardEvent]): Unit = eventList.foreach(publish(_))
+  private def publishAll(events: List[WizardEvent]): Unit = events.foreach(publish)
 
-  private def publish[T <: Event : ClassTag](event: T): Unit =
+  private def publish(event: WizardEvent): Unit =
     println(s"Publishing event: $event")
-    this.vertx.eventBus().publish(addressOf[T], event)
+    eventAddresses(event).foreach: address =>
+      this.vertx.eventBus().publish(address, event)
 
   private def runOnVerticle[T](activityName: String)(activity: => T): Future[T] =
     this.verticleExecutor.runLater:
       println(s"Running activity '$activityName' on verticle...")
       activity
+
+  private def publishInvitationEvent(state: GameState): Unit =
+    InvitationEvent.fromState(state).foreach(publish)
+
+  private def eventAddresses(event: WizardEvent): List[String] =
+    val familyAddress = event match
+      case _: ActionEvent     => addressOf[ActionEvent]
+      case _: FailureEvent    => addressOf[FailureEvent]
+      case _: InvitationEvent => addressOf[InvitationEvent]
+      case _: LifecycleEvent  => addressOf[LifecycleEvent]
+      case _: ProgressEvent   => addressOf[ProgressEvent]
+    List(event.getClass.getSimpleName, familyAddress, addressOf[WizardEvent]).distinct
