@@ -86,7 +86,7 @@ object Deck:
 
   /**
    * @param n -> number of cards you want to receive from main deck.
-   *  * From an FP point of view analyzing pop function,
+   *  * From an FP point of fxml analyzing pop function,
    *  * how can we return the cards,
    *  * and at the same time, return the remaining Deck?
    *  * Using Cats.State

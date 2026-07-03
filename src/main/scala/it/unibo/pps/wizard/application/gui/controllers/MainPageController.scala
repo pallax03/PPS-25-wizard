@@ -1,0 +1,38 @@
+package it.unibo.pps.wizard.application.gui.controllers
+
+import it.unibo.pps.wizard.application.WizardApplicationContext
+import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
+import it.unibo.pps.wizard.application.gui.pages.GameBoardView
+import it.unibo.pps.wizard.engine.model.basic.{Player, PlayerId, PlayerName, Players}
+import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
+import javafx.fxml.FXML
+import scalafx.application.Platform
+import javafx.scene.control.{Button, ComboBox, TextField}
+import scalafx.stage.Stage
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
+
+class MainPageController(override protected val stage: Stage)
+                        (using protected val context: WizardApplicationContext)
+extends FXMLController:
+
+  @FXML private var nameField: TextField = _
+  @FXML private var opponentsCombo: ComboBox[Integer] = _
+  @FXML private var btnStart: Button = _
+
+  @FXML
+  private def handleStartGameClick(): Unit =
+    val playerName = nameField.text.value
+    val opponentsNum = opponentsCombo.value.value
+    val players = Players(Player.human(PlayerId(1), PlayerName(playerName)))
+
+    println(s"Giocatore: $playerName, Avversari: $opponentsNum")
+    context.wizardEngineProxy
+      .startGame(players, GameConfiguration(playerName, opponentsNum))
+      .onComplete:
+        case Success(_) => Platform.runLater {
+          //GameBoardView(stage)
+          println("Grande nico!!")
+        }
+        case Failure(exception) => throw exception
