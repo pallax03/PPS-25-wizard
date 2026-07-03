@@ -1,16 +1,13 @@
 package it.unibo.pps.wizard.engine.services
 
 import io.vertx.core.{AbstractVerticle, Promise}
-import it.unibo.pps.wizard.engine.adapters.LocalWizardAdapter
-import it.unibo.pps.wizard.engine.model.game.WizardGame
-import it.unibo.pps.wizard.engine.ports.WizardPort
+import it.unibo.pps.wizard.engine.adapters.WizardGameAdapter
 
 class WizardService extends AbstractVerticle:
-  private var _wizardAdapter: Option[LocalWizardAdapter] = None
+  private var _wizardAdapter: Option[WizardGameAdapter] = None
 
   override def start(startPromise: Promise[Void]): Unit =
-    val wizardGame: WizardPort = WizardGame(this.getVertx)
-    this._wizardAdapter = Some(LocalWizardAdapter(wizardGame))
+    this._wizardAdapter = Some(WizardGameAdapter(this.getVertx))
     startPromise.complete()
 
-  def localAdapter: Option[LocalWizardAdapter] = this._wizardAdapter
+  def localAdapter: Option[WizardGameAdapter] = this._wizardAdapter
