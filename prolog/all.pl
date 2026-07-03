@@ -3,8 +3,8 @@ range(X, _, X).
 range(A, B, X) :- A2 is A+1, A2 =< B, range(A2, B, X).
 
 count([], _, 0).
-count([H | T], H, N) :- count(T, H, N2), N is N2 + 1.
-count([H | T], E, N) :- count(T, E, N), H \= E.
+count([H | T], H, N) :- !, count(T, H, N2), N is N2 + 1.
+count([H | T], E, N) :- count(T, E, N).
 
 max([H], H, H).
 max([H | T], H, Min) :- max(T, Mx, Min), H > Mx, !.
