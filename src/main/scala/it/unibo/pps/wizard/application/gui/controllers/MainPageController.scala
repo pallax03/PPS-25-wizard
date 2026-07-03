@@ -2,10 +2,8 @@ package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
-import it.unibo.pps.wizard.application.gui.pages.GameBoardView
 import it.unibo.pps.wizard.engine.model.basic.{Player, PlayerId, PlayerName, Players}
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
-import javafx.fxml.FXML
 import scalafx.application.Platform
 import javafx.scene.control.{Button, ComboBox, TextField}
 import scalafx.stage.Stage

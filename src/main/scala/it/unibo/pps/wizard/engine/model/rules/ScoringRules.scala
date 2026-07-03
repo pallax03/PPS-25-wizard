@@ -7,8 +7,8 @@ object ScoringRules:
   private final val BASE_WIN_POINTS = 20
   private final val POINTS_PER_TRICK = 10
 
-  def compute(players: List[Player], bids: Bids, tricks: Tricks, scoreboard: Scoreboard): Scoreboard =
-    players.foldLeft(scoreboard): (sb, player) =>
+  def compute(players: Players, bids: Bids, tricks: Tricks, scoreboard: Scoreboard): Scoreboard =
+    players.toList.foldLeft(scoreboard): (sb, player) =>
       val points = bids(player.id).scoreAgainst(tricks(player.id))
       sb.updateScore(player.id, points)
 

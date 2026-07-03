@@ -6,23 +6,23 @@ import it.unibo.pps.wizard.engine.model.core.{CoreState, GameError, GameState}
 
 object RoundManager:
 
-  extension (players: List[Player])
+  extension (players: Players)
     def nextAfter(current: PlayerId): Either[GameError, PlayerId] =
-      val idx = players.indexWhere(_.id == current)
-      Either.cond(idx >= 0, players((idx + 1) % players.size).id, GameError.NotYourTurn)
+      val idx = players.toList.indexWhere(_.id == current)
+      Either.cond(idx >= 0, players.toList((idx + 1) % players.toList.size).id, GameError.NotYourTurn)
 
   extension (round: Round)
-    def firstPlayer(players: List[Player]): PlayerId =
-      players((round.value - 1) % players.size).id
+    def firstPlayer(players: Players): PlayerId =
+      players.toList((round.value - 1) % players.toList.size).id
 
     def isComplete(currentTrickCount: Int): Boolean =
       currentTrickCount == round.value
 
-    def deal(players: List[Player]): State[Deck, (Hands, Option[Card])] =
+    def deal(players: Players): State[Deck, (Hands, Option[Card])] =
       val cardsPerPlayer = round.value
       for
-        drawn <- Deck.pop(cardsPerPlayer * players.size)
-        hands = Hands(players.map(_.id).zip(drawn.grouped(cardsPerPlayer).map(Hand(_)).toList).toMap)
+        drawn <- Deck.pop(cardsPerPlayer * players.toList.size)
+        hands = Hands(players.toList.map(_.id).zip(drawn.grouped(cardsPerPlayer).map(Hand(_)).toList).toMap)
         currentDeck <- State.get[Deck]
         trump <- if currentDeck.length > 0 then Deck.pop(1).map(_.headOption) else State.pure[Deck, Option[Card]](None)
       yield (hands, trump)
@@ -31,9 +31,9 @@ object RoundManager:
       for
         core <- State.get[CoreState]
 
-        (remainingDeck, (hands, maybeTrump)) = round.deal(core.players.toList).run(core.deck).value
+        (remainingDeck, (hands, maybeTrump)) = round.deal(core.players).run(core.deck).value
 
-        firstPlayer = round.firstPlayer(core.players.toList)
+        firstPlayer = round.firstPlayer(core.players)
 
         newCore = core.copy(
           hands = hands,
