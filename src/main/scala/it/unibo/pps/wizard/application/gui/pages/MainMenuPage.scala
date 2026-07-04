@@ -5,7 +5,7 @@ import it.unibo.pps.wizard.application.gui.controllers.MainPageController
 import it.unibo.pps.wizard.application.gui.pages.template.{ApplicablePage, FXMLPage}
 import scalafx.stage.Stage
 
-case class MainMenuPage(override protected val stage: Stage)
-                       (using protected val context: WizardApplicationContext)
-  extends FXMLPage(MainPageController(stage), "main-page")
-  with ApplicablePage
+case class MainMenuPage(override protected val stage: Stage)(using
+    protected val context: WizardApplicationContext
+) extends FXMLPage(MainPageController(stage), "main-page")
+    with ApplicablePage

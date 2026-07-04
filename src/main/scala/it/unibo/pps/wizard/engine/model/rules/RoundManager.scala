@@ -9,7 +9,11 @@ object RoundManager:
   extension (players: Players)
     def nextAfter(current: PlayerId): Either[GameError, PlayerId] =
       val idx = players.toList.indexWhere(_.id == current)
-      Either.cond(idx >= 0, players.toList((idx + 1) % players.toList.size).id, GameError.NotYourTurn)
+      Either.cond(
+        idx >= 0,
+        players.toList((idx + 1) % players.toList.size).id,
+        GameError.NotYourTurn
+      )
 
   extension (round: Round)
     def firstPlayer(players: Players): PlayerId =
@@ -22,9 +26,13 @@ object RoundManager:
       val cardsPerPlayer = round.value
       for
         drawn <- Deck.pop(cardsPerPlayer * players.toList.size)
-        hands = Hands(players.toList.map(_.id).zip(drawn.grouped(cardsPerPlayer).map(Hand(_)).toList).toMap)
+        hands = Hands(
+          players.toList.map(_.id).zip(drawn.grouped(cardsPerPlayer).map(Hand(_)).toList).toMap
+        )
         currentDeck <- State.get[Deck]
-        trump <- if currentDeck.length > 0 then Deck.pop(1).map(_.headOption) else State.pure[Deck, Option[Card]](None)
+        trump <-
+          if currentDeck.length > 0 then Deck.pop(1).map(_.headOption)
+          else State.pure[Deck, Option[Card]](None)
       yield (hands, trump)
 
     def initialize: State[CoreState, GameState.Bidding] =
@@ -41,7 +49,6 @@ object RoundManager:
         )
 
         _ <- State.set(newCore)
-
       yield GameState.Bidding(
         core = newCore,
         trump = Trump.asTrump(maybeTrump),

@@ -24,7 +24,6 @@ object Bids:
     def isComplete(totalPlayers: Int): Boolean = b.size == totalPlayers
     def total: Bid = b.values.foldLeft(Bid.zero)(_ + _)
 
-
 opaque type Tricks = Bids
 
 object Tricks:

@@ -12,7 +12,7 @@ class TestPlayers extends AnyWordSpec with Matchers:
       p.id shouldBe id
       p.isBot shouldBe false
 
-  "A Bot" should :
+  "A Bot" should:
     val id: PlayerId = PlayerId(2)
     val com = Player.computer(id)
     "have the correct id" in:

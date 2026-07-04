@@ -19,14 +19,13 @@ class TrumpView(trump: Trump) extends HBox:
       cardView.prefHeight = ch
       cardView.prefWidth = ch / 1.2
 
-      trump.effectiveColor.foreach(color =>
-        cardView.setGlow(CardView.fxColor(color))
-      )
+      trump.effectiveColor.foreach(color => cardView.setGlow(CardView.fxColor(color)))
 
       children = cardView
     case None =>
       val placeholder = new Label("No Trump"):
-        style = "-fx-text-fill: #555555; -fx-font-weight: bold; -fx-font-size: 12px; -fx-text-alignment: center;"
+        style =
+          "-fx-text-fill: #555555; -fx-font-weight: bold; -fx-font-size: 12px; -fx-text-alignment: center;"
         minWidth = 80
         minHeight = 80 * 1.2
         alignment = Pos.Center

@@ -4,16 +4,13 @@ opaque type PlayerId = Int
 object PlayerId:
   def apply(s: Int): PlayerId = s
 
-  extension (p: PlayerId)
-    infix def plays(c: Card): (PlayerId, Card) = (p, c)
+  extension (p: PlayerId) infix def plays(c: Card): (PlayerId, Card) = (p, c)
 
 opaque type PlayerName = String
 object PlayerName:
   def apply(s: String): PlayerName = s
 
-/**
- * Represent a player in the game that can be human or computer.
- */
+/** Represent a player in the game that can be human or computer. */
 final case class Player(id: PlayerId, name: PlayerName, isBot: Boolean)
 
 object Player:
@@ -24,8 +21,9 @@ opaque type Players = List[Player]
 
 object Players:
   def apply(players: Player*): Players = players.toList
-  def create(players: Players, numberOfComputers: Int): Players = players ++ generateComputers(numberOfComputers)
-  private def generateComputers(numberOfComputers: Int): Players = (1 to numberOfComputers).map(id => Player.computer(PlayerId(id))).toList
+  def create(players: Players, numberOfComputers: Int): Players =
+    players ++ generateComputers(numberOfComputers)
+  private def generateComputers(numberOfComputers: Int): Players =
+    (1 to numberOfComputers).map(id => Player.computer(PlayerId(id))).toList
 
-  extension (players: Players)
-    def toList: List[Player] = players.toList
+  extension (players: Players) def toList: List[Player] = players.toList

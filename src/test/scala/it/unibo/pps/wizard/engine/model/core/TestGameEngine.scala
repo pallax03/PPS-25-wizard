@@ -1,6 +1,14 @@
 package it.unibo.pps.wizard.engine.model.core
 
-import it.unibo.pps.wizard.engine.model.basic.{Bid, Card, Player, PlayerId, PlayerName, Players, Round}
+import it.unibo.pps.wizard.engine.model.basic.{
+  Bid,
+  Card,
+  Player,
+  PlayerId,
+  PlayerName,
+  Players,
+  Round
+}
 import it.unibo.pps.wizard.engine.model.basic.Card.*
 import it.unibo.pps.wizard.engine.model.core.GameError.*
 import org.scalatest.wordspec.AnyWordSpec
@@ -20,7 +28,7 @@ class TestGameEngine extends AnyWordSpec with Matchers:
     "correctly initialize the game into a Bidding state" in:
       val initialState = GameEngine.initializeGame(mockPlayers)
 
-      initialState shouldBe a [GameState.Bidding]
+      initialState shouldBe a[GameState.Bidding]
       val biddingState = initialState.asInstanceOf[GameState.Bidding]
 
       biddingState.core.players shouldBe mockPlayers
@@ -39,7 +47,7 @@ class TestGameEngine extends AnyWordSpec with Matchers:
       result.foreach:
         case nextState: GameState.Bidding =>
           nextState.currentBids(currentPlayer) shouldBe currentBid
-          nextState.currentPlayer shouldNot be (currentPlayer)
+          nextState.currentPlayer shouldNot be(currentPlayer)
         case _ => fail("Expected GameState.Bidding")
 
     "fail with NotYourTurn when a player places a bid out of turn" in:

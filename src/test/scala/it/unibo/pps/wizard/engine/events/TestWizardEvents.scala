@@ -16,7 +16,7 @@ class TestWizardEvents extends AnyWordSpec with Matchers:
   private val name1 = PlayerName("Alice")
   private val name2 = PlayerName("Bob")
   private val player2 = PlayerId(2)
-  
+
   private val players = Players(Player.human(player1, name1), Player.human(player2, name2))
   private val core = CoreState(
     players = players,

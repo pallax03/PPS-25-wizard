@@ -14,8 +14,10 @@ object ProgressEvent:
 
   def fromTransition(oldState: GameState, newState: GameState): List[WizardEvent] =
     (oldState, newState) match
-      case (GameState.Playing(_, _, _, oldTable, _, _), GameState.Playing(_, _, _, newTable, winnerId, _))
-        if oldTable.playedCards.nonEmpty && newTable.playedCards.isEmpty =>
+      case (
+            GameState.Playing(_, _, _, oldTable, _, _),
+            GameState.Playing(_, _, _, newTable, winnerId, _)
+          ) if oldTable.playedCards.nonEmpty && newTable.playedCards.isEmpty =>
         List(TrickWon(winnerId, oldTable.playedCards))
       case (oldS: GameState.Playing, newS: GameState.Bidding) =>
         List(

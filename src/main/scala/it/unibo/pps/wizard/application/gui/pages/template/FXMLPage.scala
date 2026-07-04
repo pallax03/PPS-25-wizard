@@ -6,9 +6,9 @@ import javafx.scene.Parent
 import scalafx.scene.Scene
 
 abstract class FXMLPage[C <: FXMLController](
-                                              protected val controller: C,
-                                              protected val fxmlPath: String)
-  extends Page:
+    protected val controller: C,
+    protected val fxmlPath: String
+) extends Page:
   private val fxmlLoader: FXMLLoader = FXMLPage.createFXMLLoader(this.fxmlPath)
   this.fxmlLoader.setController(this.controller)
 

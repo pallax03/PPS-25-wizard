@@ -33,10 +33,10 @@ enum Trump:
     case _                        => None
 
   def card: Option[Card] = this match
-    case Absent => None
-    case Jester(c) => Some(c)
-    case Standard(c) => Some(c)
-    case WizardUnresolved(c) => Some(c)
+    case Absent               => None
+    case Jester(c)            => Some(c)
+    case Standard(c)          => Some(c)
+    case WizardUnresolved(c)  => Some(c)
     case WizardResolved(c, _) => Some(c)
 object Trump:
   def apply(c: Card): Trump = c match
@@ -47,7 +47,7 @@ object Trump:
   extension (optCard: Option[Card])
     def asTrump: Trump = optCard match
       case Some(card) => Trump(card)
-      case None => Trump.Absent
+      case None       => Trump.Absent
 
   extension (t: Trump.WizardUnresolved)
     infix def resolvedAs(color: Card.Color): Trump.WizardResolved =
