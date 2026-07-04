@@ -12,11 +12,11 @@ import scala.reflect.ClassTag
 trait WizardPort:
 
   def getState: Future[WizardGameState]
-  
+
   def startGame(players: Players, config: GameConfiguration): Future[Unit]
 
   def submitAction(action: GameAction): Future[Unit]
-  
+
   def subscribe[T <: Event: ClassTag](handler: T => Unit): Future[String]
-  
+
   def unsubscribe(subscriptionIds: String*): Future[Unit]

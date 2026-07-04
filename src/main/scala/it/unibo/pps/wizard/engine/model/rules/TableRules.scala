@@ -8,13 +8,12 @@ object TableRules:
 
   extension (h: Hand)
     private def hasColor(color: Card.Color): Boolean = h.toList.exists:
-        case Card.Standard(c, _) => c == color
-        case _                   => false
+      case Card.Standard(c, _) => c == color
+      case _                   => false
 
   extension (cardPlayed: Card)
     def validateAgainst(table: Table, hand: Hand): Either[GameError, Unit] =
-      if !hand.contains(cardPlayed) then
-        return Left(GameError.CardNotAllowed(CardNotInHand))
+      if !hand.contains(cardPlayed) then return Left(GameError.CardNotAllowed(CardNotInHand))
 
       cardPlayed match
         case _: SpecialCard => Right(())
@@ -23,7 +22,8 @@ object TableRules:
             case None => Right(())
             case Some(Card.Standard(leaderColor, _)) =>
               if playedColor == leaderColor then Right(())
-              else if hand.hasColor(leaderColor) then Left(GameError.CardNotAllowed(MustFollowLeader(leaderColor)))
+              else if hand.hasColor(leaderColor) then
+                Left(GameError.CardNotAllowed(MustFollowLeader(leaderColor)))
               else Right(())
 
   extension (table: Table)
@@ -33,10 +33,12 @@ object TableRules:
       val followingColor = table.followingCard.map(_.color)
 
       def highestOf(targetColor: Option[Card.Color]): Option[Card] =
-        cards.collect { case c @ Card.Standard(color, rank) if targetColor.contains(color) => c }
+        cards
+          .collect { case c @ Card.Standard(color, rank) if targetColor.contains(color) => c }
           .maxByOption(_.rank.value)
 
-      val winningCard = cards.find(_.isInstanceOf[Card.Wizard])
+      val winningCard = cards
+        .find(_.isInstanceOf[Card.Wizard])
         .orElse(highestOf(trumpColor))
         .orElse(highestOf(followingColor))
         .getOrElse(cards.head)

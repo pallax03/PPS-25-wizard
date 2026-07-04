@@ -8,7 +8,11 @@ import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.layout.FlowPane
 import scalafx.util.Duration
 
-class HandView(hand: Hand, onCardDragged: (Double, Double) => Unit, onCardDropped: (Card, Double, Double) => Unit) extends FlowPane:
+class HandView(
+    hand: Hand,
+    onCardDragged: (Double, Double) => Unit,
+    onCardDropped: (Card, Double, Double) => Unit
+) extends FlowPane:
   alignment = Pos.Center
   style = "-fx-background-color: #A0A2A180; -fx-background-radius: 15;"
   padding = Insets(10)
@@ -16,7 +20,8 @@ class HandView(hand: Hand, onCardDragged: (Double, Double) => Unit, onCardDroppe
 
   val cards: List[Card] = hand.toList
   private val cardCount: Int = math.max(1, cards.size)
-  private val maxCardsPerRow: Double = if (cardCount > 10) math.ceil(cardCount / 2.0).toInt else cardCount
+  private val maxCardsPerRow: Double =
+    if (cardCount > 10) math.ceil(cardCount / 2.0).toInt else cardCount
   private val overlapRatio: Double = if (cardCount > 10) -0.03 else -0.01
 
   hgap <== this.width * overlapRatio

@@ -5,4 +5,3 @@ import scalafx.scene.Scene
 
 trait Page extends FXComponent:
   def getScene: Scene
-

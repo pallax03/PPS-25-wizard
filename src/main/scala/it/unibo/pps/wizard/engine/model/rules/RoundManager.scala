@@ -22,9 +22,13 @@ object RoundManager:
       val cardsPerPlayer = round.value
       for
         drawn <- Deck.pop(cardsPerPlayer * players.size)
-        hands = Hands(players.map(_.id).zip(drawn.grouped(cardsPerPlayer).map(Hand(_)).toList).toMap)
+        hands = Hands(
+          players.map(_.id).zip(drawn.grouped(cardsPerPlayer).map(Hand(_)).toList).toMap
+        )
         currentDeck <- State.get[Deck]
-        trump <- if currentDeck.length > 0 then Deck.pop(1).map(_.headOption) else State.pure[Deck, Option[Card]](None)
+        trump <-
+          if currentDeck.length > 0 then Deck.pop(1).map(_.headOption)
+          else State.pure[Deck, Option[Card]](None)
       yield (hands, trump)
 
     def initialize: State[CoreState, GameState.Bidding] =
@@ -41,7 +45,6 @@ object RoundManager:
         )
 
         _ <- State.set(newCore)
-
       yield GameState.Bidding(
         core = newCore,
         trump = Trump.asTrump(maybeTrump),

@@ -5,18 +5,23 @@ import it.unibo.pps.wizard.engine.model.core.GameError
 
 object BiddingRules:
 
-  def processBid(bid: Bid, currentBids: Bids, currentPlayer: PlayerId, round: Round, totalPlayers: Int): Either[GameError, Bids] =
-    bid.validateBid(round, currentBids, totalPlayers)
+  def processBid(
+      bid: Bid,
+      currentBids: Bids,
+      currentPlayer: PlayerId,
+      round: Round,
+      totalPlayers: Int
+  ): Either[GameError, Bids] =
+    bid
+      .validateBid(round, currentBids, totalPlayers)
       .map(_ => currentBids + (currentPlayer -> bid))
 
   extension (bid: Bid)
     def validateBid(round: Round, currentBids: Bids, totalPlayers: Int): Either[GameError, Unit] =
-      if !bid.isWithinBounds(round) then
-        Left(GameError.InvalidBid)
+      if !bid.isWithinBounds(round) then Left(GameError.InvalidBid)
       else if bid.isLastPlayerInvalid(round, currentBids, totalPlayers) then
         Left(GameError.InvalidBid)
-      else
-        Right(())
+      else Right(())
 
     private def isWithinBounds(round: Round): Boolean =
       bid >= Bid.zero && bid.isValid(round)

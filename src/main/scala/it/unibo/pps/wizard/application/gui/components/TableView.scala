@@ -22,9 +22,10 @@ class PlayedCardWrapper(val card: Card, playerName: String, isLeader: Boolean) e
     style = "-fx-text-fill: gold; -fx-font-weight: bold; -fx-font-size: 12px;"
     minHeight = 15
 
-  if isLeader then card match
-    case Card.Standard(color, rank) => cardView.setGlow(CardView.fxColor(color))
-    case _ =>
+  if isLeader then
+    card match
+      case Card.Standard(color, rank) => cardView.setGlow(CardView.fxColor(color))
+      case _                          =>
 
   children = Seq(statusLabel, cardView, nameLabel)
 
@@ -33,15 +34,19 @@ class TableView(table: Table) extends HBox:
   padding = Insets(20)
   spacing = 15.0
 
-  private val normalStyle = "-fx-background-color: rgba(43, 92, 63, 0.85); -fx-background-radius: 15;"
-  private val hoverStyle = "-fx-background-color: rgba(60, 120, 80, 0.95); -fx-background-radius: 15;"
+  private val normalStyle =
+    "-fx-background-color: rgba(43, 92, 63, 0.85); -fx-background-radius: 15;"
+  private val hoverStyle =
+    "-fx-background-color: rgba(60, 120, 80, 0.95); -fx-background-radius: 15;"
 
   style = normalStyle
 
-  val check: (c: Card) => Boolean = (c) => table.followingCard match
-    case Some(value) if c == value => true
-    case _ => false
-  private val dummyData = table.playedCards.map(c => (c, "Player " + table.playerOf(c).get, check(c)))
+  val check: (c: Card) => Boolean = (c) =>
+    table.followingCard match
+      case Some(value) if c == value => true
+      case _                         => false
+  private val dummyData =
+    table.playedCards.map(c => (c, "Player " + table.playerOf(c).get, check(c)))
   children = dummyData.map { case (card, playerName, isLeader) =>
     val wrapper = new PlayedCardWrapper(card, playerName, isLeader)
     wrapper.prefWidth <== (this.width - 40 - (5 * spacing.value)) / 6

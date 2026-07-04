@@ -13,9 +13,9 @@ import scalafx.stage.Stage
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-class MainPageController(override protected val stage: Stage)
-                        (using protected val context: WizardApplicationContext)
-extends FXMLController:
+class MainPageController(override protected val stage: Stage)(using
+    protected val context: WizardApplicationContext
+) extends FXMLController:
 
   @FXML private var nameField: TextField = _
   @FXML private var opponentsCombo: ComboBox[Integer] = _
@@ -31,8 +31,9 @@ extends FXMLController:
     context.wizardEngineProxy
       .startGame(players, GameConfiguration(playerName, opponentsNum))
       .onComplete:
-        case Success(_) => Platform.runLater {
-          //GameBoardView(stage)
-          println("Grande nico!!")
-        }
+        case Success(_) =>
+          Platform.runLater {
+            // GameBoardView(stage)
+            println("Grande nico!!")
+          }
         case Failure(exception) => throw exception

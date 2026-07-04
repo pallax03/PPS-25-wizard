@@ -51,7 +51,7 @@ class WizardGameAdapter(private val vertx: Vertx) extends WizardPort:
               this.publishInvitationEvent(newState)
         case _ =>
 
-  override def subscribe[T <: Event : ClassTag](handler: T => Unit): Future[String] =
+  override def subscribe[T <: Event: ClassTag](handler: T => Unit): Future[String] =
     val subscriptionId: String = Id()
     runOnVerticle(s"Subscription to ${addressOf[T]} {#${subscriptionId}}"):
       this.subscriptions +=
@@ -64,9 +64,11 @@ class WizardGameAdapter(private val vertx: Vertx) extends WizardPort:
   override def unsubscribe(subscriptionIds: String*): Future[Unit] =
     runOnVerticle(s"Unsubscription from ${subscriptionIds.mkString(", ")}"):
       subscriptionIds.foreach: subscriptionId =>
-        this.subscriptions.get(subscriptionId).foreach: consumer =>
-          consumer.unregister()
-          this.subscriptions -= subscriptionId
+        this.subscriptions
+          .get(subscriptionId)
+          .foreach: consumer =>
+            consumer.unregister()
+            this.subscriptions -= subscriptionId
 
   private def publishAll(events: List[WizardEvent]): Unit = events.foreach(publish)
 
