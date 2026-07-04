@@ -4,9 +4,6 @@ opaque type Table = List[(PlayerId, Card)]
 object Table:
   def empty: Table = List.empty
 
-  extension (p: PlayerId)
-    infix def plays(c: Card): (PlayerId, Card) = (p, c)
-
   extension (t: Table)
     def isEmpty: Boolean = t.isEmpty
     def size: Int = t.length
@@ -22,7 +19,6 @@ object Table:
         .collect { case s: Card.Standard => s }
 
     infix def +(play: (PlayerId, Card)): Table = t :+ play
-//    todo: removed from +, for testing gui: private[model]
 
 enum Trump:
   case Absent

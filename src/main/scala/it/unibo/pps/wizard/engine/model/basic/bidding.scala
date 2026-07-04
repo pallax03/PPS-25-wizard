@@ -36,3 +36,4 @@ object Tricks:
   extension (t: Tricks)
     def apply(p: PlayerId): Int = t.getOrElse(p, 0)
     def addTrickTo(p: PlayerId): Tricks = t.updated(p, t(p) + 1)
+    def total: Int = t.values.sum

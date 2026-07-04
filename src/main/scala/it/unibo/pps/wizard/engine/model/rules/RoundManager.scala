@@ -57,6 +57,8 @@ object RoundManager:
     def isBiddingPhaseComplete(totalPlayers: Int): Boolean =
       bidsCount == totalPlayers
 
-//  extension (table: Table)
-//    def isTrickComplete(totalPlayers: Int): Boolean =
-//      table.size == totalPlayers
+  extension (table: Table)
+    def isTrickComplete(totalPlayers: Int): Boolean =
+      table.size == totalPlayers
+
+export RoundManager.*

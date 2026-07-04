@@ -3,7 +3,10 @@ package it.unibo.pps.wizard.engine.model.basic
 opaque type PlayerId = Int
 object PlayerId:
   def apply(s: Int): PlayerId = s
-  
+
+  extension (p: PlayerId)
+    infix def plays(c: Card): (PlayerId, Card) = (p, c)
+
 opaque type PlayerName = String
 object PlayerName:
   def apply(s: String): PlayerName = s

@@ -24,3 +24,6 @@ object ScoringRules:
 //    if bid.value == tricksWon
 //    then BASE_WIN_POINTS + (tricksWon * POINTS_PER_TRICK)
 //    else -Math.abs(bid.value - tricksWon) * POINTS_PER_TRICK
+
+
+export ScoringRules.*
