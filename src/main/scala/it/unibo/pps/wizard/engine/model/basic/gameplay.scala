@@ -22,7 +22,6 @@ object Table:
         .collect { case s: Card.Standard => s }
 
     infix def +(play: (PlayerId, Card)): Table = t :+ play
-//    todo: removed from +, for testing gui: private[model]
 
 enum Trump:
   case Absent
