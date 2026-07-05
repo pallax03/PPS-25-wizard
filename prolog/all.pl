@@ -128,14 +128,38 @@ playable_cards(Hand, Hand). % no Following Card - is necessary?
 
 
 % BIDS
-%place_bid(+Hand, -TrumpColor, +TotalBids, -Bid) -> return the best bid, based on secure strategies: 
-%		- count_trumps + count_wizards -> secure bids
-%		- count_jesters -> ???
-%   - Bids -> ???
-place_bid(Hand, TrumpColor, TotalBids, Bid) :-
-	count_trumps(Hand, TrumpColor, Trumps),
-	count_wizards(Hand, Wizards),
-	Bid is Trumps + Wizards.
+ranks_of_color(Cards, Color, Ranks) :- findall(Rank, member(card(Rank, Color), Cards), Ranks).
+count_color(Cards, Color, Count) :- ranks_of_color(Cards, Color, Ranks), length(Ranks, Count).
+
+safe_trick(wizard, _, _).
+safe_trick(card(Rank, TrumpColor), _, TrumpColor) :- range(10, 13, Rank).
+safe_trick(card(13, Color), _, TrumpColor) :- Color \= TrumpColor.
+
+risky_trick(card(Rank, Color), Hand, TrumpColor) :-
+	range(10, 12, Rank),
+	Color \= TrumpColor,
+	count_color(Hand, Color, Count),
+	Count >= 5.
+risky_trick(card(Rank, Color), Hand, TrumpColor) :-
+    range(11, 12, Rank),
+    Color \= TrumpColor,
+    count_color(Hand, Color, 1).
+
+%place_bid(+Hand, -TrumpColor, -Bid)
+place_bid(Hand, TrumpColor, Bid) :-
+	findall(Card, (member(Card, Hand), (safe_trick(Card, Hand, TrumpColor) ; risky_trick(Card, Hand, TrumpColor))), Cards),
+  length(Cards, Bid).
+%place_bid([card(1, red), jester, card(4, red), wizard, card(12, yellow), card(13, blue), wizard, jester, wizard], yellow, Bid) -> 5
+
+% To call when place_bid return an invalid number.
+%adjust_bid(+Hand, +RejectedBid, -FinalBid) -> + 1 (fallback) or - 1 (if Hand has jesters) from RejectingBid (avoiding loop)
+adjust_bid(Hand, 0, 1) :- !.
+adjust_bid(Hand, RejectedBid, FinalBid) :- length(Hand, MaxSize), RejectedBid >= MaxSize, FinalBid is MaxSize - 1, !.
+adjust_bid(Hand, RejectedBid, FinalBid) :- member(jester, Hand), FinalBid is RejectedBid - 1, !.
+adjust_bid(Hand, RejectedBid, FinalBid) :- FinalBid is RejectedBid + 1, !.
+% loop: adjust_bid([card(1, red), card(4, red), wizard, card(12, yellow), card(13, blue), wizard, wizard], 10, Bid) -> Bid / 6
+% fallback: adjust_bid([card(1, red), card(4, red), wizard, card(12, yellow), card(13, blue), wizard, wizard], 7, Bid) -> Bid / 6
+% jesters: adjust_bid([card(1, red), jester, card(4, red), wizard, card(12, yellow), card(13, blue), wizard, jester, wizard], 9, Bid) -> Bid / 8
 
 %best_playable_card(+Hand, +FollowingColor, +LeaderCard, +Bids, +Tricks, -Card)
 
