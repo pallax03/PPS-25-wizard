@@ -22,9 +22,16 @@ distinct([H | T], [H|O]) :- distinct(T, O).
 % WIZARD ENGINE.BASIC
 
 % CARD
-is_valid_rank(RANK) :- range(1, 13, RANK).
-is_valid_color(COLOR) :- member(COLOR, [red, green, yellow, blue]).
-card(RANK, COLOR) :- is_valid_rank(RANK), is_valid_color(COLOR).
+
+%% VALIDATOR DO NOT USED (RIPASSO DI PROLOG)
+%is_valid_rank(RANK) :- range(1, 13, RANK).
+%is_valid_color(COLOR) :- member(COLOR, [red, green, yellow, blue]).
+%card(RANK, COLOR) :- is_valid_rank(RANK), is_valid_color(COLOR).
+%%validate_cards(+CARDS)
+%validate_cards([]).
+%validate_cards([wizard | T]) :- validate_cards(T).
+%validate_cards([jester | T]) :- validate_cards(T).
+%validate_cards([card(RANK, Color) | T]) :- card(RANK, COLOR), !, validate_cards(T).
 
 %special_cards(+Hand, -Specials)
 wizard.
@@ -33,39 +40,37 @@ special_cards(HAND, S) :- findall(E, (member(E, HAND), (E = wizard ; E = jester)
 %special_cards([wizard, jester, card(13, green), wizard, wizard, jester, jester, card(1, red)], S)
 % -> S / [wizard,jester,wizard,wizard,jester,jester]
 
-%validate_cards(+CARDS)
-validate_cards([]).
-validate_cards([wizard | T]) :- validate_cards(T).
-validate_cards([jester | T]) :- validate_cards(T).
-validate_cards([card(RANK, COLOR) | T]) :- card(RANK, COLOR), !, validate_cards(T).
+
+
+
 
 %extract_colors(+Cards, -Colors) -> return the list of colors in a List of cards (not distincts)
-extract_colors(CARDS, COLORS) :- findall(COLOR, member(card(_, COLOR), CARDS), COLORS).
-%extract_colors([card(1, red), card(5, green), card(8, yellow), card(13, red)], COLORS)
-% -> COLORS / [red,green,yellow,red]
+extract_colors(Cards, Colors) :- findall(Color, member(card(_, Color), Cards), Colors).
+%extract_colors([card(1, red), card(5, green), card(8, yellow), card(13, red)], Colors)
+% -> Colors / [red,green,yellow,red]
 
-%color_frequencies(+Cards, -Frequencies)
-color_frequencies(CARDS, FREQUENCIES) :- 
-	extract_colors(CARDS, COLORS), 
-	distinct(COLORS, DistinctColors), 
+%color_frequencies(+Cards, -Frequencies) -> return a mapped list from a List of Cards with DistinctColors and his frequencies
+color_frequencies(Cards, Frequencies) :- 
+	extract_colors(Cards, Colors), 
+	distinct(Colors, DistinctColors), 
 	findall(
-		freq(COLOR, COUNT), 
-		(member(COLOR, DistinctColors), count(COLORS, COLOR, COUNT)), 
-		FREQUENCIES
+		freq(Color, N), 
+		(member(Color, DistinctColors), count(Colors, Color, N)), 
+		Frequencies
 	).
-%color_frequencies([card(1, red), card(4, red), card(1, yellow), card(13, blue)], L)
+%color_frequencies([card(1, red), card(4, red), card(1, yellow), card(13, blue)], Frequencies)
+% -> Frequencies / [freq(red,2),freq(yellow,1),freq(blue,1)]
 
-%dominant_color(+Cards, ?Color) -> return the max color present in a List of card
-dominant_color(CARDS, COLOR) :- 
-	color_frequencies(CARDS, L), 
-	findall(N, member(freq(_, N), L), Counts),
-	min_max(Counts, Max, _), 
-	print(Max),
-	member(freq(COLOR, Max), L).
-% dominant_color([card(1, red), card(4, red), card(1, yellow), card(13, blue)], COLOR)
-% -> COLOR / red
-% dominant_color([card(1, red), card(4, red), card(1, yellow), card(13, yellow)], COLOR) % 2 red and 2 yellow -> any of max COLOR is right
-% -> COLOR / red
+%dominant_color(+Cards, ?Color) -> return the max color present in a List of card (2 red and 2 yellow -> given in next paths)
+dominant_color(Cards, Color) :- 
+	color_frequencies(Cards, Frequencies), 
+	findall(N, member(freq(_, N), Frequencies), Counts),
+	min_max(Counts, Max, _),
+	member(freq(Color, Max), Frequencies).
+% dominant_color([card(1, red), card(4, red), card(1, yellow), card(13, blue)], Color)
+% -> Color / red
+% dominant_color([card(1, red), card(4, red), card(1, yellow), card(13, yellow)], Color)
+% -> Color / red
 
 
 
@@ -73,13 +78,13 @@ dominant_color(CARDS, COLOR) :-
 
 % RULES
 % following_play_card(?StandardCard, ?FollowingColor).
-following_standard_card(card(_, COLOR), COLOR).
+following_standard_card(card(_, FollowingColor), FollowingColor).
 
 % following_standard_cards(+Hand, +FollowingColor, -LegalStandardCards)
-following_standard_cards(HAND, FollowingColor, LegalStandardCards) :- findall(
-	CARD, (
-		member(CARD, HAND), 
-		following_standard_card(CARD, FollowingColor)
+following_standard_cards(Hand, FollowingColor, LegalStandardCards) :- findall(
+	Card, (
+		member(Card, Hand), 
+		following_standard_card(Card, FollowingColor)
 	), LegalStandardCards).
 %following_standard_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], red, L)
 % -> L / [card(1,red),card(4,red)]
@@ -96,17 +101,25 @@ play_card(jester, _).
 
 % FINAL API 
 
-%bot_playable_cards(+Hand, +FollowingColor, -PlayableCards)
-bot_playable_cards(HAND, FollowingColor, HAND) :- following_standard_cards(HAND, FollowingColor, []), !.
-bot_playable_cards(HAND, FollowingColor, PlayableCards) :- 
-	following_standard_cards(HAND, FollowingColor, FollowingStandardCards),
-	special_cards(HAND, SpecialCards),
+%choose_trump(+Hand, -TrumpColor) -> return the best trump to choose based on dominant_color (see dominant_color doc)
+choose_trump(Hand, TrumpColor) :- dominant_color(Hand, TrumpColor).
+
+%playable_cards(+Hand, +FollowingColor, -PlayableCards)
+playable_cards(Hand, FollowingColor, Hand) :- following_standard_cards(Hand, FollowingColor, []), !.
+playable_cards(Hand, FollowingColor, PlayableCards) :- 
+	following_standard_cards(Hand, FollowingColor, FollowingStandardCards),
+	special_cards(Hand, SpecialCards),
 	append(FollowingStandardCards, SpecialCards, PlayableCards).
-bot_playable_cards(HAND, PlayableCards) :- bot_playable_cards(HAND, null, PlayableCards).	% no FollowingCard
-%bot_playable_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], red, L)
+playable_cards(Hand, Hand). % no Following Card - is necessary?
+%playable_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], red, L)
 % -> L / [card(1,red),card(4,red),wizard,jester]
-%bot_playable_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], L)
+%playable_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], L)
 % -> L / [card(1,red),card(4,red),card(1,yellow),card(13,blue),wizard,jester]
+
+
+
+
+%best_playable_card(+Hand, +FollowingColor, +LeaderCard, +Bids, +Tricks, -Card)
 
 
 
