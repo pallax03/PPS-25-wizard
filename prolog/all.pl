@@ -39,7 +39,7 @@ jester.
 % following_play_card(?StandardCard, ?FollowingColor).
 following_standard_card(card(_, FollowingColor), FollowingColor).
 
-% following_standard_cards(+Hand, +FollowingColor, -LegalStandardCards)
+% following_standard_cards(+Hand, ?FollowingColor, -LegalStandardCards)
 following_standard_cards(Hand, FollowingColor, LegalStandardCards) :- findall(Card, (member(Card, Hand), following_standard_card(Card, FollowingColor)), LegalStandardCards).
 % following_standard_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], red, L) -> L / [card(1,red),card(4,red)]
 % following_standard_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], jester, L) -> L / []
@@ -76,6 +76,9 @@ count_jesters(Hand, Count) :- findall(jester, member(jester, Hand), Jesters), le
 cards_ranks_of_color(Cards, Color, Ranks) :- findall(Rank, member(card(Rank, Color), Cards), Ranks).
 count_color(Cards, Color, Count) :- cards_ranks_of_color(Cards, Color, Ranks), length(Ranks, Count).
 
+% wants_to_win/lose(+Bids, +Tricks) -> checkers.
+wants_to_win(Bids, Tricks) :- Bids < Tricks.
+wants_to_lose(Bids, Tricks) :- Bids >= Tricks.
 
 % WIZARD STRATEGY -> Strategies for API
 
@@ -109,6 +112,14 @@ risky_trick(card(Rank, Color), Hand, TrumpColor) :-
     Color \= TrumpColor,
     count_color(Hand, Color, Count),
     Count =< 2.
+
+% beats(+MyCard, +WinningCard, +TrumpColor, +FollowingColor) -> evaluate TrickWinner using MyCard
+%		- wizard wins over all, but only the first one.
+beats(wizard, NotWizard, _, _) :- !, NotWizard = jester ; NotWizard = card(_, _).
+%		- a Trump always beat a not Trump
+beats(card(_, TrumpColor), card(_, Color), TrumpColor, _) :- Color \= TrumpColor.
+%		- highest Rank
+beats(card(MyCardRank, Color), card(WinningCardRank, Color), _, _) :- MyCardRank > WinningCardRank.
 
 
 % WIZARD API
