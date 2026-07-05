@@ -18,10 +18,7 @@ distinct([H | T], O) :- find(T, H), distinct(T, O), !.
 distinct([H | T], [H|O]) :- distinct(T, O).
 
 
-
 % WIZARD ENGINE.BASIC
-
-% CARD
 
 %% VALIDATOR DO NOT USED (RIPASSO DI PROLOG)
 %is_valid_rank(RANK) :- range(1, 13, RANK).
@@ -33,23 +30,32 @@ distinct([H | T], [H|O]) :- distinct(T, O).
 %validate_cards([jester | T]) :- validate_cards(T).
 %validate_cards([card(RANK, Color) | T]) :- card(RANK, COLOR), !, validate_cards(T).
 
-%special_cards(+Hand, -Specials)
 wizard.
 jester.
+
+
+% WIZARD ENGINE.RULES -> Standard Rules of the Game
+
+% following_play_card(?StandardCard, ?FollowingColor).
+following_standard_card(card(_, FollowingColor), FollowingColor).
+
+% following_standard_cards(+Hand, +FollowingColor, -LegalStandardCards)
+following_standard_cards(Hand, FollowingColor, LegalStandardCards) :- findall(Card, (member(Card, Hand), following_standard_card(Card, FollowingColor)), LegalStandardCards).
+% following_standard_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], red, L) -> L / [card(1,red),card(4,red)]
+% following_standard_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], jester, L) -> L / []
+
+% special_cards(+Hand, -Specials)
 special_cards(HAND, S) :- findall(E, (member(E, HAND), (E = wizard ; E = jester)), S).
-%special_cards([wizard, jester, card(13, green), wizard, wizard, jester, jester, card(1, red)], S)
-% -> S / [wizard,jester,wizard,wizard,jester,jester]
+% special_cards([wizard, jester, card(13, green), wizard, wizard, jester, jester, card(1, red)], S) -> S / [wizard,jester,wizard,wizard,jester,jester]
 
 
+% WIZARD STRATEGY.HELPER -> Feature extracted from Rules and Basic, for Strategies
 
-
-
-%extract_colors(+Cards, -Colors) -> return the list of colors in a List of cards (not distincts)
+% extract_colors(+Cards, -Colors) -> return the list of colors in a List of cards (not distincts)
 extract_colors(Cards, Colors) :- findall(Color, member(card(_, Color), Cards), Colors).
-%extract_colors([card(1, red), card(5, green), card(8, yellow), card(13, red)], Colors)
-% -> Colors / [red,green,yellow,red]
+% extract_colors([card(1, red), card(5, green), card(8, yellow), card(13, red)], Colors) -> Colors / [red,green,yellow,red]
 
-%color_frequencies(+Cards, -Frequencies) -> return a mapped list from a List of Cards with DistinctColors and his frequencies
+% color_frequencies(+Cards, -Frequencies) -> return a mapped list from a List of Cards with DistinctColors and his frequencies
 color_frequencies(Cards, Frequencies) :- 
 	extract_colors(Cards, Colors), 
 	distinct(Colors, DistinctColors), 
@@ -58,58 +64,53 @@ color_frequencies(Cards, Frequencies) :-
 		(member(Color, DistinctColors), count(Colors, Color, N)), 
 		Frequencies
 	).
-%color_frequencies([card(1, red), card(4, red), card(1, yellow), card(13, blue)], Frequencies)
-% -> Frequencies / [freq(red,2),freq(yellow,1),freq(blue,1)]
+% color_frequencies([card(1, red), card(4, red), card(1, yellow), card(13, blue)], Frequencies) -> Frequencies / [freq(red,2),freq(yellow,1),freq(blue,1)]
 
-%dominant_color(+Cards, ?Color) -> return the max color present in a List of card (2 red and 2 yellow -> given in next paths)
+% count_trumps(+Hand, +TrumpColor, -Count) -> return the number of trumps in Hand
+count_trumps(Hand, TrumpColor, Count) :- following_standard_cards(Hand, TrumpColor, TrumpCards), length(TrumpCards, Count).
+% count_wizards(+Hand, -Count) -> return the number of wizards in Hand
+count_wizards(Hand, Count) :- findall(wizard, member(wizard, Hand), Wizards), length(Wizards, Count). 
+% count_jesters(+Hand, -Count) -> return the number of jesters in Hand
+count_jesters(Hand, Count) :- findall(jester, member(jester, Hand), Jesters), length(Jesters, Count). 
+
+cards_ranks_of_color(Cards, Color, Ranks) :- findall(Rank, member(card(Rank, Color), Cards), Ranks).
+count_color(Cards, Color, Count) :- cards_ranks_of_color(Cards, Color, Ranks), length(Ranks, Count).
+
+
+% WIZARD STRATEGY -> Strategies for API
+
+% dominant_color(+Cards, ?Color) -> return the max color present in a List of card (2 red and 2 yellow -> given in next paths)
 dominant_color(Cards, Color) :- 
 	color_frequencies(Cards, Frequencies), 
 	findall(N, member(freq(_, N), Frequencies), Counts),
 	min_max(Counts, Max, _),
 	member(freq(Color, Max), Frequencies).
-% dominant_color([card(1, red), card(4, red), card(1, yellow), card(13, blue)], Color)
-% -> Color / red
-% dominant_color([card(1, red), card(4, red), card(1, yellow), card(13, yellow)], Color)
-% -> Color / red
+% dominant_color([card(1, red), card(4, red), card(1, yellow), card(13, blue)], Color) -> Color / red
+% dominant_color([card(1, red), card(4, red), card(1, yellow), card(13, yellow)], Color) -> Color / red
+
+% safe_trick(+Card, +Hand, +TrumpColor) -> evaluate if card can be a secure trick
+% 	- wizards 
+safe_trick(wizard, _, _).
+% 	- Trump Cards, Rank in range 10 - 13.
+safe_trick(card(Rank, TrumpColor), _, TrumpColor) :- range(10, 13, Rank).
+% 	- no Trump Cards, 13 Rank (highest)
+safe_trick(card(13, Color), _, TrumpColor) :- Color \= TrumpColor.
+
+% ricky_trick(+Card, +Hand, +TrumpColor) -> evaluate if card can be a risky trick (exclude safe_trick: (Rank 13 is already included in safe_trick))
+% 	- no Trump Cards, Hand contains >= 5 of the same color, Rank in range 10 - 12. 
+risky_trick(card(Rank, Color), Hand, TrumpColor) :-
+	range(10, 12, Rank),
+	Color \= TrumpColor,
+	count_color(Hand, Color, Count),
+	Count >= 5.
+% 	- no Trump Cards, Hand contains only a card of a color, Rank in range 11 - 12.
+risky_trick(card(Rank, Color), Hand, TrumpColor) :-
+    range(11, 12, Rank),
+    Color \= TrumpColor,
+    count_color(Hand, Color, 1).
 
 
-%count_trumps(+Hand, +TrumpColor, -Count) -> return the number of trumps in Hand
-count_trumps(Hand, TrumpColor, Count) :-
-	following_standard_cards(Hand, TrumpColor, TrumpCards),
-	length(TrumpCards, Count).
-% count_trumps([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], red, Count) -> Count / 2
-
-%count_wizards(+Hand, -Count) -> return the number of wizards in Hand
-count_wizards(Hand, Count) :- findall(wizard, member(wizard, Hand), Wizards), length(Wizards, Count). 
-%count_jesters(+Hand, -Count) -> return the number of jesters in Hand
-count_jesters(Hand, Count) :- findall(jester, member(jester, Hand), Jesters), length(Jesters, Count). 
-
-% WIZARD ENGINE.RULES
-
-% RULES
-% following_play_card(?StandardCard, ?FollowingColor).
-following_standard_card(card(_, FollowingColor), FollowingColor).
-
-% following_standard_cards(+Hand, +FollowingColor, -LegalStandardCards)
-following_standard_cards(Hand, FollowingColor, LegalStandardCards) :- findall(
-	Card, (
-		member(Card, Hand), 
-		following_standard_card(Card, FollowingColor)
-	), LegalStandardCards).
-%following_standard_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], red, L)
-% -> L / [card(1,red),card(4,red)]
-%following_standard_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], jester, L)
-%	-> L / []
-
-
-play_card(wizard, _).
-play_card(jester, _).
-%playable_cards(HAND, FollowingCard, L) :- 
-%playable_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], card(3, red), L)
-
-
-
-% FINAL API 
+% WIZARD API
 
 %choose_trump(+Hand, -TrumpColor) -> return the best trump to choose based on dominant_color (see dominant_color doc)
 choose_trump(Hand, TrumpColor) :- dominant_color(Hand, TrumpColor).
@@ -125,25 +126,6 @@ playable_cards(Hand, Hand). % no Following Card - is necessary?
 % -> L / [card(1,red),card(4,red),wizard,jester]
 %playable_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], L)
 % -> L / [card(1,red),card(4,red),card(1,yellow),card(13,blue),wizard,jester]
-
-
-% BIDS
-ranks_of_color(Cards, Color, Ranks) :- findall(Rank, member(card(Rank, Color), Cards), Ranks).
-count_color(Cards, Color, Count) :- ranks_of_color(Cards, Color, Ranks), length(Ranks, Count).
-
-safe_trick(wizard, _, _).
-safe_trick(card(Rank, TrumpColor), _, TrumpColor) :- range(10, 13, Rank).
-safe_trick(card(13, Color), _, TrumpColor) :- Color \= TrumpColor.
-
-risky_trick(card(Rank, Color), Hand, TrumpColor) :-
-	range(10, 12, Rank),
-	Color \= TrumpColor,
-	count_color(Hand, Color, Count),
-	Count >= 5.
-risky_trick(card(Rank, Color), Hand, TrumpColor) :-
-    range(11, 12, Rank),
-    Color \= TrumpColor,
-    count_color(Hand, Color, 1).
 
 %place_bid(+Hand, -TrumpColor, -Bid)
 place_bid(Hand, TrumpColor, Bid) :-
@@ -163,6 +145,10 @@ adjust_bid(Hand, RejectedBid, FinalBid) :- FinalBid is RejectedBid + 1, !.
 
 %best_playable_card(+Hand, +FollowingColor, +LeaderCard, +Bids, +Tricks, -Card)
 
-
+% TODO: olds
+play_card(wizard, _).
+play_card(jester, _).
+%playable_cards(HAND, FollowingCard, L) :- 
+%playable_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], card(3, red), L)
 
 
