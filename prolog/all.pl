@@ -73,6 +73,16 @@ dominant_color(Cards, Color) :-
 % -> Color / red
 
 
+%count_trumps(+Hand, +TrumpColor, -Count) -> return the number of trumps in Hand
+count_trumps(Hand, TrumpColor, Count) :-
+	following_standard_cards(Hand, TrumpColor, TrumpCards),
+	length(TrumpCards, Count).
+% count_trumps([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], red, Count) -> Count / 2
+
+%count_wizards(+Hand, -Count) -> return the number of wizards in Hand
+count_wizards(Hand, Count) :- findall(wizard, member(wizard, Hand), Wizards), length(Wizards, Count). 
+%count_jesters(+Hand, -Count) -> return the number of jesters in Hand
+count_jesters(Hand, Count) :- findall(jester, member(jester, Hand), Jesters), length(Jesters, Count). 
 
 % WIZARD ENGINE.RULES
 
@@ -117,7 +127,15 @@ playable_cards(Hand, Hand). % no Following Card - is necessary?
 % -> L / [card(1,red),card(4,red),card(1,yellow),card(13,blue),wizard,jester]
 
 
-
+% BIDS
+%place_bid(+Hand, -TrumpColor, +TotalBids, -Bid) -> return the best bid, based on secure strategies: 
+%		- count_trumps + count_wizards -> secure bids
+%		- count_jesters -> ???
+%   - Bids -> ???
+place_bid(Hand, TrumpColor, TotalBids, Bid) :-
+	count_trumps(Hand, TrumpColor, Trumps),
+	count_wizards(Hand, Wizards),
+	Bid is Trumps + Wizards.
 
 %best_playable_card(+Hand, +FollowingColor, +LeaderCard, +Bids, +Tricks, -Card)
 
