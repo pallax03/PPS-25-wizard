@@ -107,31 +107,30 @@ risky_trick(card(Rank, Color), Hand, TrumpColor) :-
 risky_trick(card(Rank, Color), Hand, TrumpColor) :-
     range(11, 12, Rank),
     Color \= TrumpColor,
-    count_color(Hand, Color, 1).
+    count_color(Hand, Color, Count),
+    Count =< 2.
 
 
 % WIZARD API
 
-%choose_trump(+Hand, -TrumpColor) -> return the best trump to choose based on dominant_color (see dominant_color doc)
+% choose_trump(+Hand, -TrumpColor) -> return the best trump to choose based on dominant_color (see STRATEGY.dominant_color)
 choose_trump(Hand, TrumpColor) :- dominant_color(Hand, TrumpColor).
 
-%playable_cards(+Hand, +FollowingColor, -PlayableCards)
+% playable_cards(+Hand, ?FollowingColor, -PlayableCards) -> return a List of Playable Cards from Hand.
 playable_cards(Hand, FollowingColor, Hand) :- following_standard_cards(Hand, FollowingColor, []), !.
 playable_cards(Hand, FollowingColor, PlayableCards) :- 
 	following_standard_cards(Hand, FollowingColor, FollowingStandardCards),
 	special_cards(Hand, SpecialCards),
 	append(FollowingStandardCards, SpecialCards, PlayableCards).
-playable_cards(Hand, Hand). % no Following Card - is necessary?
-%playable_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], red, L)
-% -> L / [card(1,red),card(4,red),wizard,jester]
-%playable_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], L)
-% -> L / [card(1,red),card(4,red),card(1,yellow),card(13,blue),wizard,jester]
+playable_cards(Hand, Hand). % no Following Card -> is necessary?
+% playable_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], red, L) -> L / [card(1,red),card(4,red),wizard,jester]
+% playable_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], L) -> L / [card(1,red),card(4,red),card(1,yellow),card(13,blue),wizard,jester]
 
-%place_bid(+Hand, -TrumpColor, -Bid)
+% place_bid(+Hand, -TrumpColor, -Bid) -> return the best Bid based on STRATEGY: cards matching safe_trick OR risky_trick: add a Bid
 place_bid(Hand, TrumpColor, Bid) :-
 	findall(Card, (member(Card, Hand), (safe_trick(Card, Hand, TrumpColor) ; risky_trick(Card, Hand, TrumpColor))), Cards),
   length(Cards, Bid).
-%place_bid([card(1, red), jester, card(4, red), wizard, card(12, yellow), card(13, blue), wizard, jester, wizard], yellow, Bid) -> 5
+% place_bid([card(1, red), jester, card(4, red), wizard, card(12, yellow), card(13, blue), wizard, jester, wizard], yellow, Bid) -> Bid / 5
 
 % To call when place_bid return an invalid number.
 %adjust_bid(+Hand, +RejectedBid, -FinalBid) -> + 1 (fallback) or - 1 (if Hand has jesters) from RejectingBid (avoiding loop)
@@ -144,11 +143,5 @@ adjust_bid(Hand, RejectedBid, FinalBid) :- FinalBid is RejectedBid + 1, !.
 % jesters: adjust_bid([card(1, red), jester, card(4, red), wizard, card(12, yellow), card(13, blue), wizard, jester, wizard], 9, Bid) -> Bid / 8
 
 %best_playable_card(+Hand, +FollowingColor, +LeaderCard, +Bids, +Tricks, -Card)
-
-% TODO: olds
-play_card(wizard, _).
-play_card(jester, _).
-%playable_cards(HAND, FollowingCard, L) :- 
-%playable_cards([card(1, red), card(4, red), card(1, yellow), card(13, blue), wizard, jester], card(3, red), L)
 
 
