@@ -106,7 +106,7 @@ risky_trick(card(Rank, Color), Hand, TrumpColor) :-
 	Color \= TrumpColor,
 	count_color(Hand, Color, Count),
 	Count >= 5.
-% 	- no Trump Cards, Hand contains only a card of a color, Rank in range 11 - 12.
+% 	- no Trump Cards, Hand contains only 2 cards of a color, Rank in range 11 - 12.
 risky_trick(card(Rank, Color), Hand, TrumpColor) :-
     range(11, 12, Rank),
     Color \= TrumpColor,
@@ -114,12 +114,26 @@ risky_trick(card(Rank, Color), Hand, TrumpColor) :-
     Count =< 2.
 
 % beats(+MyCard, +WinningCard, +TrumpColor, +FollowingColor) -> evaluate TrickWinner using MyCard
+%		- any cards wins over jester, but not another jester.
+beats(NotJester, jester, _, _) :- !, NotJester \= jester.
 %		- wizard wins over all, but only the first one.
-beats(wizard, NotWizard, _, _) :- !, NotWizard = jester ; NotWizard = card(_, _).
+beats(wizard, NotWizard, _, _) :- !, NotWizard \= wizard.
 %		- a Trump always beat a not Trump
 beats(card(_, TrumpColor), card(_, Color), TrumpColor, _) :- Color \= TrumpColor.
 %		- highest Rank
 beats(card(MyCardRank, Color), card(WinningCardRank, Color), _, _) :- MyCardRank > WinningCardRank.
+
+
+% winning_options(+PlayableCards, +WinningCard, +TrumpColor, -WinningCards) -> given a Legit List of PlayableCards (playable_cards doc) -> return a List of WinningCards
+winning_options(PlayableCards, WinningCard, TrumpColor, WinningCards) :-
+	findall(Card, (member(Card, PlayableCards), beats(Card, WinningCard, TrumpColor, _)), WinningCards).
+% winning_options([card(1,red),card(4,yellow),wizard,jester], card(10, yellow), red, WinningCards) -> WinningCards / [card(1,red),wizard]
+
+% losing_options(+PlayableCards, +WinningCard, +TrumpColor, -LosingCards) -> given a Legit List of PlayableCards (playable_cards doc) -> return a List of LosingCards
+losing_options(PlayableCards, WinningCard, TrumpColor, LosingCards) :-
+	findall(Card, (member(Card, PlayableCards), \+ beats(Card, WinningCard, TrumpColor, _)), LosingCards).
+% losing_options([card(1,red),card(4,yellow),wizard,jester], card(10, yellow), red, LosingCards) -> LosingCards / [card(4,yellow),jester]
+
 
 
 % WIZARD API
@@ -153,6 +167,10 @@ adjust_bid(Hand, RejectedBid, FinalBid) :- FinalBid is RejectedBid + 1, !.
 % fallback: adjust_bid([card(1, red), card(4, red), wizard, card(12, yellow), card(13, blue), wizard, wizard], 7, Bid) -> Bid / 6
 % jesters: adjust_bid([card(1, red), jester, card(4, red), wizard, card(12, yellow), card(13, blue), wizard, jester, wizard], 9, Bid) -> Bid / 8
 
-%best_playable_card(+Hand, +FollowingColor, +LeaderCard, +Bids, +Tricks, -Card)
-
+%best_playable_card(+Hand, +WinningCard, +FollowingColor, +TrumpColor, +Bids, +Tricks, -Card)
+best_playable_card(Hand, WinningCard, FollowingColor, TrumpColor, Card) :-
+	wants_to_win(Bids, Tricks),
+	findall()
+	min_max()
+	.
 
