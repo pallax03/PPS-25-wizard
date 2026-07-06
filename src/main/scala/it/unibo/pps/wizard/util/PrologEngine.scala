@@ -1,6 +1,4 @@
 package it.unibo.pps.wizard.util
 
-// import alice.tuprolog.*
-
-object PrologEngine:
+class PrologEngine(theory: String):
   def query(): Unit = ???

@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.application.bots
+package it.unibo.pps.wizard.application.bot
 
 import io.vertx.core.AbstractVerticle
 import it.unibo.pps.wizard.engine.events.InvitationEvent
