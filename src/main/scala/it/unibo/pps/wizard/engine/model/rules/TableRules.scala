@@ -44,3 +44,5 @@ object TableRules:
         .getOrElse(cards.head)
 
       table.playerOf(winningCard).get
+
+export TableRules.*

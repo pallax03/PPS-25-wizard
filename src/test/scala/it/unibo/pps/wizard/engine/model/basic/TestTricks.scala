@@ -8,8 +8,10 @@ class TestTricks extends AnyWordSpec with Matchers:
   import Tricks.*
 
   val p1: PlayerId = PlayerId(1)
+  val name1: PlayerName = PlayerName("Alice")
   val p2: PlayerId = PlayerId(2)
-  val players: List[Player] = List(Player.human(p1), Player.human(p2))
+  val name2: PlayerName = PlayerName("Bob")
+  val players: List[Player] = List(Player.human(p1, name1), Player.human(p2, name2))
 
   "Tricks" when:
     "initialized" should:

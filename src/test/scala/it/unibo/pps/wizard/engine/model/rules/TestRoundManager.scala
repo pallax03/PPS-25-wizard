@@ -11,8 +11,14 @@ class TestRoundManager extends AnyWordSpec with Matchers:
   import RoundManager.*
   import Round.*
 
+  val p0: Player = Player.human(PlayerId(1), PlayerName("Alice"))
+  val p1: Player = Player.human(PlayerId(2), PlayerName("Bob"))
+  val p2: Player = Player.human(PlayerId(3), PlayerName("Charlie"))
+
+  val players: Players = Players(p0, p1, p2)
+
   "RoundManager" when:
-    val players = List(PlayerId(1), PlayerId(2), PlayerId(3)).map(Player.human)
+    // val players = List(PlayerId(1), PlayerId(2), PlayerId(3)).map(Player.human)
 
     "managing turn order" should:
       "find the next player correctly" in:
@@ -82,7 +88,7 @@ class TestRoundManager extends AnyWordSpec with Matchers:
         val initialDeck = Deck.create
         val round = Round.start
         val core = CoreState(
-          players = Players(players),
+          players = players,
           hands = Hands.empty,
           deck = initialDeck,
           round = round,
@@ -102,7 +108,7 @@ class TestRoundManager extends AnyWordSpec with Matchers:
         val initialDeck = Deck.create
         val round3 = Round.start.next.next.next
         val core = CoreState(
-          players = Players(players),
+          players = players,
           hands = Hands.empty,
           deck = initialDeck,
           round = round3,

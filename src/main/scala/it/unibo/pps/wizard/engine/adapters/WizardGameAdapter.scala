@@ -7,7 +7,6 @@ import it.unibo.pps.wizard.engine.events.FailureEvent.ActionFailed
 import it.unibo.pps.wizard.engine.events.LifecycleEvent.GameStarted
 import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
-import it.unibo.pps.wizard.engine.model.core.{GameAction, GameEngine}
 import it.unibo.pps.wizard.engine.model.game.WizardGameState
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameEngine, GameState}
 import it.unibo.pps.wizard.engine.ports.WizardPort
@@ -53,7 +52,7 @@ class WizardGameAdapter(private val vertx: Vertx) extends WizardPort:
 
   override def subscribe[T <: Event: ClassTag](handler: T => Unit): Future[String] =
     val subscriptionId: String = Id()
-    runOnVerticle(s"Subscription to ${addressOf[T]} {#${subscriptionId}}"):
+    runOnVerticle(s"Subscription to ${addressOf[T]} {#$subscriptionId}"):
       this.subscriptions +=
         subscriptionId ->
           this.vertx

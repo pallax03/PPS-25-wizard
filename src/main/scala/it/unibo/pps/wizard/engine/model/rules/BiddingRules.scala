@@ -43,3 +43,5 @@ object BiddingRules:
 //        private def isForbiddenTotal(round: Round, bids: Bids, totalPlayers: Int): Boolean =
 //          val isLastPlayer = bids.isComplete(totalPlayers - 1)
 //          isLastPlayer && (bids.total + bid) == round
+
+export BiddingRules.*

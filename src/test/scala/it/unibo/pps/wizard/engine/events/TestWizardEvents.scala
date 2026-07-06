@@ -13,8 +13,11 @@ import org.scalatest.wordspec.AnyWordSpec
 class TestWizardEvents extends AnyWordSpec with Matchers:
 
   private val player1 = PlayerId(1)
+  private val name1 = PlayerName("Alice")
+  private val name2 = PlayerName("Bob")
   private val player2 = PlayerId(2)
-  private val players = Players(List(Player.human(player1), Player.human(player2)))
+
+  private val players = Players(Player.human(player1, name1), Player.human(player2, name2))
   private val core = CoreState(
     players = players,
     hands = Hands.empty,

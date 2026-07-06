@@ -41,9 +41,9 @@ object Card:
   final case class Jester(id: Int) extends SpecialCard
 
   private val specialIdGenWizard = new AtomicInteger(0)
-  def wizard: Card = Wizard(specialIdGenWizard.incrementAndGet())
+  def wizard: Wizard = Wizard(specialIdGenWizard.incrementAndGet())
   private val specialIdGenJester = new AtomicInteger(0)
-  def jester: Card = Jester(specialIdGenJester.incrementAndGet())
+  def jester: Jester = Jester(specialIdGenJester.incrementAndGet())
 
   extension (value: Int)
     infix def of(color: Color): Card = Standard(color, Rank.values.find(_.value == value).get)
@@ -131,3 +131,5 @@ object Hands:
   extension (hands: Hands)
     def getHand(player: PlayerId): Option[Hand] = hands.get(player)
     infix def +(entry: (PlayerId, Hand)): Hands = hands + entry
+    def remove(player: PlayerId, card: Card): Hands = hands.updated(player, hands(player) - card)
+    def areEmpty: Boolean = hands.values.forall(_.isEmpty)
