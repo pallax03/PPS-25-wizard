@@ -23,6 +23,7 @@ object Bids:
     infix def +(entry: (PlayerId, Bid)): Bids = b + entry
     def isComplete(totalPlayers: Int): Boolean = b.size == totalPlayers
     def total: Bid = b.values.foldLeft(Bid.zero)(_ + _)
+    def size: Int = b.size
 
 opaque type Tricks = Bids
 
