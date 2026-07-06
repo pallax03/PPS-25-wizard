@@ -34,6 +34,9 @@ class TableView(table: Table) extends HBox:
   padding = Insets(20)
   spacing = 15.0
 
+  maxWidth = Double.MaxValue
+  maxHeight = Double.MaxValue
+
   private val normalStyle =
     "-fx-background-color: rgba(43, 92, 63, 0.85); -fx-background-radius: 15;"
   private val hoverStyle =
@@ -41,17 +44,17 @@ class TableView(table: Table) extends HBox:
 
   style = normalStyle
 
-  val check: (c: Card) => Boolean = (c) =>
+  private val check: (c: Card) => Boolean = c =>
     table.followingCard match
       case Some(value) if c == value => true
       case _                         => false
   private val dummyData =
     table.playedCards.map(c => (c, "Player " + table.playerOf(c).get, check(c)))
-  children = dummyData.map { case (card, playerName, isLeader) =>
-    val wrapper = new PlayedCardWrapper(card, playerName, isLeader)
-    wrapper.prefWidth <== (this.width - 40 - (5 * spacing.value)) / 6
-    wrapper
-  }
+  children = dummyData.map:
+    case (card, playerName, isLeader) =>
+      val wrapper = new PlayedCardWrapper(card, playerName, isLeader)
+      wrapper.prefWidth <== this.width * 0.12
+      wrapper
 
   def setHighlight(active: Boolean): Unit =
     this.style = if (active) hoverStyle else normalStyle

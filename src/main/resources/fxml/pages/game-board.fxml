@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.geometry.Insets?>
+
+<?import javafx.scene.layout.HBox?>
+<BorderPane fx:id="rootPane" prefWidth="1200.0" prefHeight="800.0"
+            style="-fx-background-color: #1e1e1e;"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+
+    <padding>
+        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+    </padding>
+
+    <top>
+        <HBox fx:id="playersContainer" alignment="CENTER" spacing="20.0" prefHeight="70.0">
+            <padding>
+                <Insets bottom="10.0"/>
+            </padding>
+        </HBox>
+    </top>
+
+    <center>
+        <StackPane fx:id="tableContainer" minHeight="400.0" prefHeight="450.0"
+                   style="-fx-border-color: #2b5c3f; -fx-border-width: 2; -fx-border-radius: 15;">
+            <padding>
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+            </padding>
+        </StackPane>
+    </center>
+
+    <bottom>
+        <StackPane fx:id="handContainer" maxHeight="160.0" prefHeight="160.0">
+            <padding>
+                <Insets top="10.0" bottom="10.0"/>
+            </padding>
+        </StackPane>
+    </bottom>
+
+    <left>
+        <StackPane fx:id="trumpContainer">
+            <padding>
+                <Insets right="20.0"/>
+            </padding>
+        </StackPane>
+    </left>
+
+</BorderPane>
