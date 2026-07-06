@@ -8,6 +8,7 @@ import scalafx.application.Platform
 import javafx.scene.control.{Button, ComboBox, TextField}
 import scalafx.stage.Stage
 
+import scala.annotation.nowarn
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
@@ -15,11 +16,11 @@ class MainPageController(override protected val stage: Stage)(using
     protected val context: WizardApplicationContext
 ) extends FXMLController:
 
-  @FXML private var nameField: TextField = _
-  @FXML private var opponentsCombo: ComboBox[Integer] = _
-  @FXML private var btnStart: Button = _
+  @nowarn @FXML private var nameField: TextField = _
+  @nowarn @FXML private var opponentsCombo: ComboBox[Integer] = _
+  @nowarn @FXML private var btnStart: Button = _
 
-  @FXML
+  @nowarn @FXML
   private def handleStartGameClick(): Unit =
     val playerName = nameField.text.value
     val opponentsNum = opponentsCombo.value.value

@@ -50,7 +50,7 @@ object Trump:
   extension (t: Trump)
     def resolveWizard(color: Card.Color): Either[GameError, Trump] = t match
       case Trump.WizardUnresolved(c) => Right(Trump.WizardResolved(c, color))
-      case _                   => Left(GameError.InvalidAction)
+      case _                         => Left(GameError.InvalidAction)
 
   extension (optCard: Option[Card])
     def asTrump: Trump = optCard match

@@ -11,7 +11,7 @@ val vertxVersion          = "5.1.3"
 val prologVersion         = "4.1.1"
 
 ThisBuild / scalaVersion := scala3Version
-ThisBuild / scalacOptions := Seq("-Wunused:all", "-Wunused:imports") //, "-Werror")
+ThisBuild / scalacOptions := Seq("-Wunused:all", "-Wunused:imports", "-Werror")
 
 ThisBuild / libraryDependencies ++= Seq(
   "org.typelevel"             %%  "cats-core"               % catsVersion,

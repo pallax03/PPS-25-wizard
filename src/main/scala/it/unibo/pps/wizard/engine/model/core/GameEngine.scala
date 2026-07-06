@@ -1,7 +1,17 @@
 package it.unibo.pps.wizard.engine.model.core
 
 import GameError.*
-import it.unibo.pps.wizard.engine.model.basic.{Deck, Hand, Hands, PlayerId, Players, Round, Scoreboard, Table, Tricks}
+import it.unibo.pps.wizard.engine.model.basic.{
+  Deck,
+  Hand,
+  Hands,
+  PlayerId,
+  Players,
+  Round,
+  Scoreboard,
+  Table,
+  Tricks
+}
 import it.unibo.pps.wizard.engine.model.rules.{BiddingRules, ScoringRules}
 import it.unibo.pps.wizard.engine.model.rules.RoundManager.*
 import it.unibo.pps.wizard.engine.model.rules.TableRules.{evaluateTrickWinner, validateAgainst}
@@ -32,7 +42,8 @@ object GameEngine:
               tricksWon = Tricks.empty
             )
           else
-            val nextPlayer = currentState.core.players.nextAfter(playerId).getOrElse(currentState.currentPlayer)
+            val nextPlayer =
+              currentState.core.players.nextAfter(playerId).getOrElse(currentState.currentPlayer)
             currentState.copy(
               currentBids = updatedBids,
               currentPlayer = nextPlayer
@@ -42,8 +53,7 @@ object GameEngine:
         for
           _ <- currentState.currentPlayer.validateTurnOf(playerId)
           updatedTrump <- currentState.trump.resolveWizard(color)
-        yield
-          currentState.copy(trump = updatedTrump)
+        yield currentState.copy(trump = updatedTrump)
 
       case (currentState: GameState.Playing, GameAction.PlayCard(playerId, card)) =>
         val playerHand = currentState.core.hands.getHand(playerId).getOrElse(Hand.empty)
@@ -76,7 +86,7 @@ object GameEngine:
                 val nextRound = finalCore.round.next
                 val coreForNextRound = finalCore.copy(
                   round = nextRound,
-                  dealerId = finalCore.players.nextAfter(finalCore.dealerId).getOrElse(PlayerId(0)),
+                  dealerId = finalCore.players.nextAfter(finalCore.dealerId).getOrElse(PlayerId(0))
                 )
                 val (_, nextBiddingState) = nextRound.initialize.run(coreForNextRound).value
                 nextBiddingState
@@ -90,7 +100,8 @@ object GameEngine:
                 tricksWon = updatedTricks
               )
           else
-            val nextPlayer = updatedCore.players.nextAfter(playerId).getOrElse(currentState.currentPlayerTurn)
+            val nextPlayer =
+              updatedCore.players.nextAfter(playerId).getOrElse(currentState.currentPlayerTurn)
             currentState.copy(
               core = updatedCore,
               table = updatedTable,
@@ -100,7 +111,7 @@ object GameEngine:
       case (GameState.Ended(_), _) =>
         Left(InvalidAction)
 
-      case (_, _)               =>
+      case (_, _) =>
         Left(InvalidAction)
 
   def initializeGame(players: Players): GameState =

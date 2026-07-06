@@ -65,7 +65,8 @@ class TestGameEngine extends AnyWordSpec with Matchers:
 
     "transition from Bidding to Playing phase when the last player places their bid" in:
       val core = createMockCore(1)
-      val currentBids: Bids = Bids.empty + (PlayerId(1) -> Bid(0)) + (PlayerId(2) -> Bid(1)) + (PlayerId(3) -> Bid(0))
+      val currentBids: Bids =
+        Bids.empty + (PlayerId(1) -> Bid(0)) + (PlayerId(2) -> Bid(1)) + (PlayerId(3) -> Bid(0))
 
       val biddingState = GameState.Bidding(
         core = core,
@@ -145,7 +146,7 @@ class TestGameEngine extends AnyWordSpec with Matchers:
       result.isRight shouldBe true
       result.foreach:
         case nextState: GameState.Playing =>
-          nextState.table.playedCards should contain (c1)
+          nextState.table.playedCards should contain(c1)
           nextState.currentPlayerTurn shouldBe PlayerId(2)
         case _ => fail("Expected GameState.Playing")
 
@@ -157,15 +158,18 @@ class TestGameEngine extends AnyWordSpec with Matchers:
 
       val extraCard = 3 of Yellow
 
-      val hands = Hands(Map(
-        PlayerId(1) -> Hand(List(c0, extraCard)),
-        PlayerId(2) -> Hand(List(c1, extraCard)),
-        PlayerId(3) -> Hand(List(c2, extraCard)),
-        PlayerId(4) -> Hand(List(c3, extraCard))
-      ))
+      val hands = Hands(
+        Map(
+          PlayerId(1) -> Hand(List(c0, extraCard)),
+          PlayerId(2) -> Hand(List(c1, extraCard)),
+          PlayerId(3) -> Hand(List(c2, extraCard)),
+          PlayerId(4) -> Hand(List(c3, extraCard))
+        )
+      )
       val core = createMockCore(2).copy(hands = hands)
 
-      val currentTable = Table.empty + (PlayerId(1) -> c0) + (PlayerId(2) -> c1) + (PlayerId(3) -> c2)
+      val currentTable =
+        Table.empty + (PlayerId(1) -> c0) + (PlayerId(2) -> c1) + (PlayerId(3) -> c2)
 
       val playingState = GameState.Playing(
         core = core,
