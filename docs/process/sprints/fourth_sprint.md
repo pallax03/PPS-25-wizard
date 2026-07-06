@@ -1,7 +1,10 @@
 # Sprint 4
-deadline: 03-07-2026 -> 17-07-2026 ~ 15 Ore
+deadline: 03-07-2026 -> 10-07-2026 ~ 15 Ore
 
-| Product Id | Product Backlog                                            | Task                                         | Assegnato a      | Stima Ore |
-|------------|------------------------------------------------------------|----------------------------------------------|------------------|:---------:|
-| P6-03      |                                                            | prolog: trick, hand, table                   | @pallax03        |     8     |
-| P6-04      |                                                            | prolog: trump, bidding                       | @pallax03        |     8     |
+| Product Id | Product Backlog                                            | Task                                                                 | Assegnato a      | Stima Ore |
+|------------|------------------------------------------------------------|----------------------------------------------------------------------|------------------|:---------:|
+| P6-06      | L'utente può unirsi ad una partita e giocare contro i bot. | logiche API per il bot                                               | @pallax03        |     4     |
+| P6-07      |                                                            | refactoring delle teorie e implementazione nell'ambiente scala       | @pallax03        |     4     |
+| P6-08      |                                                            | Adapter e Creazione del bot utilizzando le API dell'engine in prolog | @pallax03        |     4     |
+| P6-09      |                                                            | Implementazione del GameEngine                                       | @NicolaGraziotin |     6     |
+| P7-07      | Quality Assurance e DSL                                    | Scalafmt e CodeQL                                                    | @pallax03        |     2     |
