@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard.application
 
 import it.unibo.pps.wizard.application.WizardApplicationContext.WizardApplicationContextBuilder
-import it.unibo.pps.wizard.application.gui.pages.ViewManager
+import it.unibo.pps.wizard.application.gui.pages.MainMenuPage
 import it.unibo.pps.wizard.engine.ports.WizardPort
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
@@ -21,7 +21,7 @@ object WizardApplication extends JFXApp3:
 
   override def start(): Unit =
     stageConfiguration()
-    ViewManager(stage)
+    MainMenuPage(this.stage)
 
   override def stopApp(): Unit =
     System.exit(0)
@@ -29,5 +29,5 @@ object WizardApplication extends JFXApp3:
   private def stageConfiguration(): Unit =
     this.stage = new PrimaryStage():
       title = "PPS Card Game - Wizard"
-      resizable = false
+      resizable = true
     this.contextBuilder.setPrimaryStage(this.stage)

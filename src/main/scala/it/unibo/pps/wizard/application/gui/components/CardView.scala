@@ -17,7 +17,8 @@ class CardView(val card: Card) extends StackPane:
   minHeight = 0
 
   private val imagePath = getImagePath(card)
-  private val cardImage = Option(getClass.getResourceAsStream(imagePath)).map(stream => new Image(stream))
+  private val cardImage =
+    Option(getClass.getResourceAsStream(imagePath)).map(stream => new Image(stream))
 
   cardImage match
     case Some(img) =>
@@ -58,7 +59,8 @@ class CardView(val card: Card) extends StackPane:
     this.effect = null
 
   private def getImagePath(c: Card): String = c match
-    case Card.Standard(color, rank) => s"/cards/${color.toString.toLowerCase}/${color.toString.substring(0, 1).toUpperCase}${rank.value}.webp"
+    case Card.Standard(color, rank) =>
+      s"/cards/${color.toString.toLowerCase}/${color.toString.substring(0, 1).toUpperCase}${rank.value}.webp"
     case Card.Wizard(id) => specialCardsImages(getFallbackText(c), id)
     case Card.Jester(id) => specialCardsImages(getFallbackText(c), id)
 
@@ -67,22 +69,22 @@ class CardView(val card: Card) extends StackPane:
     case 2 => s"/cards/blue/B$name.webp"
     case 3 => s"/cards/red/R$name.webp"
     case 4 => s"/cards/green/G$name.webp"
-    case _ => s"/cards/green/G$name.webp" //todo
+    case _ => s"/cards/green/G$name.webp" // todo
 
   private def getFallbackColor(card: Card): Color = card match
-    case Card.Jester(_) => Color.Purple
-    case Card.Wizard(_) => Color.Aquamarine
+    case Card.Jester(_)          => Color.Purple
+    case Card.Wizard(_)          => Color.Aquamarine
     case Card.Standard(color, _) => CardView.fxColor(color)
 
   private def getFallbackText(c: Card): String = c match
     case Card.Standard(_, rank) => rank.value.toString
-    case Card.Wizard(_) => "W"
-    case Card.Jester(_) => "J"
+    case Card.Wizard(_)         => "W"
+    case Card.Jester(_)         => "J"
 
 // todo: refactoring of this helper
 object CardView:
   def fxColor(color: Card.Color): Color = color match
-    case Card.Color.Blue => Color.DodgerBlue
-    case Card.Color.Green => Color.ForestGreen
-    case Card.Color.Red => Color.FireBrick
+    case Card.Color.Blue   => Color.DodgerBlue
+    case Card.Color.Green  => Color.ForestGreen
+    case Card.Color.Red    => Color.FireBrick
     case Card.Color.Yellow => Color.Goldenrod

@@ -15,8 +15,8 @@ object WizardApplicationContext:
   def builder: WizardApplicationContextBuilder = WizardApplicationContextBuilder()
 
   private case class BasicWizardApplicationContext(
-    override val primaryStage: Stage,
-    override val wizardEngineProxy: WizardPort
+      override val primaryStage: Stage,
+      override val wizardEngineProxy: WizardPort
   ) extends WizardApplicationContext
 
   case class WizardApplicationContextBuilder private[WizardApplicationContext] ():
@@ -34,7 +34,8 @@ object WizardApplicationContext:
     def build: WizardApplicationContext =
       WizardApplicationContext(
         this.stage.getOrElse:
-          throw new IllegalStateException("Primary stage is not set"),
+          throw new IllegalStateException("Primary stage is not set")
+        ,
         this.port.getOrElse:
           throw new IllegalStateException("Wizard engine proxy is not set")
       )

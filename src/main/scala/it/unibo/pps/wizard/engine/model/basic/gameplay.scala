@@ -1,11 +1,10 @@
 package it.unibo.pps.wizard.engine.model.basic
 
+import it.unibo.pps.wizard.engine.model.core.GameError
+
 opaque type Table = List[(PlayerId, Card)]
 object Table:
   def empty: Table = List.empty
-
-  extension (p: PlayerId)
-    infix def plays(c: Card): (PlayerId, Card) = (p, c)
 
   extension (t: Table)
     def isEmpty: Boolean = t.isEmpty
@@ -36,21 +35,27 @@ enum Trump:
     case _                        => None
 
   def card: Option[Card] = this match
-    case Absent => None
-    case Jester(c) => Some(c)
-    case Standard(c) => Some(c)
-    case WizardUnresolved(c) => Some(c)
+    case Absent               => None
+    case Jester(c)            => Some(c)
+    case Standard(c)          => Some(c)
+    case WizardUnresolved(c)  => Some(c)
     case WizardResolved(c, _) => Some(c)
+
 object Trump:
   def apply(c: Card): Trump = c match
     case j: Card.Jester   => Trump.Jester(j)
     case w: Card.Wizard   => Trump.WizardUnresolved(w)
     case s: Card.Standard => Trump.Standard(s)
 
+  extension (t: Trump)
+    def resolveWizard(color: Card.Color): Either[GameError, Trump] = t match
+      case Trump.WizardUnresolved(c) => Right(Trump.WizardResolved(c, color))
+      case _                         => Left(GameError.InvalidAction)
+
   extension (optCard: Option[Card])
     def asTrump: Trump = optCard match
       case Some(card) => Trump(card)
-      case None => Trump.Absent
+      case None       => Trump.Absent
 
   extension (t: Trump.WizardUnresolved)
     infix def resolvedAs(color: Card.Color): Trump.WizardResolved =
@@ -59,6 +64,7 @@ object Trump:
 opaque type Round = Int
 object Round:
   def start: Round = 1
+  def apply(value: Int): Round = value
 
   extension (r: Round)
     def value: Int = r

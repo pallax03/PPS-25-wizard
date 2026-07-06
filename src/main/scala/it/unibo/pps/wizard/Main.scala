@@ -35,5 +35,5 @@ def deployServiceLocally(): Future[WizardService] =
 def deployApplicationLocally(service: WizardService): Unit =
   service.localAdapter.foreach: localAdapter =>
     println("Deploying wizard application...")
-    WizardApplication.launch(LocalWizardProxy(localAdapter.port))(Array.empty)
+    WizardApplication.launch(LocalWizardProxy(localAdapter))(Array.empty)
     println("Wizard application deployed.")

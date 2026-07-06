@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.engine.model.game
+package it.unibo.pps.wizard.engine.adapters
 
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.MessageConsumer
@@ -7,6 +7,7 @@ import it.unibo.pps.wizard.engine.events.FailureEvent.ActionFailed
 import it.unibo.pps.wizard.engine.events.LifecycleEvent.GameStarted
 import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
+import it.unibo.pps.wizard.engine.model.game.WizardGameState
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameEngine, GameState}
 import it.unibo.pps.wizard.engine.ports.WizardPort
 import it.unibo.pps.wizard.util.{Id, VerticleExecutor}
@@ -14,7 +15,7 @@ import it.unibo.pps.wizard.util.{Id, VerticleExecutor}
 import scala.concurrent.Future
 import scala.reflect.ClassTag
 
-class WizardGame(private val vertx: Vertx) extends WizardPort:
+class WizardGameAdapter(private val vertx: Vertx) extends WizardPort:
   private var currentState: WizardGameState = WizardGameState.NotConfigured
   private val verticleExecutor: VerticleExecutor = VerticleExecutor(this.vertx)
   private var subscriptions: Map[String, MessageConsumer[?]] = Map.empty
@@ -49,9 +50,9 @@ class WizardGame(private val vertx: Vertx) extends WizardPort:
               this.publishInvitationEvent(newState)
         case _ =>
 
-  override def subscribe[T <: Event : ClassTag](handler: T => Unit): Future[String] =
+  override def subscribe[T <: Event: ClassTag](handler: T => Unit): Future[String] =
     val subscriptionId: String = Id()
-    runOnVerticle(s"Subscription to ${addressOf[T]} {#${subscriptionId}}"):
+    runOnVerticle(s"Subscription to ${addressOf[T]} {#$subscriptionId}"):
       this.subscriptions +=
         subscriptionId ->
           this.vertx
@@ -62,9 +63,11 @@ class WizardGame(private val vertx: Vertx) extends WizardPort:
   override def unsubscribe(subscriptionIds: String*): Future[Unit] =
     runOnVerticle(s"Unsubscription from ${subscriptionIds.mkString(", ")}"):
       subscriptionIds.foreach: subscriptionId =>
-        this.subscriptions.get(subscriptionId).foreach: consumer =>
-          consumer.unregister()
-          this.subscriptions -= subscriptionId
+        this.subscriptions
+          .get(subscriptionId)
+          .foreach: consumer =>
+            consumer.unregister()
+            this.subscriptions -= subscriptionId
 
   private def publishAll(events: List[WizardEvent]): Unit = events.foreach(publish)
 

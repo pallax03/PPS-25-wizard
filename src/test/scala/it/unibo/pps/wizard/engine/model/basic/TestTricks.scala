@@ -8,36 +8,39 @@ class TestTricks extends AnyWordSpec with Matchers:
   import Tricks.*
 
   val p1: PlayerId = PlayerId(1)
+  val name1: PlayerName = PlayerName("Alice")
   val p2: PlayerId = PlayerId(2)
-  val players: List[Player] = List(Player.human(p1), Player.human(p2))
+  val name2: PlayerName = PlayerName("Bob")
+  val players: List[Player] = List(Player.human(p1, name1), Player.human(p2, name2))
 
-  "Tricks" when :
-    "initialized" should :
+  "Tricks" when:
+    "initialized" should:
       val tricks = Tricks.initialize(players)
-      "set all players to zero" in :
+      "set all players to zero" in:
         tricks(p1) shouldBe 0
         tricks(p2) shouldBe 0
 
-    "empty" should :
-      "return zero for any player" in :
+    "empty" should:
+      "return zero for any player" in:
         Tricks.empty(p1) shouldBe 0
 
-    "receiving a trick" should :
-      "increment the count for the player" in :
+    "receiving a trick" should:
+      "increment the count for the player" in:
         val t = Tricks.initialize(players).addTrickTo(p1)
         t(p1) shouldBe 1
         t(p2) shouldBe 0
 
-      "accumulate correctly over multiple tricks" in :
-        val t = Tricks.initialize(players)
+      "accumulate correctly over multiple tricks" in:
+        val t = Tricks
+          .initialize(players)
           .addTrickTo(p1)
           .addTrickTo(p1)
           .addTrickTo(p2)
         t(p1) shouldBe 2
         t(p2) shouldBe 1
 
-    "created from a map" should :
-      "properly reflect the provided values" in :
+    "created from a map" should:
+      "properly reflect the provided values" in:
         val t = Tricks(Map(p1 -> 5))
         t(p1) shouldBe 5
         t(p2) shouldBe 0
