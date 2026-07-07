@@ -2,14 +2,15 @@ package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
-import it.unibo.pps.wizard.application.gui.components.{HandView, PlayerView, TableView, TrumpView}
+import it.unibo.pps.wizard.application.gui.components.{HandView, PlayerView, ScoreboardView, TableView, TrumpView}
 import it.unibo.pps.wizard.engine.model.game.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.core.GameState
 import javafx.scene.layout.{BorderPane, HBox, StackPane}
 import scalafx.application.Platform
-import scalafx.stage.Stage
+import scalafx.stage.{Modality, Stage}
 import it.unibo.pps.wizard.engine.model.core.GameState.*
+import scalafx.scene.Scene
 
 import scala.annotation.nowarn
 import scala.util.{Failure, Success}
@@ -19,11 +20,18 @@ class GameBoardController(override protected val stage: Stage)(using
     protected val context: WizardApplicationContext
 ) extends FXMLController:
 
-  @nowarn @FXML private var rootPane: BorderPane = _
-  @nowarn @FXML private var tableContainer: StackPane = _
-  @nowarn @FXML private var handContainer: StackPane = _
-  @nowarn @FXML private var trumpContainer: StackPane = _
-  @nowarn @FXML private var playersContainer: HBox = _
+  @nowarn
+  @FXML private var rootPane: BorderPane = _
+  @nowarn
+  @FXML private var tableContainer: StackPane = _
+  @nowarn
+  @FXML private var handContainer: StackPane = _
+  @nowarn
+  @FXML private var trumpContainer: StackPane = _
+  @nowarn
+  @FXML private var playersContainer: HBox = _
+  @nowarn
+  @FXML private var scoreboardContainer: StackPane = _
 
   @nowarn private var tableView: TableView = _
   @nowarn private var handView: HandView = _
@@ -82,6 +90,30 @@ class GameBoardController(override protected val stage: Stage)(using
           tableContainer.getChildren.add(this.tableView.delegate)
           handContainer.getChildren.add(this.handView.delegate)
           trumpContainer.getChildren.add(this.trumpView.delegate)
+
+      case Success(otherState) =>
+        println(s"Il gioco non è in uno stato valido per la partita: $otherState")
+
+      case Failure(exception) =>
+        println(s"Errore nel recupero dello stato iniziale: ${exception.getMessage}")
+
+  @FXML
+  def openScoreboardWindow(): Unit =
+    context.wizardEngineProxy.getState.onComplete:
+      case Success(Running(status: Bidding)) =>
+        Platform.runLater:
+          val scoresMap = status.core.scoreboard.asInstanceOf[Map[PlayerId, Int]]
+          val allPlayers = status.core.players.asInstanceOf[List[Player]]
+          val dataList = allPlayers.map(p => (p.name.toString, scoresMap.getOrElse(p.id, 0).toString))
+  
+          val scoreboardView = new ScoreboardView(dataList)
+  
+          val scoreboardStage = new Stage():
+            initModality(Modality.ApplicationModal)
+            title = "Classifica"
+            scene = new Scene(scoreboardView, 300, 500)
+            resizable = false
+          scoreboardStage.show()
 
       case Success(otherState) =>
         println(s"Il gioco non è in uno stato valido per la partita: $otherState")

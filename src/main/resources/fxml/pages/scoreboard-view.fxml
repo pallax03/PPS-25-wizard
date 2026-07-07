@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="it.unibo.pps.wizard.application.gui.controllers.ScoreboardController"
+           style="-fx-background-color: white;">
+
+    <TableView fx:id="scoreboardTable" style="-fx-font-size: 16px; -fx-table-cell-border-color: transparent;">
+        <columns>
+            <TableColumn fx:id="colName" text="Giocatore" prefWidth="200"/>
+            <TableColumn fx:id="colScore" text="Punteggio" prefWidth="100"/>
+        </columns>
+    </TableView>
+</StackPane>

@@ -5,6 +5,8 @@
 <?import javafx.geometry.Insets?>
 
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
 <BorderPane fx:id="rootPane" prefWidth="1200.0" prefHeight="800.0"
             style="-fx-background-color: #1e1e1e;"
             xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
@@ -45,5 +47,27 @@
             </padding>
         </StackPane>
     </left>
+
+    <right>
+        <StackPane fx:id="scoreboardContainer" prefWidth="50.0"
+                   style="-fx-background-color: #2b5c3f; -fx-cursor: hand;"
+                   onMouseClicked="#openScoreboardWindow">
+            <padding>
+                <Insets top="10" bottom="10"/>
+            </padding>
+
+            <VBox alignment="CENTER" spacing="2">
+                <Label text="S" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Label text="C" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Label text="O" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Label text="R" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Label text="E" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Label text="B" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Label text="A" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Label text="R" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <Label text="D" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+            </VBox>
+        </StackPane>
+    </right>
 
 </BorderPane>
