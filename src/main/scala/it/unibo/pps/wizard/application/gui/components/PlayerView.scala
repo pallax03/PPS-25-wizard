@@ -1,6 +1,6 @@
 package it.unibo.pps.wizard.application.gui.components
 
-import it.unibo.pps.wizard.engine.model.basic.Player
+import it.unibo.pps.wizard.engine.model.basic.{Bid, Player}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
 import scalafx.scene.layout.VBox
@@ -32,5 +32,12 @@ class PlayerView(val player: Player, val isCurrentTurn: Boolean = false) extends
   private val roleLabel = new Label(if player.isBot then "Bot" else "Tu"):
     font = Font.font("Arial", FontWeight.Normal, 10)
     textFill = if player.isBot then Color.rgb(140, 140, 140) else Color.rgb(230, 126, 34)
+    
+  private val bidLabel = new Label(s"Bid: 0"):
+    font = Font.font("Arial", FontWeight.Normal, 10)
+    textFill = Color.rgb(178, 190, 195)
 
-  children = Seq(avatarIndicator, nameLabel, roleLabel)
+  def updateBid(bid: Bid): Unit =
+    bidLabel.text = s"Bid: $bid"
+
+  children = Seq(avatarIndicator, nameLabel, roleLabel, bidLabel)

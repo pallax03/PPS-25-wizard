@@ -14,7 +14,6 @@ class HandView(
     onCardDropped: (Card, Double, Double) => Unit
 ) extends FlowPane:
   alignment = Pos.Center
-  style = "-fx-background-color: #A0A2A180; -fx-background-radius: 15;"
   padding = Insets(10)
   maxHeight = 180
 
@@ -67,3 +66,6 @@ class HandView(
       returnAnimation.play()
 
     cardView
+    
+  def removeCard(card: Card): Unit =
+    children.removeIf(_.asInstanceOf[CardView].card == card)
