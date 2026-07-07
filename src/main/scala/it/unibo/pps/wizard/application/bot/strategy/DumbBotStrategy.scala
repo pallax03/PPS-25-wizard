@@ -1,13 +1,11 @@
-package it.unibo.pps.wizard.application.bot
+package it.unibo.pps.wizard.application.bot.strategy
 
+import it.unibo.pps.wizard.application.bot.strategy.BotStrategy
 import it.unibo.pps.wizard.engine.events.InvitationEvent
 import it.unibo.pps.wizard.engine.model.basic.{Bid, Card}
 import it.unibo.pps.wizard.engine.model.core.GameAction
 
 import scala.util.Random
-
-trait BotStrategy:
-  def decide(invitation: InvitationEvent): GameAction
 
 class DumbBotStrategy(random: Random = Random()) extends BotStrategy:
 

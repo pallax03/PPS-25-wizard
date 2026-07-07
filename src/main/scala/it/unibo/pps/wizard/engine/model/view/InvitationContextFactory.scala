@@ -9,7 +9,11 @@ object InvitationContextFactory:
 
   def fromState(state: GameState): Option[InvitationEvent] = state match
     case GameState.Bidding(core, trump: Trump.WizardUnresolved, _, playerId) =>
-      Some(InvitationEvent.WaitingForTrump(TrumpContext(playerId, core.hands.getHand(playerId).head, trump)))
+      Some(
+        InvitationEvent.WaitingForTrump(
+          TrumpContext(playerId, core.hands.getHand(playerId).head, trump)
+        )
+      )
     case GameState.Bidding(core, trump, currentBids, playerId) =>
       Some(
         InvitationEvent.WaitingForBid(
