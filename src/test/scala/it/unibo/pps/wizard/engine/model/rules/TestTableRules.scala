@@ -49,18 +49,22 @@ class TestTableRules extends AnyWordSpec with Matchers:
     val p2 = PlayerId(2)
     val p3 = PlayerId(3)
     "award the trick to the first Wizard played" in:
-      val table = Table.empty + (p1 plays 10.red) + (p2 plays wizard) + (p3 plays wizard)
-      table.evaluateTrickWinner(Trump.Absent) shouldBe p2
+      val winningTrick = p2 plays wizard
+      val table = Table.empty + (p1 plays 10.red) + winningTrick + (p3 plays wizard)
+      table.evaluateTrick(Trump.Absent) shouldBe winningTrick
 
     "award the trick to the highest trump (no Wizard)" in:
-      val table = Table.empty + (p1 plays 10.blue) + (p2 plays 2.red) + (p3 plays 5.red)
-      table.evaluateTrickWinner(Trump(1.red)) shouldBe p3
+      val winningTrick = p3 plays 5.red
+      val table = Table.empty + (p1 plays 10.blue) + (p2 plays 2.red) + winningTrick
+      table.evaluateTrick(Trump(1.red)) shouldBe winningTrick
 
     "award the trick to the highest following card (no Trump and no Wizard)" in:
+      val winningTrick = p2 plays 10.blue
       val table = Table.empty + (p1 plays 5.blue) + (p2 plays 10.blue) + (p3 plays 2.yellow)
       val trump = Trump(1.green) // trump color differ from played cards
-      table.evaluateTrickWinner(trump) shouldBe p2
+      table.evaluateTrick(trump) shouldBe winningTrick
 
     "award the trick to the first played Jester if ONLY Jesters are on table" in:
-      val table = Table.empty + (p1 plays jester) + (p2 plays jester) + (p3 plays jester)
-      table.evaluateTrickWinner(Trump.Absent) shouldBe p1
+      val winningTrick = p1 plays jester
+      val table = Table.empty + winningTrick + (p2 plays jester) + (p3 plays jester)
+      table.evaluateTrick(Trump.Absent) shouldBe winningTrick

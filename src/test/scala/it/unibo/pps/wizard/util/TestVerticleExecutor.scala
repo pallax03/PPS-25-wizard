@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.util.vertx
+package it.unibo.pps.wizard.util
 
 import io.vertx.core.Vertx
 import it.unibo.pps.wizard.util.VerticleExecutor
