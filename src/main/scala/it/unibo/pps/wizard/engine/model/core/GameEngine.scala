@@ -81,7 +81,7 @@ object GameEngine:
               val finalCore = updatedCore.copy(scoreboard = updatedScoreboard)
 
               if finalCore.round.value == (Deck.create.length / totalPlayers) then
-                GameState.Ended(finalCore.scoreboard)
+                GameState.Ended(updatedCore.players, finalCore.scoreboard)
               else
                 val nextRound = finalCore.round.next
                 val coreForNextRound = finalCore.copy(
@@ -108,7 +108,7 @@ object GameEngine:
               currentPlayerTurn = nextPlayer
             )
 
-      case (GameState.Ended(_), _) =>
+      case (GameState.Ended(_, _), _) =>
         Left(InvalidAction)
 
       case (_, _) =>
