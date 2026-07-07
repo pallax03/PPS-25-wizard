@@ -2,7 +2,7 @@ package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
-import it.unibo.pps.wizard.application.gui.components.{HandView, PlayerView, TableView, TrumpView}
+import it.unibo.pps.wizard.application.gui.components.{BasePlayerView, BotPlayerView, HandView, HumanPlayerView, TableView, TrumpView}
 import it.unibo.pps.wizard.engine.events.ActionEvent
 import it.unibo.pps.wizard.engine.model.game.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
@@ -34,7 +34,7 @@ class GameBoardController(override protected val stage: Stage)(using
   @nowarn private var tableView: TableView = _
   @nowarn private var handView: HandView = _
   @nowarn private var trumpView: TrumpView = _
-  @nowarn private var currentPlayerView: PlayerView = _
+  @nowarn private var currentPlayerView: BasePlayerView = _
 
   @FXML
   def initialize(): Unit =
@@ -64,7 +64,7 @@ class GameBoardController(override protected val stage: Stage)(using
     Platform.runLater:
       println(s"Evento ricevuto: Offerta piazzata dal giocatore $playerId: $bid")
       playersContainer.getChildren.forEach: playerViewNode =>
-        val playerView = playerViewNode.asInstanceOf[PlayerView]
+        val playerView = playerViewNode.asInstanceOf[BasePlayerView]
         if playerView.player.id == playerId then
           playerView.updateBid(bid)
 
@@ -103,12 +103,26 @@ class GameBoardController(override protected val stage: Stage)(using
 
           val currentPlayer = status.core.players.toList.head
           val isMyTurn = status.currentPlayer == currentPlayer.id
-          this.currentPlayerView = new PlayerView(currentPlayer, isMyTurn)
+          val humanView = HumanPlayerView(
+            currentPlayer,
+            isMyTurn,
+            onBidSubmitted = bid =>
+              println(s"Offerta piazzata dal giocatore: $bid")
+              context.wizardEngineProxy.submitAction(
+                GameAction.PlaceBid(currentPlayer.id, bid)
+              ),
+            onTrumpSelected = color =>
+              println(s"Trump selezionato dal giocatore: $color")
+              context.wizardEngineProxy.submitAction(
+                GameAction.ChooseTrump(currentPlayer.id, color)
+              )
+          )
+          this.currentPlayerView = humanView
 
           val allOtherPlayers = status.core.players.filter(_.id != status.core.players.toList.head.id)
           allOtherPlayers.toList.foreach: player =>
             val isHisTurn = status.currentPlayer == player.id
-            val playerView = new PlayerView(player, isHisTurn)
+            val playerView = BotPlayerView(player, isHisTurn)
             this.playersContainer.getChildren.add(playerView.delegate)
 
           val gameInfo = new Label(s"Round: ${status.getClass.getSimpleName}"):
