@@ -9,6 +9,7 @@ import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
 import it.unibo.pps.wizard.engine.model.game.WizardGameState
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameEngine, GameState}
+import it.unibo.pps.wizard.engine.model.view.InvitationContextFactory
 import it.unibo.pps.wizard.engine.ports.WizardPort
 import it.unibo.pps.wizard.util.{Id, VerticleExecutor}
 
@@ -82,7 +83,7 @@ class WizardGameAdapter(private val vertx: Vertx) extends WizardPort:
       activity
 
   private def publishInvitationEvent(state: GameState): Unit =
-    InvitationEvent.fromState(state).foreach(publish)
+    InvitationContextFactory.fromState(state).foreach(publish)
 
   private def eventAddresses(event: WizardEvent): List[String] =
     val familyAddress = event match

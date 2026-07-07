@@ -1,18 +1,17 @@
 package it.unibo.pps.wizard.engine.events
 
-import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.core.GameState
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
+import it.unibo.pps.wizard.engine.model.view.{BidContext, PlayCardContext, TrumpContext}
 
-sealed trait InvitationEvent extends WizardEvent
+sealed trait InvitationEvent extends WizardEvent:
+  def playerId: PlayerId
 
 object InvitationEvent:
-  case class WaitingForBid(playerId: PlayerId) extends InvitationEvent
-  case class WaitingForCard(playerId: PlayerId) extends InvitationEvent
-  case class WaitingForTrump(playerId: PlayerId) extends InvitationEvent
+  case class WaitingForBid(context: BidContext) extends InvitationEvent:
+    override def playerId: PlayerId = context.playerId
 
-  def fromState(state: GameState): Option[InvitationEvent] = state match
-    case GameState.Bidding(_, Trump.WizardUnresolved(_), _, playerId) =>
-      Some(WaitingForTrump(playerId))
-    case GameState.Bidding(_, _, _, playerId)       => Some(WaitingForBid(playerId))
-    case GameState.Playing(_, _, _, _, playerId, _) => Some(WaitingForCard(playerId))
-    case GameState.Ended(_)                         => None
+  case class WaitingForCard(context: PlayCardContext) extends InvitationEvent:
+    override def playerId: PlayerId = context.playerId
+
+  case class WaitingForTrump(context: TrumpContext) extends InvitationEvent:
+    override def playerId: PlayerId = context.playerId
