@@ -116,6 +116,10 @@ highest_card(Cards, HighestCard) :-
 
 % WIZARD STRATEGY -> Strategies for API
 
+% fallback_filtered_cards(+Cards, +NoColor, -FilteredCards) -> FilteredCards is filter_cards_of_color, but if empty return Cards.
+fallback_filtered_cards(Cards, NoColor, Cards) :- filter_cards_of_color(Cards, NoColor, []), !.
+fallback_filtered_cards(Cards, NoColor, FilteredCards) :- filter_cards_of_color(Cards, NoColor, FilteredCards).
+
 % dominant_color(+Cards, -Color) -> return the max color present in a List of card (2 red and 2 yellow -> given in next paths)
 dominant_color(Cards, Color) :- 
 	color_frequencies(Cards, Frequencies), 
@@ -251,13 +255,8 @@ best_playable_card(Hand, WinningCard, FollowingColor, TrumpColor, Bids, Tricks, 
 %			- play the lowest card -> highest chance for a higher card than that
 best_playable_card(Hand, _, _, TrumpColor, Bids, Tricks, BestCard) :-
 	wants_to_lose(Bids, Tricks),
-	filter_winning_cards(Hand, TrumpColor, FilteredCards),
+	fallback_filtered_cards(Hand, TrumpColor, FilteredCards),
 	lowest_card(FilteredCards, BestCard).
-
-%filter_winning_cards -> just fallback if not filtering with hand and just play the lowest
-%filter_cards_of_color(Cards, NoColor, NoWizard) :- 
-%	filter_wizards(Cards, NoWizard),
-%	filter_standard_with_color(NoWizard, NoColor, []), !.
 
 % - WinningCard NOT REQUIRED
 % 	- want to win:
