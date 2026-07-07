@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.geometry.Insets?>
 
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.TilePane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
 <BorderPane fx:id="rootPane"
             prefWidth="1200.0"
             prefHeight="800.0"
@@ -21,41 +18,57 @@
     </padding>
 
     <top>
-        <HBox fx:id="playersContainer"
-              alignment="CENTER"
-              spacing="20.0"
-              prefHeight="80.0">
+        <HBox alignment="CENTER" maxWidth="Infinity">
             <BorderPane.margin>
                 <Insets bottom="15.0"/>
             </BorderPane.margin>
+            <VBox fx:id="gameInfoContainer"
+                  alignment="CENTER_LEFT"
+                  spacing="10.0"
+                  prefHeight="80.0">
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <HBox fx:id="playersContainer"
+                  alignment="CENTER_RIGHT"
+                  spacing="30.0"
+                  prefHeight="80.0">
+            </HBox>
+
         </HBox>
     </top>
 
     <left>
-        <VBox fx:id="trumpContainer">
+        <VBox alignment="CENTER" spacing="30.0">
             <BorderPane.margin>
                 <Insets right="20.0"/>
             </BorderPane.margin>
+            <VBox fx:id="trumpContainer" alignment="CENTER" spacing="10.0"/>
+
+            <VBox fx:id="currentPlayerContainer" alignment="CENTER" spacing="10.0"/>
         </VBox>
     </left>
 
     <center>
-        <StackPane fx:id="tableContainer"
-                   style="-fx-background-color: rgba(43, 92, 63, 0.85); -fx-background-radius: 15;">
+        <HBox fx:id="tableContainer"
+              alignment="CENTER"
+              style="-fx-background-color: rgba(43, 92, 63, 0.85); -fx-background-radius: 15;">
             <padding>
                 <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
             </padding>
-        </StackPane>
+        </HBox>
     </center>
 
     <bottom>
-        <StackPane fx:id="handContainer"
-                   prefHeight="180.0"
-                   style = "-fx-background-color: #A0A2A180; -fx-background-radius: 15;">
+        <HBox fx:id="handContainer"
+              alignment="CENTER"
+              prefHeight="180.0"
+              style = "-fx-background-color: #A0A2A180; -fx-background-radius: 15;">
             <BorderPane.margin>
                 <Insets top="15.0"/>
             </BorderPane.margin>
-        </StackPane>
+        </HBox>
     </bottom>
 
 </BorderPane>

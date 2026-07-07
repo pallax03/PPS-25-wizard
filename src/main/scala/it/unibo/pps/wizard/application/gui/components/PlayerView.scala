@@ -19,7 +19,6 @@ class PlayerView(val player: Player, val isCurrentTurn: Boolean = false) extends
     "-fx-background-color: rgba(230, 126, 34, 0.2); -fx-background-radius: 10; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 10;"
 
   style = if isCurrentTurn then activeTurnStyle else normalStyle
-  minWidth = 110
 
   private val avatarIndicator = new Circle:
     radius = 12

@@ -30,10 +30,6 @@ class PlayedCardWrapper(val card: Card, playerName: String, isLeader: Boolean) e
   children = Seq(statusLabel, cardView, nameLabel)
 
 class TableView(table: Table) extends HBox:
-
-  maxWidth = Double.MaxValue
-  maxHeight = Double.MaxValue
-
   private val normalStyle =
     "-fx-background-color: rgba(43, 92, 63, 0.85); -fx-background-radius: 15;"
   private val hoverStyle =

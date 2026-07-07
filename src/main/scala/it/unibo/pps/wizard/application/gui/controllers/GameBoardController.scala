@@ -8,10 +8,12 @@ import it.unibo.pps.wizard.engine.model.game.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameState}
-import javafx.scene.layout.{BorderPane, HBox, StackPane, VBox}
+import javafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.application.Platform
 import scalafx.stage.Stage
 import it.unibo.pps.wizard.engine.model.core.GameState.*
+import scalafx.scene.control.Label
+import scalafx.scene.text.{Font, FontWeight}
 
 import scala.annotation.nowarn
 import scala.util.{Failure, Success}
@@ -22,14 +24,17 @@ class GameBoardController(override protected val stage: Stage)(using
 ) extends FXMLController:
 
   @nowarn @FXML private var rootPane: BorderPane = _
-  @nowarn @FXML private var tableContainer: StackPane = _
-  @nowarn @FXML private var handContainer: StackPane = _
+  @nowarn @FXML private var tableContainer: HBox = _
+  @nowarn @FXML private var handContainer: HBox = _
   @nowarn @FXML private var trumpContainer: VBox = _
+  @nowarn @FXML private var currentPlayerContainer: VBox = _
   @nowarn @FXML private var playersContainer: HBox = _
+  @nowarn @FXML private var gameInfoContainer: VBox = _
 
   @nowarn private var tableView: TableView = _
   @nowarn private var handView: HandView = _
   @nowarn private var trumpView: TrumpView = _
+  @nowarn private var currentPlayerView: PlayerView = _
 
   @FXML
   def initialize(): Unit =
@@ -71,12 +76,13 @@ class GameBoardController(override protected val stage: Stage)(using
         Platform.runLater:
           println("Stato di gioco ricevuto con successo. Generazione dei componenti grafici...")
 
+          List(tableContainer, handContainer, trumpContainer, currentPlayerContainer, playersContainer)
+            .foreach(_.getChildren.clear())
+
           val playerHand: Hand =
             status.core.hands.getHand(status.core.players.toList.head.id).getOrElse(Hand.empty)
           val currentTable: Table = Table.empty
           val trump: Trump = status.trump
-
-          val allOtherPlayers = status.core.players.filter(_.id != status.core.players.toList.head.id)
 
           this.tableView = new TableView(currentTable)
 
@@ -96,22 +102,25 @@ class GameBoardController(override protected val stage: Stage)(using
           this.trumpView = new TrumpView(trump)
 
           val currentPlayer = status.core.players.toList.head
-          val currentPlayerView = new PlayerView(currentPlayer, isCurrentTurn = status.currentPlayer == currentPlayer.id)
+          val isMyTurn = status.currentPlayer == currentPlayer.id
+          this.currentPlayerView = new PlayerView(currentPlayer, isMyTurn)
 
-          tableContainer.getChildren.clear()
-          handContainer.getChildren.clear()
-          trumpContainer.getChildren.clear()
-          playersContainer.getChildren.clear()
-
+          val allOtherPlayers = status.core.players.filter(_.id != status.core.players.toList.head.id)
           allOtherPlayers.toList.foreach: player =>
             val isHisTurn = status.currentPlayer == player.id
-            val playerView = new PlayerView(player, isCurrentTurn = isHisTurn)
-            playersContainer.getChildren.add(playerView.delegate)
+            val playerView = new PlayerView(player, isHisTurn)
+            this.playersContainer.getChildren.add(playerView.delegate)
+
+          val gameInfo = new Label(s"Round: ${status.getClass.getSimpleName}"):
+            font = Font.font("Arial", FontWeight.Normal, 25)
+            textFill = scalafx.scene.paint.Color.White
+
+          this.gameInfoContainer.getChildren.add(gameInfo)
 
           tableContainer.getChildren.add(this.tableView.delegate)
           handContainer.getChildren.add(this.handView.delegate)
           trumpContainer.getChildren.add(this.trumpView.delegate)
-          trumpContainer.getChildren.add(currentPlayerView.delegate)
+          currentPlayerContainer.getChildren.add(this.currentPlayerView.delegate)
 
       case Success(otherState) =>
         println(s"Il gioco non è in uno stato valido per la partita: $otherState")
