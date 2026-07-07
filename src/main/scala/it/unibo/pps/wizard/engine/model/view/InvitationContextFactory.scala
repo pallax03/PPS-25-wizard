@@ -45,5 +45,4 @@ object InvitationContextFactory:
           )
         )
       )
-    case GameState.Ended(_) =>
-      None
+    case GameState.Ended(_, _) => None
