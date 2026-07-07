@@ -1,0 +1,30 @@
+package it.unibo.pps.wizard.util
+
+import it.unibo.pps.wizard.engine.model.basic.Card.Color
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+
+class TestPrologEngine extends AnyWordSpec with Matchers:
+
+  "A Prolog Engine" should:
+    import PrologEngine.given
+    "Resolve a basic query with member" in:
+      val engine = PrologEngine.buildEngine("")
+      val solutions = engine("member(2, [1, 2, 3])")
+      solutions.headOption.exists(_.isYes) shouldBe true
+      val failedSolutions = engine("member(4, [1, 2, 3])")
+      failedSolutions.headOption.exists(_.isNo) shouldBe true
+
+    "Resolve Backtracking" in:
+      val theory = """
+          color(red).
+          color(blue).
+          color(green).
+          color(yellow).
+      """
+      val engine = PrologEngine.buildEngine(theory)
+      val solutions = engine("color(C)")
+      val results = solutions.take(4).map(PrologEngine.extractVars).toList
+      results.map(_("C").toString) should contain theSameElementsAs Color.values
+        .map(_.toString.toLowerCase)
+        .toList
