@@ -77,6 +77,9 @@ class HumanPlayerView(
   def setTrumpSelectionEnabled(enabled: Boolean): Unit =
     trumpComboBox.disable = !enabled
 
+  def setBidTextFieldEnabled(enabled: Boolean): Unit =
+    bidField.disable = !enabled
+
   children = Seq(
     avatarIndicator,
     nameLabel,

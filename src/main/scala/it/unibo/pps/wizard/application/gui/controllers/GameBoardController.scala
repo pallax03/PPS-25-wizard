@@ -4,7 +4,7 @@ import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
 import it.unibo.pps.wizard.application.gui.components.{GameInfo, HumanPlayerView, OpponentsView, ScoreboardView, TrumpView}
 import it.unibo.pps.wizard.application.gui.managers.{HandManager, TableManager}
-import it.unibo.pps.wizard.engine.events.{ActionEvent, ProgressEvent}
+import it.unibo.pps.wizard.engine.events.{ActionEvent, InvitationEvent, ProgressEvent}
 import it.unibo.pps.wizard.engine.model.game.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
@@ -124,6 +124,18 @@ class GameBoardController(override protected val stage: Stage)(using
 //          println(s"Evento ricevuto: Round completato. Classifica aggiornata: $scoreboard")
       case ProgressEvent.PhaseChanged(phase) => onPhaseChanged(phase)
 
+    context.wizardEngineProxy.subscribe[InvitationEvent]:
+      case InvitationEvent.WaitingForTrump(context) => onWaitingForTrump(context.playerId)
+      case _ =>
+
+  private def onWaitingForTrump(value: PlayerId): Unit =
+    Platform.runLater:
+      println(s"Evento ricevuto: Attesa selezione Trump dal giocatore $value")
+      if value == currentPlayerView.player.id then
+        currentPlayerView.setTrumpSelectionEnabled(true)
+      else
+        currentPlayerView.setTrumpSelectionEnabled(false)
+
   private def onTrickWon(winnerId: PlayerId, trickedCards: List[Card]): Unit =
     Platform.runLater:
       println(s"Evento ricevuto: Trick vinto dal giocatore $winnerId con le carte: $trickedCards")
@@ -132,6 +144,10 @@ class GameBoardController(override protected val stage: Stage)(using
   private def onPhaseChanged(phase: String): Unit =
     Platform.runLater:
       GameInfo.changePhase(this.gameInfo, phase)
+      if phase == "Bidding" then
+        currentPlayerView.setBidTextFieldEnabled(true)
+      else
+        currentPlayerView.setBidTextFieldEnabled(false)
 
   private def onCardsDealt(hands: Hands, trump: Trump, round: Round) =
     Platform.runLater:
