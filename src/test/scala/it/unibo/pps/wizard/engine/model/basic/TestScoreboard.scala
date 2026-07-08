@@ -8,33 +8,56 @@ class TestScoreboard extends AnyWordSpec with Matchers:
 
   val p1: PlayerId = PlayerId(1)
   val p2: PlayerId = PlayerId(2)
+  val r1: Round = Round(1)
+  val r2: Round = Round(2)
+  val b1: Bid = Bid(1)
+  val b2: Bid = Bid(2)
 
   "A Scoreboard" when:
     "empty" should:
       val sb = Scoreboard.empty
-      "return 0 points for any player" in:
-        sb(p1) shouldBe 0
-        sb(p2) shouldBe 0
 
-    "updated" should:
-      "correctly store points for a player" in:
-        val sb = Scoreboard.empty.updateScore(p1, 20)
-        sb(p1) shouldBe 20
+      "return an empty history map for any player" in:
+        sb(p1) shouldBe Map.empty
+        sb(p2) shouldBe Map.empty
 
-      "accumulate points correctly over multiple updates" in:
+      "return default stats (0 points, 0 bid) for any unplayed round" in:
+        val (score, bid) = sb.getStatsForRound(r1, p1)
+        score.value shouldBe 0
+        bid.value shouldBe 0
+
+    "updated with addScore" should:
+      "correctly store score and bid for a player in a specific round" in:
+        val sb = Scoreboard.empty.addScore(p1, r1, Score(20), b1)
+        val (score, bid) = sb.getStatsForRound(r1, p1)
+
+        score.value shouldBe 20
+        bid.value shouldBe 1
+
+      "store distinct stats across multiple rounds for the same player" in:
         val sb = Scoreboard.empty
-          .updateScore(p1, 20)
-          .updateScore(p1, 10)
-        sb(p1) shouldBe 30
+          .addScore(p1, r1, Score(20), b1)
+          .addScore(p1, r2, Score(10), b2)
 
-      "maintain distinct scores for different players" in:
+        val (scoreR1, bidR1) = sb.getStatsForRound(r1, p1)
+        scoreR1.value shouldBe 20
+        bidR1.value shouldBe 1
+
+        val (scoreR2, bidR2) = sb.getStatsForRound(r2, p1)
+        scoreR2.value shouldBe 10
+        bidR2.value shouldBe 2
+
+      "maintain distinct scores and bids for different players" in:
         val sb = Scoreboard.empty
-          .updateScore(p1, 50)
-          .updateScore(p2, -10)
-        sb(p1) shouldBe 50
-        sb(p2) shouldBe -10
+          .addScore(p1, r1, Score(50), b1)
+          .addScore(p2, r1, Score(-10), b2)
+
+        sb.getStatsForRound(r1, p1)._1.value shouldBe 50
+        sb.getStatsForRound(r1, p2)._1.value shouldBe -10
 
     "handling negative values" should:
-      "allow deduction of points" in:
-        val sb = Scoreboard.empty.updateScore(p1, 30).updateScore(p1, -40)
-        sb(p1) shouldBe -10
+      "allow negative scores to be recorded for a round" in:
+        val sb = Scoreboard.empty.addScore(p1, r1, Score(-15), b1)
+
+        val (score, _) = sb.getStatsForRound(r1, p1)
+        score.value shouldBe -15
