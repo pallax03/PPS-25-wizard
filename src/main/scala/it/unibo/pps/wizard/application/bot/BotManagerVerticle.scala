@@ -23,7 +23,7 @@ class BotManagerVerticle(
         .get(invitation.playerId)
         .foreach: strategy =>
           vertx.setTimer(
-            2000,
+            1000,
             _ => {
               submit(strategy.decide(invitation))
             }

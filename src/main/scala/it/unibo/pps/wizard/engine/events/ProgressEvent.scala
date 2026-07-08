@@ -8,7 +8,7 @@ import it.unibo.pps.wizard.engine.model.rules.TableRules.*
 sealed trait ProgressEvent extends WizardEvent
 
 object ProgressEvent:
-  case class CardsDealt(playerId: PlayerId, hand: Hand, trump: Trump) extends ProgressEvent
+  case class CardsDealt(playerId: PlayerId, hands: Hands, trump: Trump, round: Round) extends ProgressEvent
   case class TrickWon(winnerId: PlayerId, trickedCards: List[Card]) extends ProgressEvent
   case class RoundScored(scoreboard: Scoreboard) extends ProgressEvent
   case class PhaseChanged(phaseName: String) extends ProgressEvent
@@ -33,7 +33,7 @@ object ProgressEvent:
         List(
           trickWon(oldS, playerId, card),
           RoundScored(newS.core.scoreboard),
-          CardsDealt(playerId, newS.core.hands.getHand(playerId).get, newS.core.trump),
+          CardsDealt(playerId, newS.core.hands, newS.core.trump, newS.core.round),
           PhaseChanged(newS.getClass.getSimpleName)
         )
       case (oldS: GameState.Playing, newS: GameState.Ended, GameAction.PlayCard(playerId, card)) =>

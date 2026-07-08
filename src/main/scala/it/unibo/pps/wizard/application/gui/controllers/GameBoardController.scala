@@ -119,7 +119,7 @@ class GameBoardController(override protected val stage: Stage)(using
       case ActionEvent.BidPlaced(playerId, bid)            => onBidPlaced(playerId, bid)
 
     context.wizardEngineProxy.subscribe[ProgressEvent]:
-      case ProgressEvent.CardsDealt(hands, trump, round) => onCardsDealt(hands, trump, round)
+      case ProgressEvent.CardsDealt(playerId, hands, trump, round) => onCardsDealt(playerId, hands, trump, round)
       case ProgressEvent.TrickWon(winnerId, trickedCards) => onTrickWon(winnerId, trickedCards)
       case ProgressEvent.RoundScored(scoreboard) => ???
 //          Platform.runLater:
@@ -151,13 +151,23 @@ class GameBoardController(override protected val stage: Stage)(using
       else
         currentPlayerView.setBidTextFieldEnabled(false)
 
-  private def onCardsDealt(hands: Hands, trump: Trump, round: Round) =
+  private def onCardsDealt(playerId: PlayerId, hands: Hands, trump: Trump, round: Round): Unit =
     Platform.runLater:
       GameInfo.incrementRound(this.gameInfo, round.value)
-      println(s"Evento ricevuto: Carte distribuite. Trump: $trump Hands: ${hands}")
-//      println(s"Evento ricevuto: Carte distribuite. Trump: $trump")
-//      handManager.updateHand(hands.getHand(currentPlayerView.player.id).getOrElse(Hand.empty))
-//      trumpView.updateTrumpColor(trump.color)
+      println(s"Evento ricevuto: Carte distribuite. Player: $playerId Trump: $trump Hands: $hands")
+      //this.handManager.update(hands.getHand(this.currentPlayerView.player.id).getOrElse(Hand.empty))
+      this.trumpView = TrumpView(trump)
+      val currentPlayerId = this.currentPlayerView.player.id
+      this.handManager.initializeHand(
+        hands.getHand(currentPlayerId).getOrElse(Hand.empty),
+        onCardDragged =
+          (mouseX, mouseY) => tableManager.setHighlight(tableManager.isOver(mouseX, mouseY)),
+        onCardDropped = (card, mouseX, mouseY) => {
+          tableManager.setHighlight(false)
+          if tableManager.isOver(mouseX, mouseY) then
+            context.wizardEngineProxy.submitAction(PlayCard(currentPlayerId, card))
+        }
+      )
 
   private def onCardPlayed(playerId: PlayerId, card: Card): Unit =
     Platform.runLater:
