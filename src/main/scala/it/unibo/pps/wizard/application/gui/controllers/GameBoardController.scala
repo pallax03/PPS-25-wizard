@@ -2,8 +2,9 @@ package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
-import it.unibo.pps.wizard.application.gui.components.{BasePlayerView, BotPlayerView, HumanPlayerView, ScoreboardView, TrumpView}
+import it.unibo.pps.wizard.application.gui.components.ScoreboardView
 import it.unibo.pps.wizard.application.gui.managers.{HandManager, TableManager}
+import it.unibo.pps.wizard.application.gui.components.{HumanPlayerView, OpponentsView, TrumpView}
 import it.unibo.pps.wizard.engine.events.ActionEvent
 import it.unibo.pps.wizard.engine.model.game.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
@@ -29,7 +30,6 @@ class GameBoardController(override protected val stage: Stage)(using
     protected val context: WizardApplicationContext
 ) extends FXMLController:
 
-  // --- Nodi iniettati da FXML ---
   @nowarn @FXML private var rootPane: BorderPane = _
   @nowarn @FXML private var tableContainer: HBox = _
   @nowarn @FXML private var handContainer: HBox = _
@@ -43,6 +43,7 @@ class GameBoardController(override protected val stage: Stage)(using
   @nowarn private var handManager: HandManager = _
   @nowarn private var trumpView: TrumpView = _
   @nowarn private var currentPlayerView: HumanPlayerView = _
+  @nowarn private var opponentsView: OpponentsView = _
 
   @FXML
   def initialize(): Unit =
@@ -76,13 +77,15 @@ class GameBoardController(override protected val stage: Stage)(using
     val playerHand = status.core.hands.getHand(currentPlayerId).getOrElse(Hand.empty)
 
     this.handManager = HandManager(this.handContainer)
-    this.handManager.initializeHand(playerHand,
-        onCardDragged = (mouseX, mouseY) => tableManager.setHighlight(tableManager.isOver(mouseX, mouseY)),
-        onCardDropped = (card, mouseX, mouseY) => {
-          tableManager.setHighlight(false)
-          if tableManager.isOver(mouseX, mouseY) then
-            context.wizardEngineProxy.submitAction(PlayCard(currentPlayerId, card))
-        }
+    this.handManager.initializeHand(
+      playerHand,
+      onCardDragged =
+        (mouseX, mouseY) => tableManager.setHighlight(tableManager.isOver(mouseX, mouseY)),
+      onCardDropped = (card, mouseX, mouseY) => {
+        tableManager.setHighlight(false)
+        if tableManager.isOver(mouseX, mouseY) then
+          context.wizardEngineProxy.submitAction(PlayCard(currentPlayerId, card))
+      }
     )
 
     this.trumpView = new TrumpView(status.trump)
@@ -93,16 +96,16 @@ class GameBoardController(override protected val stage: Stage)(using
     this.currentPlayerView = HumanPlayerView(
       currentPlayer,
       isMyTurn,
-      onBidSubmitted = bid => context.wizardEngineProxy.submitAction(GameAction.PlaceBid(currentPlayer.id, bid)),
-      onTrumpSelected = color => context.wizardEngineProxy.submitAction(GameAction.ChooseTrump(currentPlayer.id, color))
+      onBidSubmitted =
+        bid => context.wizardEngineProxy.submitAction(GameAction.PlaceBid(currentPlayer.id, bid)),
+      onTrumpSelected = color =>
+        context.wizardEngineProxy.submitAction(GameAction.ChooseTrump(currentPlayer.id, color))
     )
     this.currentPlayerContainer.getChildren.add(this.currentPlayerView.delegate)
 
     val allOtherPlayers = status.core.players.filter(_.id != currentPlayerId)
-    allOtherPlayers.toList.foreach: player =>
-      val isHisTurn = status.currentPlayer == player.id
-      val botView = BotPlayerView(player, isHisTurn)
-      this.playersContainer.getChildren.add(botView.delegate)
+    this.opponentsView = OpponentsView(playersContainer)
+    this.opponentsView.renderAllOpponents(allOtherPlayers, currentPlayerId)
 
     val gameInfo = new Label(s"Round: ${status.getClass.getSimpleName}"):
       font = Font.font("Arial", FontWeight.Normal, 25)
@@ -130,10 +133,8 @@ class GameBoardController(override protected val stage: Stage)(using
   private def onBidPlaced(playerId: PlayerId, bid: Bid): Unit =
     Platform.runLater:
       println(s"Evento ricevuto: Offerta piazzata dal giocatore $playerId: $bid")
-      playersContainer.getChildren.forEach: playerViewNode =>
-        val playerView = playerViewNode.asInstanceOf[BasePlayerView]
-        if playerView.player.id == playerId then
-          playerView.updateBid(bid)
+      if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
+      else this.opponentsView.updateOpponentBid(playerId, bid)
 
   @FXML
   def openScoreboardWindow(): Unit =

@@ -32,7 +32,7 @@ class TrumpView(trump: Trump) extends HBox:
         alignment = Pos.Center
 
       children = placeholder
-  
+
   def updateTrumpColor(color: Color): Unit =
     trump match
       case Trump.WizardUnresolved(c) =>
@@ -44,4 +44,3 @@ class TrumpView(trump: Trump) extends HBox:
         children = cardView
       case _ =>
         println("Trump is not a WizardUnresolved, cannot update color.")
-    

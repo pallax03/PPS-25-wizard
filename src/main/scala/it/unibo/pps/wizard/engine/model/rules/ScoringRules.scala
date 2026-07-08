@@ -20,10 +20,9 @@ object ScoringRules:
       val roundPoints = bid.calculatePointsFor(tricksWon)
 
       val previousRoundNum = round.value - 1
-      val previousScore = if previousRoundNum > 0 then
-        sb.getStatsForRound(Round(previousRoundNum), player.id)._1
-      else
-        Score.zero
+      val previousScore =
+        if previousRoundNum > 0 then sb.getStatsForRound(Round(previousRoundNum), player.id)._1
+        else Score.zero
 
       val cumulativePoints = Score(previousScore.value + roundPoints.value)
 

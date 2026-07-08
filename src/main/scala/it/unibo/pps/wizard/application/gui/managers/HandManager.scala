@@ -9,28 +9,31 @@ import scalafx.util.Duration
 
 class HandManager(val container: HBox):
   private var activeCardNodes: Map[Card, CardView] = Map.empty
-  
+
   def initializeHand(
-                      hand: Hand,
-                      onCardDragged: (Double, Double) => Unit,
-                      onCardDropped: (Card, Double, Double) => Unit
-                    ): Unit =
+      hand: Hand,
+      onCardDragged: (Double, Double) => Unit,
+      onCardDropped: (Card, Double, Double) => Unit
+  ): Unit =
     container.children.clear()
     activeCardNodes = Map.empty
     hand.toList.foreach(addCard(_, onCardDragged, onCardDropped))
 
   private def addCard(
-                        card: Card,
-                        onCardDragged: (Double, Double) => Unit,
-                        onCardDropped: (Card, Double, Double) => Unit
-                     ): Unit =
+      card: Card,
+      onCardDragged: (Double, Double) => Unit,
+      onCardDropped: (Card, Double, Double) => Unit
+  ): Unit =
     val cardNode = createDraggableCard(card, onCardDragged, onCardDropped)
 
     activeCardNodes = activeCardNodes + (card -> cardNode)
     container.children.add(cardNode)
 
-  private def createDraggableCard(card: Card, onCardDragged: (Double, Double) => Unit,
-                                  onCardDropped: (Card, Double, Double) => Unit): CardView =
+  private def createDraggableCard(
+      card: Card,
+      onCardDragged: (Double, Double) => Unit,
+      onCardDropped: (Card, Double, Double) => Unit
+  ): CardView =
     val cardView = new CardView(card)
 
     cardView.prefWidth = 130.0
@@ -71,9 +74,11 @@ class HandManager(val container: HBox):
     cardView
 
   def removeCard(card: Card): Unit =
-    activeCardNodes.get(card).foreach: node =>
-      container.children.remove(node)
-      activeCardNodes = activeCardNodes - card
+    activeCardNodes
+      .get(card)
+      .foreach: node =>
+        container.children.remove(node)
+        activeCardNodes = activeCardNodes - card
 
   def hideLegitCards(legitCards: List[Card]): Unit =
     ???

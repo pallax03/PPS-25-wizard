@@ -31,12 +31,10 @@ class ScoreboardView(players: Players) extends StackPane:
       style = "-fx-alignment: CENTER;"
       cellValueFactory = data => StringProperty(data.value.getScore(player.id))
 
-
     val bidCol = new TableColumn[RoundRow, String]("Prese"):
       prefWidth = 60
       style = "-fx-alignment: CENTER;"
       cellValueFactory = data => StringProperty(data.value.getBid(player.id))
-
 
     playerGroupCol.columns.addAll(scoreCol, bidCol)
     table.columns.add(playerGroupCol)

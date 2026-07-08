@@ -29,28 +29,27 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
     font = Font.font("Arial", FontWeight.Bold, 12)
     textFill = Color.White
 
-  protected val bidLabel = new Label(s"Bid: 0"):
+  protected var bidLabel = new Label(s"Bid: 0"):
     font = Font.font("Arial", FontWeight.Normal, 10)
     textFill = Color.rgb(178, 190, 195)
 
   def updateBid(bid: Bid): Unit =
-    bidLabel.text = s"Bid: $bid"
+    bidLabel.text = s"Bid: ${bid.value}"
 
-
-class BotPlayerView(player: Player, isCurrentTurn: Boolean = false) extends BasePlayerView(player, isCurrentTurn):
+class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
+    extends BasePlayerView(player, isCurrentTurn):
   private val roleLabel = new Label("Bot"):
     font = Font.font("Arial", FontWeight.Normal, 10)
     textFill = Color.rgb(140, 140, 140)
 
   children = Seq(avatarIndicator, nameLabel, roleLabel, bidLabel)
 
-
 class HumanPlayerView(
-                       player: Player,
-                       isCurrentTurn: Boolean = false,
-                       onBidSubmitted: Bid => Unit = _ => (),
-                       onTrumpSelected: Card.Color => Unit = _ => ()
-                     ) extends BasePlayerView(player, isCurrentTurn):
+    player: Player,
+    isCurrentTurn: Boolean = false,
+    onBidSubmitted: Bid => Unit = _ => (),
+    onTrumpSelected: Card.Color => Unit = _ => ()
+) extends BasePlayerView(player, isCurrentTurn):
 
   private val roleLabel = new Label("You"):
     font = Font.font("Arial", FontWeight.Normal, 10)
@@ -65,20 +64,16 @@ class HumanPlayerView(
 
     onAction = _ =>
       val textValue = text.value
-      if textValue.nonEmpty && textValue.forall(_.isDigit) then
-        onBidSubmitted(Bid(textValue.toInt))
+      if textValue.nonEmpty && textValue.forall(_.isDigit) then onBidSubmitted(Bid(textValue.toInt))
 
   val trumpComboBox = new ComboBox[Card.Color]:
     items = ObservableBuffer(Card.Color.values.toSeq*)
     promptText = "Trump"
     maxWidth = 90
-    disable = true // Inizialmente disattivato come richiesto
+    disable = true
 
-    // Esegue l'azione alla selezione di un colore
-    onAction = _ =>
-      Option(selectionModel.value.getSelectedItem).foreach(onTrumpSelected)
+    onAction = _ => Option(selectionModel.value.getSelectedItem).foreach(onTrumpSelected)
 
-  // Metodo pubblico per attivare/disattivare il menu della briscola dall'esterno
   def setTrumpSelectionEnabled(enabled: Boolean): Unit =
     trumpComboBox.disable = !enabled
 

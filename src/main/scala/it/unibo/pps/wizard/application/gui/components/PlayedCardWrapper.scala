@@ -5,7 +5,6 @@ import scalafx.geometry.Pos
 import scalafx.scene.control.Label
 import scalafx.scene.layout.VBox
 
-
 class PlayedCardWrapper(val card: Card, playerName: String, isLeader: Boolean) extends VBox:
   alignment = Pos.Center
   spacing = 8
