@@ -2,15 +2,8 @@ package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
-import it.unibo.pps.wizard.application.gui.components.{
-  BasePlayerView,
-  BotPlayerView,
-  HandView,
-  HumanPlayerView,
-  ScoreboardView,
-  TableView,
-  TrumpView
-}
+import it.unibo.pps.wizard.application.gui.components.{BasePlayerView, BotPlayerView, HumanPlayerView, ScoreboardView, TrumpView}
+import it.unibo.pps.wizard.application.gui.managers.{HandManager, TableManager}
 import it.unibo.pps.wizard.engine.events.ActionEvent
 import it.unibo.pps.wizard.engine.model.game.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
