@@ -1,10 +1,11 @@
 package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
+import it.unibo.pps.wizard.application.gui.components.ScoreboardView
 import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
-import scalafx.scene.control.{TableColumn, TableView as FXTableView}
+import it.unibo.pps.wizard.engine.model.basic.{Players, RoundRow, Scoreboard}
 import scalafx.collections.ObservableBuffer
-import scalafx.beans.property.StringProperty
+import scalafx.scene.layout.StackPane
 import scalafx.stage.Stage
 
 import scala.annotation.nowarn
@@ -12,15 +13,15 @@ import scala.annotation.nowarn
 class ScoreboardController(override protected val stage: Stage)(using
     protected val context: WizardApplicationContext
 ) extends FXMLController:
+  @nowarn @FXML private var scoreboardContainer: StackPane = _
+  @nowarn private var view: ScoreboardView = _
 
-  @nowarn @FXML private var scoreboardTable: FXTableView[(String, String)] = _
-  @nowarn @FXML private var colName: TableColumn[(String, String), String] = _
-  @nowarn @FXML private var colScore: TableColumn[(String, String), String] = _
+  def init(players: Players): Unit =
+    view = new ScoreboardView(players)
+    scoreboardContainer.children.add(view)
 
-  @FXML
-  def initialize(): Unit =
-    colName.cellValueFactory = data => StringProperty(data.value._1)
-    colScore.cellValueFactory = data => StringProperty(data.value._2)
+    refresh(players, Scoreboard.empty)
 
-  def setData(data: Seq[(String, String)]): Unit =
-    scoreboardTable.items = ObservableBuffer(data*)
+  def refresh(players: Players, scoreboard: Scoreboard): Unit =
+    val rows = RoundRow.createRows(players, scoreboard)
+    view.updateData(rows, players.toList.size)

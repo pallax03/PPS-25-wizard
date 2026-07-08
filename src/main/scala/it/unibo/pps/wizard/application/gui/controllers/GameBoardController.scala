@@ -2,8 +2,15 @@ package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
-import it.unibo.pps.wizard.application.gui.components.{HandView, PlayerView, ScoreboardView, TableView, TrumpView}
-import it.unibo.pps.wizard.application.gui.components.{BasePlayerView, BotPlayerView, HandView, HumanPlayerView, TableView, TrumpView}
+import it.unibo.pps.wizard.application.gui.components.{
+  BasePlayerView,
+  BotPlayerView,
+  HandView,
+  HumanPlayerView,
+  ScoreboardView,
+  TableView,
+  TrumpView
+}
 import it.unibo.pps.wizard.engine.events.ActionEvent
 import it.unibo.pps.wizard.engine.model.game.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
@@ -13,9 +20,12 @@ import javafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.application.Platform
 import scalafx.stage.{Modality, Stage}
 import it.unibo.pps.wizard.engine.model.core.GameState.*
+import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import scalafx.scene.control.Label
 import scalafx.scene.text.{Font, FontWeight}
 import scalafx.scene.Scene
+import javafx.scene.layout.StackPane
+import scalafx.util.Duration
 
 import scala.annotation.nowarn
 import scala.util.{Failure, Success}
@@ -48,9 +58,9 @@ class GameBoardController(override protected val stage: Stage)(using
   private def subscribeToEvents(): Unit =
     println("Subscribed to game events")
     context.wizardEngineProxy.subscribe[ActionEvent]:
-      case ActionEvent.CardPlayed(playerId, card) => onCardPlayed(playerId, card)
+      case ActionEvent.CardPlayed(playerId, card)     => onCardPlayed(playerId, card)
       case ActionEvent.TrumpSelected(playerId, color) => onTrumpSelected(playerId, color)
-      case ActionEvent.BidPlaced(playerId, bid) => onBidPlaced(playerId, bid)
+      case ActionEvent.BidPlaced(playerId, bid)       => onBidPlaced(playerId, bid)
 
   private def onCardPlayed(playerId: PlayerId, card: Card): Unit =
     Platform.runLater:
@@ -68,8 +78,7 @@ class GameBoardController(override protected val stage: Stage)(using
       println(s"Evento ricevuto: Offerta piazzata dal giocatore $playerId: $bid")
       playersContainer.getChildren.forEach: playerViewNode =>
         val playerView = playerViewNode.asInstanceOf[BasePlayerView]
-        if playerView.player.id == playerId then
-          playerView.updateBid(bid)
+        if playerView.player.id == playerId then playerView.updateBid(bid)
 
   private def initView(): Unit =
     println("Richiesta dello stato iniziale del gioco al proxy...")
@@ -79,7 +88,13 @@ class GameBoardController(override protected val stage: Stage)(using
         Platform.runLater:
           println("Stato di gioco ricevuto con successo. Generazione dei componenti grafici...")
 
-          List(tableContainer, handContainer, trumpContainer, currentPlayerContainer, playersContainer)
+          List(
+            tableContainer,
+            handContainer,
+            trumpContainer,
+            currentPlayerContainer,
+            playersContainer
+          )
             .foreach(_.getChildren.clear())
 
           val playerHand: Hand =
@@ -113,7 +128,8 @@ class GameBoardController(override protected val stage: Stage)(using
               println(s"Offerta piazzata dal giocatore: $bid")
               context.wizardEngineProxy.submitAction(
                 GameAction.PlaceBid(currentPlayer.id, bid)
-              ),
+              )
+            ,
             onTrumpSelected = color =>
               println(s"Trump selezionato dal giocatore: $color")
               context.wizardEngineProxy.submitAction(
@@ -122,7 +138,8 @@ class GameBoardController(override protected val stage: Stage)(using
           )
           this.currentPlayerView = humanView
 
-          val allOtherPlayers = status.core.players.filter(_.id != status.core.players.toList.head.id)
+          val allOtherPlayers =
+            status.core.players.filter(_.id != status.core.players.toList.head.id)
           allOtherPlayers.toList.foreach: player =>
             val isHisTurn = status.currentPlayer == player.id
             val playerView = BotPlayerView(player, isHisTurn)
@@ -150,21 +167,50 @@ class GameBoardController(override protected val stage: Stage)(using
     context.wizardEngineProxy.getState.onComplete:
       case Success(Running(status: Bidding)) =>
         Platform.runLater:
-          val scoresMap = status.core.scoreboard.asInstanceOf[Map[PlayerId, Int]]
-          val allPlayers = status.core.players.asInstanceOf[List[Player]]
-          val dataList = allPlayers.map(p => (p.name.toString, scoresMap.getOrElse(p.id, 0).toString))
+          val scoresMap = status.core.scoreboard
+          val allPlayers = status.core.players
 
-          val scoreboardView = new ScoreboardView(dataList)
+          val scoreboardView = new ScoreboardView(allPlayers)
+
+          val initialRows = RoundRow.createRows(allPlayers, scoresMap)
+          scoreboardView.updateData(initialRows, allPlayers.toList.size)
 
           val scoreboardStage = new Stage():
             initModality(Modality.ApplicationModal)
-            title = "Classifica"
-            scene = new Scene(scoreboardView, 300, 500)
+            title = "Classifica Round per Round"
+            scene = new Scene(scoreboardView)
             resizable = false
-          scoreboardStage.show()
 
+          scoreboardStage.sizeToScene()
+          scoreboardStage.show()
       case Success(otherState) =>
         println(s"Il gioco non è in uno stato valido per la partita: $otherState")
 
       case Failure(exception) =>
         println(s"Errore nel recupero dello stato iniziale: ${exception.getMessage}")
+
+  @FXML
+  def handleScoreboardHover(): Unit =
+    if scoreboardContainer != null then
+      val scale = new ScaleTransition(Duration(120), scoreboardContainer)
+      scale.setToX(1.15)
+      scale.setToY(1.15)
+
+      val translate = new TranslateTransition(Duration(120), scoreboardContainer)
+      translate.setToX(-5)
+
+      val parallel = new ParallelTransition(scale, translate)
+      parallel.play()
+
+  @FXML
+  def handleScoreboardExit(): Unit =
+    if scoreboardContainer != null then
+      val scale = new ScaleTransition(Duration(120), scoreboardContainer)
+      scale.setToX(1.0)
+      scale.setToY(1.0)
+
+      val translate = new TranslateTransition(Duration(120), scoreboardContainer)
+      translate.setToX(0)
+
+      val parallel = new ParallelTransition(scale, translate)
+      parallel.play()

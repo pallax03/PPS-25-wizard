@@ -10,6 +10,7 @@
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 <BorderPane fx:id="rootPane"
             prefWidth="1200.0"
             prefHeight="800.0"
@@ -32,7 +33,7 @@
                   prefHeight="80.0">
             </VBox>
 
-            <Region HBox.hgrow="ALWAYS" />
+            <Region HBox.hgrow="ALWAYS"/>
 
             <HBox fx:id="playersContainer"
                   alignment="CENTER_RIGHT"
@@ -68,30 +69,65 @@
         <HBox fx:id="handContainer"
               alignment="CENTER"
               prefHeight="180.0"
-              style = "-fx-background-color: #A0A2A180; -fx-background-radius: 15;">
+              style="-fx-background-color: #A0A2A180; -fx-background-radius: 15;">
             <BorderPane.margin>
                 <Insets top="15.0"/>
             </BorderPane.margin>
         </HBox>
     </bottom>
     <right>
-        <StackPane fx:id="scoreboardContainer" prefWidth="50.0"
-                   style="-fx-background-color: #2b5c3f; -fx-cursor: hand;"
-                   onMouseClicked="#openScoreboardWindow">
+        <StackPane fx:id="scoreboardContainer"
+                   prefWidth="45.0"
+                   maxHeight="280.0"
+                   BorderPane.alignment="CENTER"
+                   onMouseClicked="#openScoreboardWindow"
+                   onMouseEntered="#handleScoreboardHover"
+                   onMouseExited="#handleScoreboardExit"
+                   style="-fx-background-color: linear-gradient(to left, #16301f, #254d34);
+                          -fx-background-radius: 15 0 0 15;
+                          -fx-border-color: rgba(212, 175, 55, 0.5);
+                          -fx-border-width: 1 0 1 1;
+                          -fx-border-radius: 15 0 0 15;
+                          -fx-cursor: hand;
+                          -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, -2, 0);">
+
+            <BorderPane.margin>
+                <Insets left="15.0"/>
+            </BorderPane.margin>
+
             <padding>
-                <Insets top="10" bottom="10"/>
+                <Insets top="15.0" bottom="15.0" left="5.0" right="5.0"/>
             </padding>
 
-            <VBox alignment="CENTER" spacing="2">
-                <Label text="S" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Label text="C" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Label text="O" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Label text="R" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Label text="E" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Label text="B" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Label text="A" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Label text="R" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
-                <Label text="D" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+            <VBox alignment="CENTER" spacing="4.0">
+                <SVGPath
+                        content="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.66 4.43 4.91C8.21 14.14 10 16 12 16v3H9v2h6v-2h-3v-3c2 0 3.79-1.86 4.57-4.09C19.08 11.66 21 9.55 21 7V5c0-1.1-.9-2-2-2zm-14 3V7h2v3c0-1.1-.9-2-2-2zm14 0c-1.1 0-2 .9-2 2V7h2v1z"
+                        fill="#d4af37"
+                        scaleX="0.9"
+                        scaleY="0.9"/>
+
+                <Region prefHeight="8.0"/>
+
+                <Label text="S"
+                       style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', Helvetica;"/>
+                <Label text="C"
+                       style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', Helvetica;"/>
+                <Label text="O"
+                       style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', Helvetica;"/>
+                <Label text="R"
+                       style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', Helvetica;"/>
+                <Label text="E"
+                       style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', Helvetica;"/>
+                <Label text="B"
+                       style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', Helvetica;"/>
+                <Label text="O"
+                       style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', Helvetica;"/>
+                <Label text="A"
+                       style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', Helvetica;"/>
+                <Label text="R"
+                       style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', Helvetica;"/>
+                <Label text="D"
+                       style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px; -fx-font-family: 'Segoe UI', Helvetica;"/>
             </VBox>
         </StackPane>
     </right>
