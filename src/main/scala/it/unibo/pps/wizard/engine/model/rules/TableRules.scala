@@ -27,7 +27,7 @@ object TableRules:
               else Right(())
 
   extension (table: Table)
-    def evaluateTrickWinner(trump: Trump): PlayerId =
+    def evaluateTrick(trump: Trump): (PlayerId, Card) =
       val cards = table.playedCards
       val trumpColor = trump.effectiveColor
       val followingColor = table.followingCard.map(_.color)
@@ -43,6 +43,6 @@ object TableRules:
         .orElse(highestOf(followingColor))
         .getOrElse(cards.head)
 
-      table.playerOf(winningCard).get
+      (table.playerOf(winningCard).get, winningCard)
 
 export TableRules.*

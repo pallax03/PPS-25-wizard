@@ -3,7 +3,7 @@ package it.unibo.pps.wizard.application.gui.components
 import it.unibo.pps.wizard.engine.model.basic.{Card, Table}
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.control.Label
-import scalafx.geometry.{Insets, Pos}
+import scalafx.geometry.Pos
 
 // todo: refactoring of this helper
 class PlayedCardWrapper(val card: Card, playerName: String, isLeader: Boolean) extends VBox:
@@ -30,13 +30,6 @@ class PlayedCardWrapper(val card: Card, playerName: String, isLeader: Boolean) e
   children = Seq(statusLabel, cardView, nameLabel)
 
 class TableView(table: Table) extends HBox:
-  alignment = Pos.Center
-  padding = Insets(20)
-  spacing = 15.0
-
-  maxWidth = Double.MaxValue
-  maxHeight = Double.MaxValue
-
   private val normalStyle =
     "-fx-background-color: rgba(43, 92, 63, 0.85); -fx-background-radius: 15;"
   private val hoverStyle =
@@ -62,3 +55,10 @@ class TableView(table: Table) extends HBox:
   def isOver(sceneX: Double, sceneY: Double): Boolean =
     val bounds = this.localToScene(this.boundsInLocal.value)
     bounds.contains(sceneX, sceneY)
+
+  def addCard(card: Card): Unit =
+    val playerName = "Player " + table.playerOf(card).getOrElse("Unknown")
+    val isLeader = table.followingCard.contains(card)
+    val wrapper = new PlayedCardWrapper(card, playerName, isLeader)
+    wrapper.prefWidth <== this.width * 0.12
+    children.add(wrapper)

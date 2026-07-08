@@ -14,7 +14,7 @@ import it.unibo.pps.wizard.engine.model.basic.{
 }
 import it.unibo.pps.wizard.engine.model.rules.{BiddingRules, ScoringRules}
 import it.unibo.pps.wizard.engine.model.rules.RoundManager.*
-import it.unibo.pps.wizard.engine.model.rules.TableRules.{evaluateTrickWinner, validateAgainst}
+import it.unibo.pps.wizard.engine.model.rules.TableRules.{evaluateTrick, validateAgainst}
 
 object GameEngine:
   def processAction(state: GameState, action: GameAction): Either[GameError, GameState] =
@@ -67,7 +67,7 @@ object GameEngine:
           val updatedCore = currentState.core.copy(hands = updatedHands)
 
           if updatedTable.size == totalPlayers then
-            val winnerId = updatedTable.evaluateTrickWinner(currentState.trump)
+            val winnerId = updatedTable.evaluateTrick(currentState.trump)._1
             val updatedTricks = currentState.tricksWon.addTrickTo(winnerId)
 
             if updatedHands.areEmpty then
@@ -81,7 +81,7 @@ object GameEngine:
               val finalCore = updatedCore.copy(scoreboard = updatedScoreboard)
 
               if finalCore.round.value == (Deck.create.length / totalPlayers) then
-                GameState.Ended(finalCore.scoreboard)
+                GameState.Ended(updatedCore.players, finalCore.scoreboard)
               else
                 val nextRound = finalCore.round.next
                 val coreForNextRound = finalCore.copy(
@@ -108,7 +108,7 @@ object GameEngine:
               currentPlayerTurn = nextPlayer
             )
 
-      case (GameState.Ended(_), _) =>
+      case (GameState.Ended(_, _), _) =>
         Left(InvalidAction)
 
       case (_, _) =>

@@ -8,19 +8,21 @@ val catsVersion           = "2.13.0"
 val scalafxVersion        = "26.0.0-R38"
 val twelvemonkeysVersion  = "3.13.1"
 val vertxVersion          = "5.1.3"
-val prologVersion         = "4.1.1"
+val tuPrologVersion         = "1.1.5"
 
 ThisBuild / scalaVersion := scala3Version
-ThisBuild / scalacOptions := Seq("-Wunused:all", "-Wunused:imports", "-Werror")
+ThisBuild / scalacOptions := Seq("-Wunused:all", "-Wunused:imports", "-Werror", "-language:implicitConversions")
 
 ThisBuild / libraryDependencies ++= Seq(
-  "org.typelevel"             %%  "cats-core"               % catsVersion,
-  "org.scalafx"               %%  "scalafx"                 % scalafxVersion,
-  "com.twelvemonkeys.imageio"  %  "imageio-webp"            % twelvemonkeysVersion,
-  "org.scalatest"             %%  "scalatest"               % scalatestVersion % Test,
-  "io.vertx"                  %   "vertx-core"              % vertxVersion,
-  "it.unibo.alice.tuprolog"   %   "2p-core"                 % prologVersion,
-  "it.unibo.alice.tuprolog"   %   "2p-ui"                   % prologVersion
+  "org.typelevel"             %%    "cats-core"               % catsVersion,
+  "org.scalafx"               %%    "scalafx"                 % scalafxVersion,
+  "com.twelvemonkeys.imageio"  %    "imageio-webp"            % twelvemonkeysVersion,
+  "org.scalatest"             %%    "scalatest"               % scalatestVersion % Test,
+  "io.vertx"                   %    "vertx-core"              % vertxVersion,
+  "it.unibo.tuprolog"          % "core-jvm"                   % tuPrologVersion,
+  "it.unibo.tuprolog"          % "solve-classic-jvm"          % tuPrologVersion,
+  "it.unibo.tuprolog"          % "parser-core-jvm"            % tuPrologVersion,
+  "it.unibo.tuprolog"          % "parser-theory-jvm"          % tuPrologVersion
 )
 
 lazy val root = (project in file("."))
