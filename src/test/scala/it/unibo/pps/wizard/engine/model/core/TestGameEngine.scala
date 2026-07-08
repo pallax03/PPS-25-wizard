@@ -100,10 +100,6 @@ class TestGameEngine extends AnyWordSpec with Matchers:
       val action = GameAction.ResolveTrumpColor(p2.id, Red)
       val result = GameEngine.processAction(choosingState, action)
 
-      result match
-        case Left(value)  => print(value)
-        case Right(value) => ()
-
       result.isRight shouldBe true
       result.foreach:
         case nextState: GameState.Bidding =>
