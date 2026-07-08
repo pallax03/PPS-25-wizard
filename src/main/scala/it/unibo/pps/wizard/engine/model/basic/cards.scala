@@ -54,6 +54,11 @@ object Card:
 
   extension (c: Card) infix def -(other: Card): List[Card] = List(c, other)
 
+  extension (optCard: Option[Card])
+    def asTrump: Trump = optCard match
+      case Some(card) => Trump(card)
+      case None       => Trump.Absent
+
   extension (cards: List[Card]) infix def -(other: Card): List[Card] = cards :+ other
 
 /**
@@ -109,6 +114,7 @@ opaque type Hand = List[Card]
 object Hand:
   def empty: Hand = List.empty
   def apply(cards: List[Card]): Hand = cards
+  def without(hand: Hand, card: Card): Hand = hand.filterNot(_ == card)
 
   extension (card: Card) def asHand: Hand = List(card)
 
@@ -121,7 +127,8 @@ object Hand:
     def toList: List[Card] = h
     infix def +(card: Card): Hand = h :+ card
     infix def ++(cards: List[Card]): Hand = h ++ cards
-    infix def -(card: Card): Hand = h.filterNot(_ == card)
+    def remove(card: Card): Hand = Hand.without(h, card)
+    infix def -(card: Card): Hand = h.remove(card)
 
 opaque type Hands = Map[PlayerId, Hand]
 object Hands:
@@ -131,5 +138,6 @@ object Hands:
   extension (hands: Hands)
     def getHand(player: PlayerId): Option[Hand] = hands.get(player)
     infix def +(entry: (PlayerId, Hand)): Hands = hands + entry
-    def remove(player: PlayerId, card: Card): Hands = hands.updated(player, hands(player) - card)
+    def remove(player: PlayerId, card: Card): Hands =
+      hands.updated(player, Hand.without(hands(player), card))
     def areEmpty: Boolean = hands.values.forall(_.isEmpty)

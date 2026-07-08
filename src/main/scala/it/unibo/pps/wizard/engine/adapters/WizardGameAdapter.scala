@@ -29,9 +29,10 @@ class WizardGameAdapter(private val vertx: Vertx) extends WizardPort:
     runOnVerticle("Game Start"):
       this.currentState match
         case WizardGameState.NotConfigured =>
-          val initialState = GameEngine.initializeGame(Players.create(players, config.numberOfBots))
+          val playersAndBots: Players = Players.create(players, config.numberOfBots)
+          val initialState = GameEngine.initializeGame(playersAndBots)
           this.currentState = WizardGameState.Running(initialState)
-          this.publish(GameStarted(initialState))
+          this.publish(GameStarted(playersAndBots))
           this.publishInvitationEvent(initialState)
         case _ =>
 
@@ -45,9 +46,9 @@ class WizardGameAdapter(private val vertx: Vertx) extends WizardPort:
               this.publish(ActionFailed(action.playerId, error.toString))
             case Right(newState) =>
               this.currentState = WizardGameState.Running(newState)
-              this.publishAll(
-                ActionEvent.from(action) +: ProgressEvent.fromTransition(oldState, newState)
-              )
+              val actionEvent = ActionEvent.from(action)
+              val progressEvents = ProgressEvent.fromTransition(oldState, newState, action)
+              this.publishAll(actionEvent +: progressEvents)
               this.publishInvitationEvent(newState)
         case _ =>
 

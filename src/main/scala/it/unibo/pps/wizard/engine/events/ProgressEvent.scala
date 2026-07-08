@@ -2,37 +2,52 @@ package it.unibo.pps.wizard.engine.events
 
 import it.unibo.pps.wizard.engine.events.LifecycleEvent.GameEnded
 import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.core.GameState
+import it.unibo.pps.wizard.engine.model.core.{GameAction, GameState}
+import it.unibo.pps.wizard.engine.model.rules.TableRules.*
 
 sealed trait ProgressEvent extends WizardEvent
 
 object ProgressEvent:
-  case class CardsDealt(hands: Hands, trump: Trump) extends ProgressEvent
+  case class CardsDealt(playerId: PlayerId, hand: Hand, trump: Trump) extends ProgressEvent
   case class TrickWon(winnerId: PlayerId, trickedCards: List[Card]) extends ProgressEvent
   case class RoundScored(scoreboard: Scoreboard) extends ProgressEvent
-  case class PhaseChanged(state: GameState) extends ProgressEvent
+  case class PhaseChanged(phaseName: String) extends ProgressEvent
 
-  def fromTransition(oldState: GameState, newState: GameState): List[WizardEvent] =
-    (oldState, newState) match
+  def fromTransition(
+      oldState: GameState,
+      newState: GameState,
+      action: GameAction
+  ): List[WizardEvent] =
+    (oldState, newState, action) match
       case (
-            GameState.Playing(_, _, _, oldTable, _, _),
-            GameState.Playing(_, _, _, newTable, winnerId, _)
-          ) if oldTable.playedCards.nonEmpty && newTable.playedCards.isEmpty =>
-        List(TrickWon(winnerId, oldTable.playedCards))
-      case (oldS: GameState.Playing, newS: GameState.Bidding) =>
+            oldS: GameState.Playing,
+            GameState.Playing(_, _, newTable, _, _),
+            GameAction.PlayCard(playerId, card)
+          ) if oldS.table.playedCards.nonEmpty && newTable.playedCards.isEmpty =>
+        List(trickWon(oldS, playerId, card))
+      case (
+            oldS: GameState.Playing,
+            newS: GameState.Bidding,
+            GameAction.PlayCard(playerId, card)
+          ) =>
         List(
-          TrickWon(newS.currentPlayer, oldS.table.playedCards),
+          trickWon(oldS, playerId, card),
           RoundScored(newS.core.scoreboard),
-          CardsDealt(newS.core.hands, newS.trump),
-          PhaseChanged(newS)
+          CardsDealt(playerId, newS.core.hands.getHand(playerId).get, newS.core.trump),
+          PhaseChanged(newS.getClass.getSimpleName)
         )
-      case (oldS: GameState.Playing, newS: GameState.Ended) =>
+      case (oldS: GameState.Playing, newS: GameState.Ended, GameAction.PlayCard(playerId, card)) =>
         List(
-          TrickWon(oldS.currentPlayerTurn, oldS.table.playedCards),
+          trickWon(oldS, playerId, card),
           RoundScored(newS.scoreboard),
           GameEnded(newS.scoreboard)
         )
-      case (oldState, newState) if oldState.getClass != newState.getClass =>
-        List(PhaseChanged(newState))
+      case (oldState, newState, _) if oldState.getClass != newState.getClass =>
+        List(PhaseChanged(newState.getClass.getSimpleName))
       case _ =>
         List.empty
+
+  private def trickWon(state: GameState.Playing, playerId: PlayerId, card: Card): TrickWon =
+    val completedTable = state.table + (playerId, card)
+    val winnerId = completedTable.evaluateTrick(state.core.trump)._1
+    TrickWon(winnerId, completedTable.playedCards)

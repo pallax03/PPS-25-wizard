@@ -9,6 +9,7 @@ object Table:
   extension (t: Table)
     def isEmpty: Boolean = t.isEmpty
     def size: Int = t.length
+    def isTrickComplete(totalPlayers: Int): Boolean = t.size == totalPlayers
 
     def plays: List[(PlayerId, Card)] = t
     def playedCards: List[Card] = t.map(_._2)
@@ -51,11 +52,6 @@ object Trump:
     def resolveWizard(color: Card.Color): Either[GameError, Trump] = t match
       case Trump.WizardUnresolved(c) => Right(Trump.WizardResolved(c, color))
       case _                         => Left(GameError.InvalidAction)
-
-  extension (optCard: Option[Card])
-    def asTrump: Trump = optCard match
-      case Some(card) => Trump(card)
-      case None       => Trump.Absent
 
   extension (t: Trump.WizardUnresolved)
     infix def resolvedAs(color: Card.Color): Trump =
