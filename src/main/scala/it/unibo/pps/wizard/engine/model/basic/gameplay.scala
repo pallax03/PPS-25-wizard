@@ -58,7 +58,7 @@ object Trump:
       case None       => Trump.Absent
 
   extension (t: Trump.WizardUnresolved)
-    infix def resolvedAs(color: Card.Color): Trump.WizardResolved =
+    infix def resolvedAs(color: Card.Color): Trump =
       Trump.WizardResolved(t.c, color)
 
 opaque type Round = Int

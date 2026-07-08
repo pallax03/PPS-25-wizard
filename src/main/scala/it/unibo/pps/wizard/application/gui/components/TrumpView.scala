@@ -1,7 +1,8 @@
 package it.unibo.pps.wizard.application.gui.components
 
+import it.unibo.pps.wizard.engine.model.basic
+import it.unibo.pps.wizard.engine.model.basic.Card.Color
 import it.unibo.pps.wizard.engine.model.basic.Trump
-
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
 import scalafx.scene.layout.HBox
@@ -31,3 +32,15 @@ class TrumpView(trump: Trump) extends HBox:
         alignment = Pos.Center
 
       children = placeholder
+
+  def updateTrumpColor(color: Color): Unit =
+    trump match
+      case Trump.WizardUnresolved(c) =>
+        val cardView = new CardView(c)
+        val ch = 240.0
+        cardView.prefHeight = ch
+        cardView.prefWidth = ch / 1.2
+        cardView.setGlow(CardView.fxColor(color))
+        children = cardView
+      case _ =>
+        println("Trump is not a WizardUnresolved, cannot update color.")

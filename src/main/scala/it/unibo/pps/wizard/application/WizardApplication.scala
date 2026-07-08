@@ -30,4 +30,6 @@ object WizardApplication extends JFXApp3:
     this.stage = new PrimaryStage():
       title = "PPS Card Game - Wizard"
       resizable = true
+      minWidth = 1200
+      minHeight = 800
     this.contextBuilder.setPrimaryStage(this.stage)

@@ -75,6 +75,7 @@ object GameEngine:
                 updatedCore.players,
                 currentState.bids,
                 updatedTricks,
+                currentState.core.round,
                 updatedCore.scoreboard
               )
 

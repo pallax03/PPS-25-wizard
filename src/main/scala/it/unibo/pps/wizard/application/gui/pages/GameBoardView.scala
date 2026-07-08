@@ -1,4 +1,15 @@
-//package it.unibo.pps.wizard.application.gui.pages
+package it.unibo.pps.wizard.application.gui.pages
+
+import it.unibo.pps.wizard.application.WizardApplicationContext
+import it.unibo.pps.wizard.application.gui.controllers.GameBoardController
+import it.unibo.pps.wizard.application.gui.pages.template.{ApplicablePage, FXMLPage}
+import scalafx.stage.Stage
+
+case class GameBoardView(override protected val stage: Stage)(using
+    protected val context: WizardApplicationContext
+) extends FXMLPage(GameBoardController(stage), "game-board")
+    with ApplicablePage
+
 //
 //import it.unibo.pps.wizard.application.gui.components.{HandView, TableView, TrumpView}
 //import it.unibo.pps.wizard.engine.model.basic.Card.*
