@@ -22,7 +22,12 @@ class BotManagerVerticle(
       bots
         .get(invitation.playerId)
         .foreach: strategy =>
-          submit(strategy.decide(invitation))
+          vertx.setTimer(
+            2000,
+            _ => {
+              submit(strategy.decide(invitation))
+            }
+          )
 
   private def registerBots(players: Players): Unit =
     bots = players.toList

@@ -60,7 +60,9 @@ object GameEngine:
             completeTrick(currentState, updatedCore, updatedTable)
           else
             val nextPlayer =
-              updatedCore.players.nextAfter(playerId).getOrElse(currentState.currentPlayerTurn)
+              currentState.core.players
+                .nextAfter(playerId)
+                .getOrElse(currentState.currentPlayerTurn)
             currentState.copy(
               core = updatedCore,
               table = updatedTable,
@@ -108,6 +110,7 @@ object GameEngine:
       updatedCore.players,
       state.bids,
       updatedTricks,
+      updatedCore.round,
       updatedCore.scoreboard
     )
     nextRoundOrEnd(updatedCore.copy(scoreboard = updatedScoreboard))

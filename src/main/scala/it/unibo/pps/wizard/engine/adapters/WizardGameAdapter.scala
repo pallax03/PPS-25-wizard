@@ -46,9 +46,9 @@ class WizardGameAdapter(private val vertx: Vertx) extends WizardPort:
               this.publish(ActionFailed(action.playerId, error.toString))
             case Right(newState) =>
               this.currentState = WizardGameState.Running(newState)
-              this.publishAll(
-                ActionEvent.from(action) +: ProgressEvent.fromTransition(oldState, newState)
-              )
+              val actionEvent = ActionEvent.from(action)
+              val progressEvents = ProgressEvent.fromTransition(oldState, newState, action)
+              this.publishAll(actionEvent +: progressEvents)
               this.publishInvitationEvent(newState)
         case _ =>
 
