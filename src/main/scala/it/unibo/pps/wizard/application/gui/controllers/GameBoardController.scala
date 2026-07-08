@@ -87,7 +87,7 @@ class GameBoardController(override protected val stage: Stage)(using
       }
     )
 
-    this.trumpView = new TrumpView(status.trump)
+    this.trumpView = new TrumpView(status.core.trump)
     this.trumpContainer.getChildren.add(this.trumpView.delegate)
 
     val currentPlayer = status.core.players.toList.head
@@ -98,7 +98,9 @@ class GameBoardController(override protected val stage: Stage)(using
       onBidSubmitted =
         bid => context.wizardEngineProxy.submitAction(GameAction.PlaceBid(currentPlayer.id, bid)),
       onTrumpSelected = color =>
-        context.wizardEngineProxy.submitAction(GameAction.ChooseTrump(currentPlayer.id, color))
+        context.wizardEngineProxy.submitAction(
+          GameAction.ResolveTrumpColor(currentPlayer.id, color)
+        )
     )
     this.currentPlayerContainer.getChildren.add(this.currentPlayerView.delegate)
 
@@ -112,9 +114,9 @@ class GameBoardController(override protected val stage: Stage)(using
   private def subscribeToEvents(): Unit =
     println("Subscribed to game events")
     context.wizardEngineProxy.subscribe[ActionEvent]:
-      case ActionEvent.CardPlayed(playerId, card)     => onCardPlayed(playerId, card)
-      case ActionEvent.TrumpSelected(playerId, color) => onTrumpSelected(playerId, color)
-      case ActionEvent.BidPlaced(playerId, bid)       => onBidPlaced(playerId, bid)
+      case ActionEvent.CardPlayed(playerId, card)          => onCardPlayed(playerId, card)
+      case ActionEvent.TrumpColorResolved(playerId, color) => onTrumpSelected(playerId, color)
+      case ActionEvent.BidPlaced(playerId, bid)            => onBidPlaced(playerId, bid)
 
     context.wizardEngineProxy.subscribe[ProgressEvent]:
       case ProgressEvent.CardsDealt(hands, trump, round) => onCardsDealt(hands, trump, round)

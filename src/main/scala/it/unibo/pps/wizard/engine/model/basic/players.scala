@@ -28,4 +28,5 @@ object Players:
 
   extension (players: Players)
     def toList: List[Player] = players
+    def totalPlayers: Int = players.size
     def filter(predicate: Player => Boolean): Players = players.filter(predicate)
