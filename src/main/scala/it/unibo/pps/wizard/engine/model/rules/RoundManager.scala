@@ -35,26 +35,34 @@ object RoundManager:
           else State.pure[Deck, Option[Card]](None)
       yield (hands, trump)
 
-    def initialize: State[CoreState, GameState.Bidding] =
+    def initialize: State[CoreState, GameState] =
       for
         core <- State.get[CoreState]
 
-        (remainingDeck, (hands, maybeTrump)) = round.deal(core.players).run(core.deck).value
+        (remainingDeck, (hands, optionTrump)) = round.deal(core.players).run(core.deck).value
 
         firstPlayer = round.firstPlayer(core.players)
 
         newCore = core.copy(
           hands = hands,
-          deck = remainingDeck
+          deck = remainingDeck,
+          trump = optionTrump.asTrump
         )
 
         _ <- State.set(newCore)
-      yield GameState.Bidding(
-        core = newCore,
-        trump = Trump.asTrump(maybeTrump),
-        currentBids = Bids.empty,
-        currentPlayer = firstPlayer
-      )
+      yield
+        val isUnresolved: Boolean = core.trump match
+          case Trump.WizardUnresolved(c) => true
+          case _ => false
+        
+        if isUnresolved then 
+          GameState.ChoosingTrump(newCore)
+        else 
+          GameState.Bidding(  
+            core = newCore,
+            currentBids = Bids.empty,
+            currentPlayer = firstPlayer
+          )
 
   extension (expectedPlayer: PlayerId)
     def validateTurnOf(actionPlayer: PlayerId): Either[GameError, Unit] =

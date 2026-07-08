@@ -2,21 +2,19 @@ package it.unibo.pps.wizard.engine.model.core
 
 import it.unibo.pps.wizard.engine.model.basic.*
 
-sealed trait GameState:
-  def getPlayers: Players
+sealed trait GameState
 
 object GameState:
-  case class Bidding(core: CoreState, trump: Trump, currentBids: Bids, currentPlayer: PlayerId)
-      extends GameState:
-    override def getPlayers: Players = core.players
+  case class ChoosingTrump(
+    core: CoreState,
+  ) extends GameState
+  case class Bidding(core: CoreState, currentBids: Bids, currentPlayer: PlayerId)
+      extends GameState
   case class Playing(
       core: CoreState,
-      trump: Trump,
       bids: Bids,
       table: Table,
       currentPlayerTurn: PlayerId,
       tricksWon: Tricks
-  ) extends GameState:
-    override def getPlayers: Players = core.players
-  case class Ended(players: Players, scoreboard: Scoreboard) extends GameState:
-    override def getPlayers: Players = players
+  ) extends GameState
+  case class Ended(players: Players, scoreboard: Scoreboard) extends GameState

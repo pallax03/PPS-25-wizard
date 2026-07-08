@@ -1,24 +1,18 @@
 package it.unibo.pps.wizard.engine.model.core
 
 import GameError.*
-import it.unibo.pps.wizard.engine.model.basic.{
-  Deck,
-  Hand,
-  Hands,
-  PlayerId,
-  Players,
-  Round,
-  Scoreboard,
-  Table,
-  Tricks
-}
-import it.unibo.pps.wizard.engine.model.rules.{BiddingRules, ScoringRules}
-import it.unibo.pps.wizard.engine.model.rules.RoundManager.*
-import it.unibo.pps.wizard.engine.model.rules.TableRules.{evaluateTrick, validateAgainst}
+import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.rules.*
 
 object GameEngine:
   def processAction(state: GameState, action: GameAction): Either[GameError, GameState] =
     (state, action) match
+      case (currentState: GameState.ChoosingTrump, GameAction.ResolveTrumpColor(playerId, color)) =>
+        for
+          _ <- currentState.core.dealerId.validateTurnOf(playerId)
+          updatedTrump <- currentState.core.trump.resolveWizard(color)
+        yield GameState.Bidding(currentState.core.updateTrump(updatedTrump), Bids.empty, currentState.core.dealerId)
+
       case (currentState: GameState.Bidding, GameAction.PlaceBid(playerId, bid)) =>
         for
           _ <- currentState.currentPlayer.validateTurnOf(playerId)
@@ -35,7 +29,6 @@ object GameEngine:
             val firstPlayer = currentState.core.round.firstPlayer(currentState.core.players)
             GameState.Playing(
               core = currentState.core,
-              trump = currentState.trump,
               bids = updatedBids,
               table = Table.empty,
               currentPlayerTurn = firstPlayer,
@@ -49,12 +42,6 @@ object GameEngine:
               currentPlayer = nextPlayer
             )
 
-      case (currentState: GameState.Bidding, GameAction.ChooseTrump(playerId, color)) =>
-        for
-          _ <- currentState.currentPlayer.validateTurnOf(playerId)
-          updatedTrump <- currentState.trump.resolveWizard(color)
-        yield currentState.copy(trump = updatedTrump)
-
       case (currentState: GameState.Playing, GameAction.PlayCard(playerId, card)) =>
         val playerHand = currentState.core.hands.getHand(playerId).getOrElse(Hand.empty)
         val totalPlayers = currentState.core.players.toList.size
@@ -67,7 +54,7 @@ object GameEngine:
           val updatedCore = currentState.core.copy(hands = updatedHands)
 
           if updatedTable.size == totalPlayers then
-            val winnerId = updatedTable.evaluateTrick(currentState.trump)._1
+            val winnerId = updatedTable.evaluateTrick(currentState.core.trump)._1
             val updatedTricks = currentState.tricksWon.addTrickTo(winnerId)
 
             if updatedHands.areEmpty then
@@ -93,7 +80,6 @@ object GameEngine:
             else
               GameState.Playing(
                 core = updatedCore,
-                trump = currentState.trump,
                 bids = currentState.bids,
                 table = Table.empty,
                 currentPlayerTurn = winnerId,
@@ -120,9 +106,9 @@ object GameEngine:
       players = players,
       hands = Hands.empty,
       deck = Deck.create,
+      trump = Trump.Absent,
       round = round,
       dealerId = PlayerId(0),
       scoreboard = Scoreboard.empty
     )
-    val (_, biddingState) = round.initialize.run(core).value
-    biddingState
+    round.initialize.runA(core).value

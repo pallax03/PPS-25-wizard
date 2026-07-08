@@ -12,5 +12,5 @@ enum GameAction:
   def playerId: PlayerId
 
   case PlaceBid(playerId: PlayerId, bid: Bid)
-  case ChooseTrump(playerId: PlayerId, color: Card.Color)
+  case ResolveTrumpColor(playerId: PlayerId, color: Card.Color)
   case PlayCard(playerId: PlayerId, card: Card)

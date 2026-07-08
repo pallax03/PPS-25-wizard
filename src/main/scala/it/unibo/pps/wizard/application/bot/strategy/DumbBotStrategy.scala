@@ -16,4 +16,4 @@ class DumbBotStrategy(random: Random = Random()) extends BotStrategy:
       GameAction.PlayCard(context.playerId, context.legalCards.head)
     case InvitationEvent.WaitingForTrump(context) =>
       val colors = Card.Color.values
-      GameAction.ChooseTrump(context.playerId, colors(random.nextInt(colors.length)))
+      GameAction.ResolveTrumpColor(context.playerId, colors(random.nextInt(colors.length)))
