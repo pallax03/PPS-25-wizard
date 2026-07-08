@@ -9,6 +9,7 @@ object Table:
   extension (t: Table)
     def isEmpty: Boolean = t.isEmpty
     def size: Int = t.length
+    def isTrickComplete(totalPlayers: Int): Boolean = t.size == totalPlayers
 
     def plays: List[(PlayerId, Card)] = t
     def playedCards: List[Card] = t.map(_._2)

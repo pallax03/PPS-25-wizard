@@ -11,21 +11,21 @@ object RoundManager:
       val idx = players.toList.indexWhere(_.id == current)
       Either.cond(
         idx >= 0,
-        players.toList((idx + 1) % players.toList.size).id,
+        players.toList((idx + 1) % players.totalPlayers).id,
         GameError.NotYourTurn
       )
 
   extension (round: Round)
     def firstPlayer(players: Players): PlayerId =
-      players.toList((round.value - 1) % players.toList.size).id
+      players.toList((round.value - 1) % players.totalPlayers).id
 
-    def isComplete(currentTrickCount: Int): Boolean =
-      currentTrickCount == round.value
+    def isLastRound(players: Players): Boolean =
+      round.value == (Deck.create.length / players.totalPlayers)
 
     def deal(players: Players): State[Deck, (Hands, Option[Card])] =
       val cardsPerPlayer = round.value
       for
-        drawn <- Deck.pop(cardsPerPlayer * players.toList.size)
+        drawn <- Deck.pop(cardsPerPlayer * players.totalPlayers)
         hands = Hands(
           players.toList.map(_.id).zip(drawn.grouped(cardsPerPlayer).map(Hand(_)).toList).toMap
         )
@@ -51,7 +51,7 @@ object RoundManager:
 
         _ <- State.set(newCore)
       yield
-        val isUnresolved: Boolean = core.trump match
+        val isUnresolved: Boolean = newCore.trump match
           case Trump.WizardUnresolved(c) => true
           case _                         => false
 
@@ -66,13 +66,5 @@ object RoundManager:
   extension (expectedPlayer: PlayerId)
     def validateTurnOf(actionPlayer: PlayerId): Either[GameError, Unit] =
       Either.cond(actionPlayer == expectedPlayer, (), GameError.NotYourTurn)
-
-  extension (bidsCount: Int)
-    def isBiddingPhaseComplete(totalPlayers: Int): Boolean =
-      bidsCount == totalPlayers
-
-  extension (table: Table)
-    def isTrickComplete(totalPlayers: Int): Boolean =
-      table.size == totalPlayers
 
 export RoundManager.*

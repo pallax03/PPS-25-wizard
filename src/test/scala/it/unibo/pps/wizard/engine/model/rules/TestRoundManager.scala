@@ -35,14 +35,6 @@ class TestRoundManager extends AnyWordSpec with Matchers:
         round.next.next.firstPlayer(players) shouldBe PlayerId(3)
         round.next.next.next.firstPlayer(players) shouldBe PlayerId(1)
 
-    "checking round completion" should:
-      "return true if current trick count matches the round number" in:
-        Round.start.isComplete(1) shouldBe true
-        Round.start.next.isComplete(2) shouldBe true
-
-      "return false if current trick count is less than the round number" in:
-        Round.start.isComplete(0) shouldBe false
-
     "dealing cards" should:
       "distribute the correct amount of cards based on the round" in:
         val initialDeck = Deck.create
@@ -72,15 +64,6 @@ class TestRoundManager extends AnyWordSpec with Matchers:
       "fail with NotYourTurn if the action player is different" in:
         val expected = PlayerId(2)
         expected.validateTurnOf(PlayerId(1)) shouldBe Left(GameError.NotYourTurn)
-
-    "checking bidding phase completion" should:
-      "return true when the number of bids matches total players" in:
-        val bidsCount = 3
-        bidsCount.isBiddingPhaseComplete(3) shouldBe true
-
-      "return false when the number of bids is less than total players" in:
-        val bidsCount = 1
-        bidsCount.isBiddingPhaseComplete(3) shouldBe false
 
 //    "initializing a new round" should:
 //      "correctly transition to Bidding state if trump is not Unresolved" in:

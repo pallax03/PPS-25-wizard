@@ -25,10 +25,10 @@ object GameEngine:
             currentState.currentBids,
             playerId,
             currentState.core.round,
-            currentState.core.players.toList.size
+            currentState.core.players.totalPlayers
           )
         yield
-          val totalPlayers = currentState.core.players.toList.size
+          val totalPlayers = currentState.core.players.totalPlayers
           if updatedBids.isComplete(totalPlayers) then
             val firstPlayer = currentState.core.round.firstPlayer(currentState.core.players)
             GameState.Playing(
@@ -48,47 +48,16 @@ object GameEngine:
 
       case (currentState: GameState.Playing, GameAction.PlayCard(playerId, card)) =>
         val playerHand = currentState.core.hands.getHand(playerId).getOrElse(Hand.empty)
-        val totalPlayers = currentState.core.players.toList.size
         for
           _ <- currentState.currentPlayerTurn.validateTurnOf(playerId)
           _ <- card.validateAgainst(currentState.table, playerHand)
         yield
-          val updatedHands = currentState.core.hands.remove(playerId, card)
+          val updatedCore =
+            currentState.core.copy(hands = currentState.core.hands.remove(playerId, card))
           val updatedTable = currentState.table + (playerId, card)
-          val updatedCore = currentState.core.copy(hands = updatedHands)
 
-          if updatedTable.size == totalPlayers then
-            val winnerId = updatedTable.evaluateTrick(currentState.core.trump)._1
-            val updatedTricks = currentState.tricksWon.addTrickTo(winnerId)
-
-            if updatedHands.areEmpty then
-              val updatedScoreboard = ScoringRules.compute(
-                updatedCore.players,
-                currentState.bids,
-                updatedTricks,
-                updatedCore.scoreboard
-              )
-
-              val finalCore = updatedCore.copy(scoreboard = updatedScoreboard)
-
-              if finalCore.round.value == (Deck.create.length / totalPlayers) then
-                GameState.Ended(updatedCore.players, finalCore.scoreboard)
-              else
-                val nextRound = finalCore.round.next
-                val coreForNextRound = finalCore.copy(
-                  round = nextRound,
-                  dealerId = finalCore.players.nextAfter(finalCore.dealerId).getOrElse(PlayerId(0))
-                )
-                val (_, nextBiddingState) = nextRound.initialize.run(coreForNextRound).value
-                nextBiddingState
-            else
-              GameState.Playing(
-                core = updatedCore,
-                bids = currentState.bids,
-                table = Table.empty,
-                currentPlayerTurn = winnerId,
-                tricksWon = updatedTricks
-              )
+          if updatedTable.isTrickComplete(updatedCore.players.totalPlayers) then
+            completeTrick(currentState, updatedCore, updatedTable)
           else
             val nextPlayer =
               updatedCore.players.nextAfter(playerId).getOrElse(currentState.currentPlayerTurn)
@@ -98,11 +67,7 @@ object GameEngine:
               currentPlayerTurn = nextPlayer
             )
 
-      case (GameState.Ended(_, _), _) =>
-        Left(InvalidAction)
-
-      case (_, _) =>
-        Left(InvalidAction)
+      case (_, _) => Left(InvalidAction)
 
   def initializeGame(players: Players): GameState =
     val round = Round.start
@@ -116,3 +81,42 @@ object GameEngine:
       scoreboard = Scoreboard.empty
     )
     round.initialize.runA(core).value
+
+  private def completeTrick(
+      state: GameState.Playing,
+      updatedCore: CoreState,
+      completedTable: Table
+  ): GameState =
+    val winnerId = completedTable.evaluateTrick(updatedCore.trump)._1
+    val updatedTricks = state.tricksWon.addTrickTo(winnerId)
+
+    if isRoundComplete(updatedCore.hands) then completeRound(state, updatedCore, updatedTricks)
+    else
+      state.copy(
+        core = updatedCore,
+        table = Table.empty,
+        currentPlayerTurn = winnerId,
+        tricksWon = updatedTricks
+      )
+
+  private def completeRound(
+      state: GameState.Playing,
+      updatedCore: CoreState,
+      updatedTricks: Tricks
+  ): GameState =
+    val updatedScoreboard = ScoringRules.compute(
+      updatedCore.players,
+      state.bids,
+      updatedTricks,
+      updatedCore.scoreboard
+    )
+    nextRoundOrEnd(updatedCore.copy(scoreboard = updatedScoreboard))
+
+  private def nextRoundOrEnd(core: CoreState): GameState =
+    if core.round.isLastRound(core.players) then GameState.Ended(core.players, core.scoreboard)
+    else
+      val nextRound = core.round.next
+      val nextDealer = core.players.nextAfter(core.dealerId).getOrElse(core.dealerId)
+      nextRound.initialize.runA(core.copy(round = nextRound, dealerId = nextDealer)).value
+
+  private def isRoundComplete(hands: Hands): Boolean = hands.areEmpty

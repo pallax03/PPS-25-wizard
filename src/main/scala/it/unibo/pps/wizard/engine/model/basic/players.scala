@@ -26,4 +26,6 @@ object Players:
   private def generateComputers(numberOfComputers: Int): Players =
     (1 to numberOfComputers).map(id => Player.computer(PlayerId(id))).toList
 
-  extension (players: Players) def toList: List[Player] = players.toList
+  extension (players: Players)
+    def toList: List[Player] = players
+    def totalPlayers: Int = players.size
