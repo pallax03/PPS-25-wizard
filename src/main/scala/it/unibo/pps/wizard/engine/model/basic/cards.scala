@@ -57,8 +57,8 @@ object Card:
   extension (optCard: Option[Card])
     def asTrump: Trump = optCard match
       case Some(card) => Trump(card)
-      case None => Trump.Absent
-  
+      case None       => Trump.Absent
+
   extension (cards: List[Card]) infix def -(other: Card): List[Card] = cards :+ other
 
 /**

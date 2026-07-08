@@ -12,5 +12,5 @@ object ActionEvent:
 
   def from(action: GameAction): ActionEvent = action match
     case GameAction.ResolveTrumpColor(playerId, color) => TrumpColorResolved(playerId, color)
-    case GameAction.PlaceBid(playerId, bid)      => BidPlaced(playerId, bid)
-    case GameAction.PlayCard(playerId, card)     => CardPlayed(playerId, card)
+    case GameAction.PlaceBid(playerId, bid)            => BidPlaced(playerId, bid)
+    case GameAction.PlayCard(playerId, card)           => CardPlayed(playerId, card)

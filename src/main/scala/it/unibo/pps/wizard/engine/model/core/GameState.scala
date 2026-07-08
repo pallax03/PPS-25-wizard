@@ -6,10 +6,9 @@ sealed trait GameState
 
 object GameState:
   case class ChoosingTrump(
-    core: CoreState,
+      core: CoreState
   ) extends GameState
-  case class Bidding(core: CoreState, currentBids: Bids, currentPlayer: PlayerId)
-      extends GameState
+  case class Bidding(core: CoreState, currentBids: Bids, currentPlayer: PlayerId) extends GameState
   case class Playing(
       core: CoreState,
       bids: Bids,

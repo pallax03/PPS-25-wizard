@@ -11,4 +11,4 @@ case class CoreState(
     dealerId: PlayerId,
     scoreboard: Scoreboard
 ):
-  def updateTrump(trump: Trump): CoreState = this.copy(trump= trump)
+  def updateTrump(trump: Trump): CoreState = this.copy(trump = trump)

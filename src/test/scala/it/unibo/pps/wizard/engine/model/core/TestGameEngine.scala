@@ -101,7 +101,7 @@ class TestGameEngine extends AnyWordSpec with Matchers:
       val result = GameEngine.processAction(choosingState, action)
 
       result match
-        case Left(value) => print(value)
+        case Left(value)  => print(value)
         case Right(value) => ()
 
       result.isRight shouldBe true

@@ -53,12 +53,11 @@ object RoundManager:
       yield
         val isUnresolved: Boolean = core.trump match
           case Trump.WizardUnresolved(c) => true
-          case _ => false
-        
-        if isUnresolved then 
-          GameState.ChoosingTrump(newCore)
-        else 
-          GameState.Bidding(  
+          case _                         => false
+
+        if isUnresolved then GameState.ChoosingTrump(newCore)
+        else
+          GameState.Bidding(
             core = newCore,
             currentBids = Bids.empty,
             currentPlayer = firstPlayer

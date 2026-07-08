@@ -11,7 +11,11 @@ object GameEngine:
         for
           _ <- currentState.core.dealerId.validateTurnOf(playerId)
           updatedTrump <- currentState.core.trump.resolveWizard(color)
-        yield GameState.Bidding(currentState.core.updateTrump(updatedTrump), Bids.empty, currentState.core.dealerId)
+        yield GameState.Bidding(
+          currentState.core.updateTrump(updatedTrump),
+          Bids.empty,
+          currentState.core.dealerId
+        )
 
       case (currentState: GameState.Bidding, GameAction.PlaceBid(playerId, bid)) =>
         for

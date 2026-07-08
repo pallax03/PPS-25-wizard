@@ -16,7 +16,7 @@ class BotManagerVerticle(
   override def start(): Unit =
     wizardPort.subscribe[LifecycleEvent]:
       case LifecycleEvent.GameStarted(players) => registerBots(players)
-      case _: LifecycleEvent.GameEnded              => bots = Map.empty
+      case _: LifecycleEvent.GameEnded         => bots = Map.empty
 
     wizardPort.subscribe[InvitationEvent]: invitation =>
       bots
