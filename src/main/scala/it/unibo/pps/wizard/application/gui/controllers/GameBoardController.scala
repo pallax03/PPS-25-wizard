@@ -139,10 +139,14 @@ class GameBoardController(override protected val stage: Stage)(using
   @FXML
   def openScoreboardWindow(): Unit =
     context.wizardEngineProxy.getState.onComplete:
-      case Success(Running(status: Bidding)) =>
+      case Success(Running(status: (Bidding | Playing))) =>
+        val core = status match
+          case b: Bidding => b.core
+          case p: Playing => p.core
+          
         Platform.runLater:
-          val scoresMap = status.core.scoreboard
-          val allPlayers = status.core.players
+          val scoresMap = core.scoreboard
+          val allPlayers = core.players
 
           val scoreboardView = new ScoreboardView(allPlayers)
 
