@@ -2,7 +2,13 @@ package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
-import it.unibo.pps.wizard.application.gui.components.{GameInfo, HumanPlayerView, OpponentsView, ScoreboardView, TrumpView}
+import it.unibo.pps.wizard.application.gui.components.{
+  GameInfo,
+  HumanPlayerView,
+  OpponentsView,
+  ScoreboardView,
+  TrumpView
+}
 import it.unibo.pps.wizard.application.gui.managers.{HandManager, TableManager}
 import it.unibo.pps.wizard.engine.events.{ActionEvent, InvitationEvent, ProgressEvent}
 import it.unibo.pps.wizard.engine.model.game.WizardGameState.Running
@@ -54,7 +60,7 @@ class GameBoardController(override protected val stage: Stage)(using
   private def initViewAndSubscribe(): Unit =
     println("Richiesta dello stato iniziale del gioco al proxy...")
 
-    context.wizardEngineProxy.getState.onComplete:
+    context.inboundPort.getState.onComplete:
       case Success(Running(status: Bidding)) =>
         Platform.runLater:
           println("Stato di gioco ricevuto. Generazione componenti e iscrizione eventi...")
@@ -83,7 +89,7 @@ class GameBoardController(override protected val stage: Stage)(using
       onCardDropped = (card, mouseX, mouseY) => {
         tableManager.setHighlight(false)
         if tableManager.isOver(mouseX, mouseY) then
-          context.wizardEngineProxy.submitAction(PlayCard(currentPlayerId, card))
+          context.inboundPort.submitAction(PlayCard(currentPlayerId, card))
       }
     )
 
@@ -96,9 +102,9 @@ class GameBoardController(override protected val stage: Stage)(using
       currentPlayer,
       isMyTurn,
       onBidSubmitted =
-        bid => context.wizardEngineProxy.submitAction(GameAction.PlaceBid(currentPlayer.id, bid)),
+        bid => context.inboundPort.submitAction(GameAction.PlaceBid(currentPlayer.id, bid)),
       onTrumpSelected = color =>
-        context.wizardEngineProxy.submitAction(
+        context.inboundPort.submitAction(
           GameAction.ResolveTrumpColor(currentPlayer.id, color)
         )
     )
@@ -113,30 +119,29 @@ class GameBoardController(override protected val stage: Stage)(using
 
   private def subscribeToEvents(): Unit =
     println("Subscribed to game events")
-    context.wizardEngineProxy.subscribe[ActionEvent]:
+    context.inboundPort.subscribe[ActionEvent]:
       case ActionEvent.CardPlayed(playerId, card)          => onCardPlayed(playerId, card)
       case ActionEvent.TrumpColorResolved(playerId, color) => onTrumpSelected(playerId, color)
       case ActionEvent.BidPlaced(playerId, bid)            => onBidPlaced(playerId, bid)
 
-    context.wizardEngineProxy.subscribe[ProgressEvent]:
-      case ProgressEvent.CardsDealt(playerId, hands, trump, round) => onCardsDealt(playerId, hands, trump, round)
+    context.inboundPort.subscribe[ProgressEvent]:
+      case ProgressEvent.CardsDealt(playerId, hands, trump, round) =>
+        onCardsDealt(playerId, hands, trump, round)
       case ProgressEvent.TrickWon(winnerId, trickedCards) => onTrickWon(winnerId, trickedCards)
-      case ProgressEvent.RoundScored(scoreboard) => ???
+      case ProgressEvent.RoundScored(scoreboard)          => ???
 //          Platform.runLater:
 //          println(s"Evento ricevuto: Round completato. Classifica aggiornata: $scoreboard")
       case ProgressEvent.PhaseChanged(phase) => onPhaseChanged(phase)
 
-    context.wizardEngineProxy.subscribe[InvitationEvent]:
+    context.inboundPort.subscribe[InvitationEvent]:
       case InvitationEvent.WaitingForTrump(context) => onWaitingForTrump(context.playerId)
-      case _ =>
+      case _                                        =>
 
   private def onWaitingForTrump(value: PlayerId): Unit =
     Platform.runLater:
       println(s"Evento ricevuto: Attesa selezione Trump dal giocatore $value")
-      if value == currentPlayerView.player.id then
-        currentPlayerView.setTrumpSelectionEnabled(true)
-      else
-        currentPlayerView.setTrumpSelectionEnabled(false)
+      if value == currentPlayerView.player.id then currentPlayerView.setTrumpSelectionEnabled(true)
+      else currentPlayerView.setTrumpSelectionEnabled(false)
 
   private def onTrickWon(winnerId: PlayerId, trickedCards: List[Card]): Unit =
     Platform.runLater:
@@ -146,16 +151,14 @@ class GameBoardController(override protected val stage: Stage)(using
   private def onPhaseChanged(phase: String): Unit =
     Platform.runLater:
       GameInfo.changePhase(this.gameInfo, phase)
-      if phase == "Bidding" then
-        currentPlayerView.setBidTextFieldEnabled(true)
-      else
-        currentPlayerView.setBidTextFieldEnabled(false)
+      if phase == "Bidding" then currentPlayerView.setBidTextFieldEnabled(true)
+      else currentPlayerView.setBidTextFieldEnabled(false)
 
   private def onCardsDealt(playerId: PlayerId, hands: Hands, trump: Trump, round: Round): Unit =
     Platform.runLater:
       GameInfo.incrementRound(this.gameInfo, round.value)
       println(s"Evento ricevuto: Carte distribuite. Player: $playerId Trump: $trump Hands: $hands")
-      //this.handManager.update(hands.getHand(this.currentPlayerView.player.id).getOrElse(Hand.empty))
+      // this.handManager.update(hands.getHand(this.currentPlayerView.player.id).getOrElse(Hand.empty))
       this.trumpView = TrumpView(trump)
       val currentPlayerId = this.currentPlayerView.player.id
       this.handManager.initializeHand(
@@ -165,7 +168,7 @@ class GameBoardController(override protected val stage: Stage)(using
         onCardDropped = (card, mouseX, mouseY) => {
           tableManager.setHighlight(false)
           if tableManager.isOver(mouseX, mouseY) then
-            context.wizardEngineProxy.submitAction(PlayCard(currentPlayerId, card))
+            context.inboundPort.submitAction(PlayCard(currentPlayerId, card))
         }
       )
 
@@ -183,19 +186,17 @@ class GameBoardController(override protected val stage: Stage)(using
   private def onBidPlaced(playerId: PlayerId, bid: Bid): Unit =
     Platform.runLater:
       println(s"Evento ricevuto: Offerta piazzata dal giocatore $playerId: $bid")
-      if playerId == currentPlayerView.player.id then
-        this.currentPlayerView.updateBid(bid)
-      else
-        this.opponentsView.updateOpponentBid(playerId, bid)
+      if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
+      else this.opponentsView.updateOpponentBid(playerId, bid)
 
   @FXML
   def openScoreboardWindow(): Unit =
-    context.wizardEngineProxy.getState.onComplete:
+    context.inboundPort.getState.onComplete:
       case Success(Running(status: (Bidding | Playing))) =>
         val core = status match
           case b: Bidding => b.core
           case p: Playing => p.core
-          
+
         Platform.runLater:
           val scoresMap = core.scoreboard
           val allPlayers = core.players

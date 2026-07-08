@@ -1,39 +1,32 @@
 package it.unibo.pps.wizard
 
-import io.vertx.core.{Future, Promise, Vertx}
+import io.vertx.core.Vertx
 import it.unibo.pps.wizard.application.WizardApplication
 import it.unibo.pps.wizard.application.bot.BotManagerVerticle
-import it.unibo.pps.wizard.application.proxy.LocalWizardProxy
-import it.unibo.pps.wizard.engine.services.WizardService
+import it.unibo.pps.wizard.engine.adapters.{VertxEventBusAdapter, WizardGameAdapter}
+import it.unibo.pps.wizard.engine.ports.{WizardInboundPort, WizardOutboundPort}
 
-@main
-def main(): Unit =
-  deployServiceLocally()
-    .map:
-      deployApplicationLocally
-    .onFailure: error =>
-      error.printStackTrace()
-      System.exit(1)
+object Main:
 
-def deployServiceLocally(): Future[WizardService] =
-  println("Deploying wizard engine service...")
-  val vertx = Vertx.vertx()
-  val service = WizardService()
-  val serviceDeployed: Promise[WizardService] = Promise.promise()
-  vertx
-    .deployVerticle(service)
-    .onSuccess: _ =>
-      println("Wizard engine service deployed.")
-      service.localAdapter.foreach: adapter =>
-        vertx.deployVerticle(new BotManagerVerticle(adapter))
-      serviceDeployed.complete(service)
-    .onFailure: error =>
-      println("Failed to deploy wizard engine service.")
-      serviceDeployed.fail(error)
-  serviceDeployed.future()
+  def main(args: Array[String]): Unit =
+    try
+      println("Starting wizard system...")
+      val vertx = Vertx.vertx()
 
-def deployApplicationLocally(service: WizardService): Unit =
-  service.localAdapter.foreach: localAdapter =>
-    println("Deploying wizard application...")
-    WizardApplication.launch(LocalWizardProxy(localAdapter))(Array.empty)
-    println("Wizard application deployed.")
+      val wizardOutboundPort: WizardOutboundPort = VertxEventBusAdapter(vertx)
+
+      val wizardEnginePort: WizardInboundPort = WizardGameAdapter(vertx, wizardOutboundPort)
+
+      vertx
+        .deployVerticle(BotManagerVerticle(wizardEnginePort))
+        .onSuccess(_ => println("Bot manager deployed."))
+        .onFailure(err => println("Failed to deploy bot manager: " + err.getMessage))
+
+      println("Launching wizard application...")
+      WizardApplication.launch(wizardEnginePort)(Array.empty)
+
+    catch
+      case error: Throwable =>
+        println("Error during wizard system startup: " + error.getMessage)
+        error.printStackTrace()
+        System.exit(1)

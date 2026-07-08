@@ -16,8 +16,7 @@ object Table:
     def playerOf(card: Card): Option[PlayerId] = t.find(_._2 == card).map(_._1)
 
     def followingCard: Option[Card.Standard] =
-      if t.playedCards.exists(c => c.isInstanceOf[Card.Wizard]) then
-        Option.empty
+      if t.playedCards.exists(c => c.isInstanceOf[Card.Wizard]) then Option.empty
       else
         t.playedCards
           .dropWhile(_.isInstanceOf[Card.Jester])

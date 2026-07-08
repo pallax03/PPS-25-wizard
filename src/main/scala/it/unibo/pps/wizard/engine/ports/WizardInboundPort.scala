@@ -9,7 +9,7 @@ import it.unibo.pps.wizard.engine.model.game.WizardGameState
 import scala.concurrent.Future
 import scala.reflect.ClassTag
 
-trait WizardPort:
+trait WizardInboundPort:
 
   def getState: Future[WizardGameState]
 

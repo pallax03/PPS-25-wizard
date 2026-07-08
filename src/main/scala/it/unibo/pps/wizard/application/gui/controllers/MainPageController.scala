@@ -28,7 +28,7 @@ class MainPageController(override protected val stage: Stage)(using
     val players = Players(Player.human(PlayerId(0), PlayerName(playerName)))
 
     println(s"Giocatore: $playerName, Avversari: $opponentsNum")
-    context.wizardEngineProxy
+    context.inboundPort
       .startGame(players, GameConfiguration(playerName, opponentsNum))
       .onComplete:
         case Success(_) =>

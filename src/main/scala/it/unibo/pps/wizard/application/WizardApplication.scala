@@ -2,7 +2,7 @@ package it.unibo.pps.wizard.application
 
 import it.unibo.pps.wizard.application.WizardApplicationContext.WizardApplicationContextBuilder
 import it.unibo.pps.wizard.application.gui.pages.MainMenuPage
-import it.unibo.pps.wizard.engine.ports.WizardPort
+import it.unibo.pps.wizard.engine.ports.WizardInboundPort
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
 
@@ -14,9 +14,9 @@ object WizardApplication extends JFXApp3:
 
   given applicationContext: WizardApplicationContext = this.contextBuilder.build
 
-  def launch(wizardEngineProxy: WizardPort)(args: Array[String]): Unit =
+  def launch(inboundPort: WizardInboundPort)(args: Array[String]): Unit =
     Future:
-      this.contextBuilder.setWizardEngineProxy(wizardEngineProxy)
+      this.contextBuilder.setInboundPort(inboundPort)
       this.main(args)
 
   override def start(): Unit =
