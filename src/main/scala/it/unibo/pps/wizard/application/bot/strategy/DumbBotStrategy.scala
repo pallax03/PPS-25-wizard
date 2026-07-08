@@ -11,7 +11,7 @@ class DumbBotStrategy(random: Random = Random()) extends BotStrategy:
 
   override def decide(invitation: InvitationEvent): GameAction = invitation match
     case InvitationEvent.WaitingForBid(context) =>
-      GameAction.PlaceBid(context.playerId, Bid.zero)
+      GameAction.PlaceBid(context.playerId, Bid(1))
     case InvitationEvent.WaitingForCard(context) =>
       GameAction.PlayCard(context.playerId, context.legalCards.head)
     case InvitationEvent.WaitingForTrump(context) =>

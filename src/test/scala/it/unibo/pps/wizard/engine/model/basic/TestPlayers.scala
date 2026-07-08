@@ -19,6 +19,13 @@ class TestPlayers extends AnyWordSpec with Matchers:
       com.id shouldBe id
       com.isBot shouldBe true
 
-//  "Players" should:
-//    "create" in:
-//      ???
+  "Players" should:
+    val p1 = Player.human(PlayerId(1), PlayerName("Alice"))
+    val p2 = Player.human(PlayerId(2), PlayerName("Bob"))
+    val players = Players(p1, p2)
+    "be created with a list of players" in:
+      players.toList should contain theSameElementsAs List(p1, p2)
+
+    "be created with a list of players and bots" in:
+      val playersAndBots = Players.create(players, 2)
+      playersAndBots.toList.size shouldBe 4

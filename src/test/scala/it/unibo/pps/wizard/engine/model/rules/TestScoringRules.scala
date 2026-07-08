@@ -12,29 +12,47 @@ class TestScoringRules extends AnyWordSpec with Matchers:
   val p1: Player = Player.human(PlayerId(1), PlayerName("Bob"))
   val p2: Player = Player.human(PlayerId(2), PlayerName("Charlie"))
   val players: Players = Players(p0, p1, p2)
+  val round: Round = Round(1)
 
   "ScoringRules calculation" when:
     "a player matches their bid" should:
       "award 20 points for 0 tricks" in:
-        Bid(0).scoreAgainst(0) shouldBe 20
+        Bid(0).calculatePointsFor(0) shouldBe Score(20)
 
       "award base 20 + 10 per trick for exact positive bid" in:
-        Bid(2).scoreAgainst(2) shouldBe 40 // 20 + 2*10
+        Bid(2).calculatePointsFor(2) shouldBe Score(40)
 
     "a player fails their bid" should:
       "deduct 10 points per trick of difference when winning more" in:
-        Bid(1).scoreAgainst(3) shouldBe -20 // diff 2 * 10 = 20 penalty
+        Bid(1).calculatePointsFor(3) shouldBe Score(-20)
 
       "deduct 10 points per trick of difference when winning fewer" in:
-        Bid(3).scoreAgainst(0) shouldBe -30 // diff 3 * 10 = 30 penalty
+        Bid(3).calculatePointsFor(0) shouldBe Score(-30)
 
-  "ScoringRules integration" should:
-    "correctly update the scoreboard for all players" in:
-      val bids = Bids.empty + (p1.id -> Bid(1)) + (p2.id -> Bid(2))
-      val tricks = Tricks(Map(p1.id -> 1, p2.id -> 2))
-      val initialScoreboard = Scoreboard.empty.updateScore(p1.id, 50)
+  "ScoringRules integration" when:
+    "simulating a multi-round game sequence" should:
 
-      val finalScoreboard = compute(players, bids, tricks, initialScoreboard)
+      val round1 = Round(1)
+      val bids1 = Bids.empty + (p0.id -> Bid(0)) + (p1.id -> Bid(1)) + (p2.id -> Bid(2))
+      val tricks1 = Tricks(Map(p0.id -> 0, p1.id -> 1, p2.id -> 2))
+      val scoreboardAfterR1 = compute(players, bids1, tricks1, round1, Scoreboard.empty)
 
-      finalScoreboard(p1.id) shouldBe 80 // 50 + 30 (20+10)
-      finalScoreboard(p2.id) shouldBe 40 // 0 + 40 (20+20)
+      "calculate baseline points correctly for Round 1" in:
+        scoreboardAfterR1(p0.id)(round1) shouldBe (Score(20), Bid(0))
+        scoreboardAfterR1(p1.id)(round1) shouldBe (Score(30), Bid(1))
+        scoreboardAfterR1(p2.id)(round1) shouldBe (Score(40), Bid(2))
+
+      val round2 = Round(2)
+      val bids2 = Bids.empty + (p0.id -> Bid(1)) + (p1.id -> Bid(2)) + (p2.id -> Bid(0))
+      val tricks2 = Tricks(Map(p0.id -> 1, p1.id -> 0, p2.id -> 2))
+      val scoreboardAfterR2 = compute(players, bids2, tricks2, round2, scoreboardAfterR1)
+
+      "add round 2 gains to the previous baseline for successful bids" in:
+        scoreboardAfterR2(p0.id)(round2) shouldBe (Score(50), Bid(1))
+
+      "deduct round 2 penalties from the previous baseline for failed bids" in:
+        scoreboardAfterR2(p1.id)(round2) shouldBe (Score(10), Bid(2))
+        scoreboardAfterR2(p2.id)(round2) shouldBe (Score(20), Bid(0))
+
+      "keep historical records for older rounds intact after the new round is processed" in:
+        scoreboardAfterR2(p0.id)(round1)._1.value shouldBe 20
