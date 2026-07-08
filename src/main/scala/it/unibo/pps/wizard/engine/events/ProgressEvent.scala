@@ -7,10 +7,10 @@ import it.unibo.pps.wizard.engine.model.core.GameState
 sealed trait ProgressEvent extends WizardEvent
 
 object ProgressEvent:
-  case class CardsDealt(hands: Hands, trump: Trump) extends ProgressEvent
+  case class CardsDealt(hands: Hands, trump: Trump, round: Round) extends ProgressEvent
   case class TrickWon(winnerId: PlayerId, trickedCards: List[Card]) extends ProgressEvent
   case class RoundScored(scoreboard: Scoreboard) extends ProgressEvent
-  case class PhaseChanged(state: GameState) extends ProgressEvent
+  case class PhaseChanged(phase: String) extends ProgressEvent
 
   def fromTransition(oldState: GameState, newState: GameState): List[WizardEvent] =
     (oldState, newState) match
@@ -23,8 +23,8 @@ object ProgressEvent:
         List(
           TrickWon(newS.currentPlayer, oldS.table.playedCards),
           RoundScored(newS.core.scoreboard),
-          CardsDealt(newS.core.hands, newS.trump),
-          PhaseChanged(newS)
+          CardsDealt(newS.core.hands, newS.trump, newS.core.round),
+          PhaseChanged(newS.getClass.getSimpleName)
         )
       case (oldS: GameState.Playing, newS: GameState.Ended) =>
         List(
@@ -33,6 +33,6 @@ object ProgressEvent:
           GameEnded(newS.scoreboard)
         )
       case (oldState, newState) if oldState.getClass != newState.getClass =>
-        List(PhaseChanged(newState))
+        List(PhaseChanged(newState.getClass.getSimpleName))
       case _ =>
         List.empty

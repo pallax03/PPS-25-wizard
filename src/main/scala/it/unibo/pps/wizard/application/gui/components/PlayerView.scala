@@ -26,11 +26,11 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
     fill = if isCurrentTurn then Color.rgb(230, 126, 34) else Color.rgb(178, 190, 195)
 
   protected val nameLabel = new Label(player.name.toString):
-    font = Font.font("Arial", FontWeight.Bold, 12)
+    font = Font.font("Arial", FontWeight.Bold, 15)
     textFill = Color.White
 
   protected var bidLabel = new Label(s"Bid: 0"):
-    font = Font.font("Arial", FontWeight.Normal, 10)
+    font = Font.font("Arial", FontWeight.Normal, 13)
     textFill = Color.rgb(178, 190, 195)
 
   def updateBid(bid: Bid): Unit =
@@ -39,7 +39,7 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
 class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
     extends BasePlayerView(player, isCurrentTurn):
   private val roleLabel = new Label("Bot"):
-    font = Font.font("Arial", FontWeight.Normal, 10)
+    font = Font.font("Arial", FontWeight.Normal, 13)
     textFill = Color.rgb(140, 140, 140)
 
   children = Seq(avatarIndicator, nameLabel, roleLabel, bidLabel)
@@ -52,14 +52,14 @@ class HumanPlayerView(
 ) extends BasePlayerView(player, isCurrentTurn):
 
   private val roleLabel = new Label("You"):
-    font = Font.font("Arial", FontWeight.Normal, 10)
+    font = Font.font("Arial", FontWeight.Normal, 13)
     textFill = Color.rgb(230, 126, 34)
 
   val bidField = new TextField:
     promptText = "Bid"
     maxWidth = 60
     prefWidth = 60
-    font = Font.font("Arial", 10)
+    font = Font.font("Arial", 13)
     disable = !isCurrentTurn
 
     onAction = _ =>

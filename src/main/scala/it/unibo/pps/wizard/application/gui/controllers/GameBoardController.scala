@@ -2,10 +2,9 @@ package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
-import it.unibo.pps.wizard.application.gui.components.ScoreboardView
+import it.unibo.pps.wizard.application.gui.components.{GameInfo, HumanPlayerView, OpponentsView, ScoreboardView, TrumpView}
 import it.unibo.pps.wizard.application.gui.managers.{HandManager, TableManager}
-import it.unibo.pps.wizard.application.gui.components.{HumanPlayerView, OpponentsView, TrumpView}
-import it.unibo.pps.wizard.engine.events.ActionEvent
+import it.unibo.pps.wizard.engine.events.{ActionEvent, ProgressEvent}
 import it.unibo.pps.wizard.engine.model.game.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
@@ -17,7 +16,6 @@ import scalafx.stage.{Modality, Stage}
 import it.unibo.pps.wizard.engine.model.core.GameState.*
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import scalafx.scene.control.Label
-import scalafx.scene.text.{Font, FontWeight}
 import scalafx.scene.Scene
 import javafx.scene.layout.StackPane
 import scalafx.util.Duration
@@ -44,6 +42,7 @@ class GameBoardController(override protected val stage: Stage)(using
   @nowarn private var trumpView: TrumpView = _
   @nowarn private var currentPlayerView: HumanPlayerView = _
   @nowarn private var opponentsView: OpponentsView = _
+  @nowarn private var gameInfo: Label = _
 
   @FXML
   def initialize(): Unit =
@@ -107,10 +106,8 @@ class GameBoardController(override protected val stage: Stage)(using
     this.opponentsView = OpponentsView(playersContainer)
     this.opponentsView.renderAllOpponents(allOtherPlayers, currentPlayerId)
 
-    val gameInfo = new Label(s"Round: ${status.getClass.getSimpleName}"):
-      font = Font.font("Arial", FontWeight.Normal, 25)
-      textFill = scalafx.scene.paint.Color.White
-    this.gameInfoContainer.getChildren.add(gameInfo)
+    this.gameInfo = GameInfo(status.core.round.value, status.getClass.getSimpleName)
+    this.gameInfoContainer.getChildren.add(this.gameInfo)
 
   private def subscribeToEvents(): Unit =
     println("Subscribed to game events")
@@ -118,6 +115,31 @@ class GameBoardController(override protected val stage: Stage)(using
       case ActionEvent.CardPlayed(playerId, card)     => onCardPlayed(playerId, card)
       case ActionEvent.TrumpSelected(playerId, color) => onTrumpSelected(playerId, color)
       case ActionEvent.BidPlaced(playerId, bid)       => onBidPlaced(playerId, bid)
+
+    context.wizardEngineProxy.subscribe[ProgressEvent]:
+      case ProgressEvent.CardsDealt(hands, trump, round) => onCardsDealt(hands, trump, round)
+      case ProgressEvent.TrickWon(winnerId, trickedCards) => onTrickWon(winnerId, trickedCards)
+      case ProgressEvent.RoundScored(scoreboard) => ???
+//          Platform.runLater:
+//          println(s"Evento ricevuto: Round completato. Classifica aggiornata: $scoreboard")
+      case ProgressEvent.PhaseChanged(phase) => onPhaseChanged(phase)
+
+  private def onTrickWon(winnerId: PlayerId, trickedCards: List[Card]): Unit =
+    Platform.runLater:
+      println(s"Evento ricevuto: Trick vinto dal giocatore $winnerId con le carte: $trickedCards")
+      tableManager.initializeTable(Table.empty, None)
+
+  private def onPhaseChanged(phase: String): Unit =
+    Platform.runLater:
+      GameInfo.changePhase(this.gameInfo, phase)
+
+  private def onCardsDealt(hands: Hands, trump: Trump, round: Round) =
+    Platform.runLater:
+      GameInfo.incrementRound(this.gameInfo, round.value)
+      println(s"Evento ricevuto: Carte distribuite. Trump: $trump Hands: ${hands}")
+//      println(s"Evento ricevuto: Carte distribuite. Trump: $trump")
+//      handManager.updateHand(hands.getHand(currentPlayerView.player.id).getOrElse(Hand.empty))
+//      trumpView.updateTrumpColor(trump.color)
 
   private def onCardPlayed(playerId: PlayerId, card: Card): Unit =
     Platform.runLater:
@@ -133,8 +155,10 @@ class GameBoardController(override protected val stage: Stage)(using
   private def onBidPlaced(playerId: PlayerId, bid: Bid): Unit =
     Platform.runLater:
       println(s"Evento ricevuto: Offerta piazzata dal giocatore $playerId: $bid")
-      if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
-      else this.opponentsView.updateOpponentBid(playerId, bid)
+      if playerId == currentPlayerView.player.id then
+        this.currentPlayerView.updateBid(bid)
+      else
+        this.opponentsView.updateOpponentBid(playerId, bid)
 
   @FXML
   def openScoreboardWindow(): Unit =
