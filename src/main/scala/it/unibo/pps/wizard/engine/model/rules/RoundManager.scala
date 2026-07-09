@@ -20,7 +20,7 @@ object RoundManager:
       players.toList((round.value - 1) % players.totalPlayers).id
 
     def isLastRound(players: Players): Boolean =
-      round.value == (Deck.create.length / players.totalPlayers)
+      round.value == (Deck.TOTAL_SIZE / players.totalPlayers)
 
     def deal(players: Players): State[Deck, (Hands, Option[Card])] =
       val cardsPerPlayer = round.value

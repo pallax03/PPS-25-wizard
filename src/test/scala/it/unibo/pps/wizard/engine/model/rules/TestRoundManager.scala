@@ -54,6 +54,7 @@ class TestRoundManager extends AnyWordSpec with Matchers:
         hands.getHand(PlayerId(1)).value.size shouldBe 20
         trump shouldBe empty
         deckAfter.length shouldBe 0
+        maxRound.isLastRound(players) shouldBe true
 
     "validating the turn of a player" should:
       "succeed if the action player matches the expected player" in:
@@ -73,20 +74,26 @@ class TestRoundManager extends AnyWordSpec with Matchers:
         val TrumpResolved = Option(Card_TrumpResolved).asTrump
         val customDeck_TrumpResolved = Deck.create(deckCards - Card_TrumpResolved)
 
-        round.initialize(customDeck_TrumpResolved).runA(CoreState.initialize(players, round)).value match
+        round
+          .initialize(customDeck_TrumpResolved)
+          .runA(CoreState.initialize(players, round))
+          .value match
           case biddingState: GameState.Bidding =>
             biddingState.core.hands.getHand(p1.id).value.size shouldBe 1
             biddingState.currentPlayer shouldBe p1.id
             biddingState.core.trump shouldBe TrumpResolved
           case _ => ()
 
-      "correctly transition to ChoosingTrump state" in :
+      "correctly transition to ChoosingTrump state" in:
         val round = Round.start
         val Card_TrumpUnResolved = wizard
         val TrumpUnResolved = Option(Card_TrumpUnResolved).asTrump
         val customDeck_TrumpUnresolved = Deck.create(deckCards - Card_TrumpUnResolved)
 
-        round.initialize(customDeck_TrumpUnresolved).runA(CoreState.initialize(players, round)).value match
+        round
+          .initialize(customDeck_TrumpUnresolved)
+          .runA(CoreState.initialize(players, round))
+          .value match
           case choosingState: GameState.ChoosingTrump =>
             choosingState.core.hands.getHand(p1.id).value.size shouldBe 1
             choosingState.core.trump shouldBe TrumpUnResolved

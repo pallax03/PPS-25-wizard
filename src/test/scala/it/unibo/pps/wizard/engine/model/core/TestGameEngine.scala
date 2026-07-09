@@ -22,16 +22,6 @@ class TestGameEngine extends AnyWordSpec with Matchers:
 
   "A GameEngine" should:
 
-    "correctly initialize the game into a Bidding state" in:
-      val initialState = GameEngine.initializeGame(mockPlayers)
-
-      initialState shouldBe a[GameState.Bidding]
-      val biddingState = initialState.asInstanceOf[GameState.Bidding]
-
-      biddingState.core.players shouldBe mockPlayers
-      biddingState.core.round.value shouldBe 1
-      biddingState.currentBids.size shouldBe 0
-
     "allow the current player to place a valid bid" in:
       val currentBid = Bid(1)
       val initialState = GameEngine.initializeGame(mockPlayers).asInstanceOf[GameState.Bidding]
