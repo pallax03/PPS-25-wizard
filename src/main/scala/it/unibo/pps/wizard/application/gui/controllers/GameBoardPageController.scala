@@ -1,7 +1,6 @@
 package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
-import it.unibo.pps.wizard.application.gui.FXComponent
 import it.unibo.pps.wizard.application.gui.components.{GameInfo, HumanPlayerView, OpponentsView, ScoreboardView, TrumpView}
 import it.unibo.pps.wizard.application.gui.managers.{HandManager, TableManager}
 import it.unibo.pps.wizard.engine.adapters.WizardGameState.Running
@@ -11,7 +10,6 @@ import it.unibo.pps.wizard.engine.model.basic.Card.*
 import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameState}
 import javafx.scene.layout.{BorderPane, HBox, VBox}
-import scalafx.application.Platform
 import scalafx.stage.{Modality, Stage}
 import it.unibo.pps.wizard.engine.model.core.GameState.*
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
@@ -23,9 +21,8 @@ import scalafx.util.Duration
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class GameBoardPageController(protected val stage: Stage)(using
-    protected val context: WizardApplicationContext
-) extends FXComponent:
+class GameBoardPageController(stage: Stage)(using context: WizardApplicationContext)
+  extends Controller(stage):
 
   @nowarn @FXML private var rootPane: BorderPane = _
   @nowarn @FXML private var tableContainer: HBox = _
@@ -54,7 +51,7 @@ class GameBoardPageController(protected val stage: Stage)(using
       .getState
       .onComplete:
         case Success(Running(status: Bidding)) =>
-          Platform.runLater:
+          runOnUi:
             buildUI(status)
             subscribeToEvents()
 
@@ -124,24 +121,24 @@ class GameBoardPageController(protected val stage: Stage)(using
       case _                                        =>
 
   private def onWaitingForTrump(value: PlayerId): Unit =
-    Platform.runLater:
+    runOnUi:
       println(s"Event received: Waiting for Trump selection from player $value")
       if value == currentPlayerView.player.id then currentPlayerView.setTrumpSelectionEnabled(true)
       else currentPlayerView.setTrumpSelectionEnabled(false)
 
   private def onTrickWon(winnerId: PlayerId, trickedCards: List[Card]): Unit =
-    Platform.runLater:
+    runOnUi:
       println(s"Event received: Trick won by player $winnerId with cards: $trickedCards")
       tableManager.initializeTable(Table.empty, None)
 
   private def onPhaseChanged(phase: String): Unit =
-    Platform.runLater:
+    runOnUi:
       GameInfo.changePhase(this.gameInfo, phase)
       if phase == "Bidding" then currentPlayerView.setBidTextFieldEnabled(true)
       else currentPlayerView.setBidTextFieldEnabled(false)
 
   private def onCardsDealt(playerId: PlayerId, hands: Hands, trump: Trump, round: Round): Unit =
-    Platform.runLater:
+    runOnUi:
       GameInfo.incrementRound(this.gameInfo, round.value)
       println(s"Event received: Cards dealt. Player: $playerId Trump: $trump Hands: $hands")
       this.trumpView = TrumpView(trump)
@@ -158,18 +155,18 @@ class GameBoardPageController(protected val stage: Stage)(using
       )
 
   private def onCardPlayed(playerId: PlayerId, card: Card): Unit =
-    Platform.runLater:
+    runOnUi:
       println(s"Event received: Card played by player $playerId: $card")
       tableManager.addCard(card, playerId, false)
       handManager.removeCard(card)
 
   private def onTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
-    Platform.runLater:
+    runOnUi:
       println(s"Event received: Trump selected by player $playerId: $color")
       trumpView.updateTrumpColor(color)
 
   private def onBidPlaced(playerId: PlayerId, bid: Bid): Unit =
-    Platform.runLater:
+    runOnUi:
       println(s"Event received: Bid placed by player $playerId: $bid")
       if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
       else this.opponentsView.updateOpponentBid(playerId, bid)
@@ -184,7 +181,7 @@ class GameBoardPageController(protected val stage: Stage)(using
             case b: Bidding => b.core
             case p: Playing => p.core
 
-          Platform.runLater:
+          runOnUi:
             val scoresMap = core.scoreboard
             val allPlayers = core.players
 
