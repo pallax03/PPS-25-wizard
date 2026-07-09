@@ -5,9 +5,9 @@ import it.unibo.pps.wizard.application.gui.FXComponent
 import scalafx.application.Platform
 import scalafx.stage.Stage
 
-abstract class Controller(protected val stage: Stage)
-                         (using protected val context: WizardApplicationContext)
-  extends FXComponent:
+abstract class Controller(protected val stage: Stage)(using
+    protected val context: WizardApplicationContext
+) extends FXComponent:
 
   protected def runOnUi(action: => Unit): Unit =
     Platform.runLater(action)

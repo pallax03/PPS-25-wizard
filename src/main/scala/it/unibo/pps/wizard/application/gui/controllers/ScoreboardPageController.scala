@@ -7,7 +7,8 @@ import scalafx.collections.ObservableBuffer
 import scalafx.scene.layout.StackPane
 import scalafx.stage.Stage
 
-class ScoreboardPageController(stage: Stage)(using context: WizardApplicationContext) extends Controller(stage):
+class ScoreboardPageController(stage: Stage)(using context: WizardApplicationContext)
+    extends Controller(stage):
   @nowarn @FXML private var scoreboardContainer: StackPane = _
   @nowarn private var view: ScoreboardView = _
 

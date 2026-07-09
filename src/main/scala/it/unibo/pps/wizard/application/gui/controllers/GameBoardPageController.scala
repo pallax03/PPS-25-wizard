@@ -1,7 +1,13 @@
 package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
-import it.unibo.pps.wizard.application.gui.components.{GameInfo, HumanPlayerView, OpponentsView, ScoreboardView, TrumpView}
+import it.unibo.pps.wizard.application.gui.components.{
+  GameInfo,
+  HumanPlayerView,
+  OpponentsView,
+  ScoreboardView,
+  TrumpView
+}
 import it.unibo.pps.wizard.application.gui.managers.{HandManager, TableManager}
 import it.unibo.pps.wizard.engine.adapters.WizardGameState.Running
 import it.unibo.pps.wizard.engine.events.{ActionEvent, InvitationEvent, ProgressEvent}
@@ -22,7 +28,7 @@ import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class GameBoardPageController(stage: Stage)(using context: WizardApplicationContext)
-  extends Controller(stage):
+    extends Controller(stage):
 
   @nowarn @FXML private var rootPane: BorderPane = _
   @nowarn @FXML private var tableContainer: HBox = _
@@ -47,8 +53,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     this.initViewAndSubscribe()
 
   private def initViewAndSubscribe(): Unit =
-    context.inboundPort
-      .getState
+    context.inboundPort.getState
       .onComplete:
         case Success(Running(status: Bidding)) =>
           runOnUi:
@@ -98,7 +103,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
     val allOtherPlayers = status.core.players.filter(_.id != currentPlayerId)
     this.opponentsView = OpponentsView(playersContainer)
-    this.opponentsView.renderAllOpponents(allOtherPlayers, currentPlayerId)
+    this.opponentsView.renderAllOpponents(allOtherPlayers)
 
     this.gameInfo = GameInfo(status.core.round.value, status.getClass.getSimpleName)
     this.gameInfoContainer.getChildren.add(this.gameInfo)
@@ -114,7 +119,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
         onCardsDealt(playerId, hands, trump, round)
       case ProgressEvent.TrickWon(winnerId, trickedCards) => onTrickWon(winnerId, trickedCards)
       case ProgressEvent.RoundScored(scoreboard)          => ???
-      case ProgressEvent.PhaseChanged(phase) => onPhaseChanged(phase)
+      case ProgressEvent.PhaseChanged(phase)              => onPhaseChanged(phase)
 
     context.inboundPort.subscribe[InvitationEvent]:
       case InvitationEvent.WaitingForTrump(context) => onWaitingForTrump(context.playerId)
@@ -130,6 +135,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     runOnUi:
       println(s"Event received: Trick won by player $winnerId with cards: $trickedCards")
       tableManager.initializeTable(Table.empty, None)
+      onTurnChanged(winnerId)
 
   private def onPhaseChanged(phase: String): Unit =
     runOnUi:
@@ -159,6 +165,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
       println(s"Event received: Card played by player $playerId: $card")
       tableManager.addCard(card, playerId, false)
       handManager.removeCard(card)
+      onTurnChanged(playerId)
 
   private def onTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
     runOnUi:
@@ -170,11 +177,15 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
       println(s"Event received: Bid placed by player $playerId: $bid")
       if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
       else this.opponentsView.updateOpponentBid(playerId, bid)
+      onTurnChanged(playerId)
+
+  private def onTurnChanged(playerId: PlayerId): Unit =
+    this.currentPlayerView.setTurnActive(playerId == currentPlayerView.player.id)
+    this.opponentsView.updateActiveTurn(playerId)
 
   @FXML
   def openScoreboardWindow(): Unit =
-    context.inboundPort
-      .getState
+    context.inboundPort.getState
       .onComplete:
         case Success(Running(status: (Bidding | Playing))) =>
           val core = status match

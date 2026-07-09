@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
 class MainPageController(stage: Stage)(using context: WizardApplicationContext)
-  extends Controller(stage):
+    extends Controller(stage):
 
   @nowarn @FXML private var nameField: TextField = _
   @nowarn @FXML private var opponentsCombo: ComboBox[Integer] = _

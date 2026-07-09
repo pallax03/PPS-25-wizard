@@ -8,11 +8,11 @@ class OpponentsView(val container: HBox):
 
   private var opponents: Map[PlayerId, Node] = Map.empty
 
-  def renderAllOpponents(players: Players, currentPlayerId: PlayerId): Unit =
+  def renderAllOpponents(players: Players): Unit =
     container.children.clear()
     opponents = Map.empty
     players.toList.foreach: player =>
-      val opponentView = BotPlayerView(player, player.id == currentPlayerId)
+      val opponentView = BotPlayerView(player)
       container.children.add(opponentView)
       opponents += (player.id -> opponentView)
 
@@ -21,3 +21,9 @@ class OpponentsView(val container: HBox):
       case Some(opponentView: BotPlayerView) =>
         opponentView.updateBid(bid)
       case _ => println(s"Opponent with ID $playerId not found.")
+
+  def updateActiveTurn(currentTurnPlayerId: PlayerId): Unit =
+    opponents.foreach: (id, view) =>
+      view match
+        case bot: BasePlayerView => bot.setTurnActive(id == currentTurnPlayerId)
+        case _                   =>
