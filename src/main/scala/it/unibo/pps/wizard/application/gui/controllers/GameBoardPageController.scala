@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
-import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
+import it.unibo.pps.wizard.application.gui.FXComponent
 import it.unibo.pps.wizard.application.gui.components.{
   GameInfo,
   HumanPlayerView,
@@ -30,9 +30,9 @@ import scala.annotation.nowarn
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class GameBoardController(override protected val stage: Stage)(using
+class GameBoardPageController(protected val stage: Stage)(using
     protected val context: WizardApplicationContext
-) extends FXMLController:
+) extends FXComponent:
 
   @nowarn @FXML private var rootPane: BorderPane = _
   @nowarn @FXML private var tableContainer: HBox = _
@@ -86,11 +86,10 @@ class GameBoardController(override protected val stage: Stage)(using
       playerHand,
       onCardDragged =
         (mouseX, mouseY) => tableManager.setHighlight(tableManager.isOver(mouseX, mouseY)),
-      onCardDropped = (card, mouseX, mouseY) => {
+      onCardDropped = (card, mouseX, mouseY) =>
         tableManager.setHighlight(false)
         if tableManager.isOver(mouseX, mouseY) then
           context.inboundPort.submitAction(PlayCard(currentPlayerId, card))
-      }
     )
 
     this.trumpView = new TrumpView(status.core.trump)

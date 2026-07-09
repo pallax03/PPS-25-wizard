@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard.application
 
 import it.unibo.pps.wizard.application.WizardApplicationContext.WizardApplicationContextBuilder
-import it.unibo.pps.wizard.application.gui.pages.MainMenuPage
+import it.unibo.pps.wizard.application.gui.pages.MainPage
 import it.unibo.pps.wizard.engine.ports.WizardInboundPort
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
@@ -21,7 +21,7 @@ object WizardApplication extends JFXApp3:
 
   override def start(): Unit =
     stageConfiguration()
-    MainMenuPage(this.stage)
+    MainPage(this.stage)
 
   override def stopApp(): Unit =
     System.exit(0)
