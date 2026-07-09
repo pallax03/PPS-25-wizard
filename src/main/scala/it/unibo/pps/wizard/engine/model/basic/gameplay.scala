@@ -51,14 +51,12 @@ object Trump:
     case w: Card.Wizard   => Trump.WizardUnresolved(w)
     case s: Card.Standard => Trump.Standard(s)
 
+//  extension (t: Trump.WizardUnresolved) infix def resolvedAs(color: Card.Color): Trump = Trump.WizardResolved(t.c, color)
+
   extension (t: Trump)
-    def resolveWizard(color: Card.Color): Either[GameError, Trump] = t match
+    infix def resolveWizard(color: Card.Color): Either[GameError, Trump] = t match
       case Trump.WizardUnresolved(c) => Right(Trump.WizardResolved(c, color))
       case _                         => Left(GameError.InvalidAction)
-
-  extension (t: Trump.WizardUnresolved)
-    infix def resolvedAs(color: Card.Color): Trump =
-      Trump.WizardResolved(t.c, color)
 
 opaque type Round = Int
 
