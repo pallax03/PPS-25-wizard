@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.core.GameError
+import it.unibo.pps.wizard.engine.model.core.{CoreState, GameError, GameState}
 import org.scalatest.OptionValues.convertOptionToValuable
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -11,14 +11,13 @@ class TestRoundManager extends AnyWordSpec with Matchers:
   import RoundManager.*
   import Round.*
 
-  val p0: Player = Player.human(PlayerId(1), PlayerName("Alice"))
-  val p1: Player = Player.human(PlayerId(2), PlayerName("Bob"))
-  val p2: Player = Player.human(PlayerId(3), PlayerName("Charlie"))
+  val p1: Player = Player.human(PlayerId(1), PlayerName("Alice"))
+  val p2: Player = Player.human(PlayerId(2), PlayerName("Bob"))
+  val p3: Player = Player.human(PlayerId(3), PlayerName("Charlie"))
 
-  val players: Players = Players(p0, p1, p2)
+  val players: Players = Players(p1, p2, p3)
 
-  "RoundManager" when:
-
+  "RoundManager on round 1" when:
     "managing turn order" should:
       "find the next player correctly" in:
         players.nextAfter(PlayerId(1)) shouldBe Right(PlayerId(2))
@@ -65,45 +64,30 @@ class TestRoundManager extends AnyWordSpec with Matchers:
         val expected = PlayerId(2)
         expected.validateTurnOf(PlayerId(1)) shouldBe Left(GameError.NotYourTurn)
 
-//    "initializing a new round" should:
-//      "correctly transition to Bidding state if trump is not Unresolved" in:
-//        val initialDeck = Deck.create
-//        val round = Round.start
-//        val core = CoreState(
-//          players = players,
-//          hands = Hands.empty,
-//          deck = initialDeck,
-//          trump = Trump.Absent,
-//          round = round,
-//          dealerId = PlayerId(1),
-//          scoreboard = Scoreboard.empty
-//        )
-//
-//        val (finalCore, initialState) = round.initialize.run(core).value
-//
-//        biddingState shouldBe a[GameState.Bidding]
-//        finalCore.hands.getHand(PlayerId(1)).value.size shouldBe 1
-//        finalCore.deck.length shouldBe (Deck.TOTAL_SIZE - 4)
-//        biddingState.currentPlayer shouldBe PlayerId(1)
-//        biddingState.trump should not be Trump.Absent
-//
-//      "correctly transition to Bidding state for Round 4" in:
-//        val initialDeck = Deck.create
-//        val round3 = Round.start.next.next.next
-//        val core = CoreState(
-//          players = players,
-//          hands = Hands.empty,
-//          deck = initialDeck,
-//          round = round3,
-//          dealerId = PlayerId(3),
-//          scoreboard = Scoreboard.empty
-//        )
-//
-//        val (finalCore, biddingState) = round3.initialize.run(core).value
-//
-//        biddingState shouldBe a[GameState.Bidding]
-//        finalCore.hands.getHand(PlayerId(1)).value.size shouldBe 4
-//        finalCore.deck.length shouldBe (Deck.TOTAL_SIZE - 13)
-//
-//        biddingState.currentPlayer shouldBe PlayerId(1)
-//        biddingState.trump should not be Trump.Absent
+    "initializing a new round" should:
+      import Card.*
+      val deckCards = 1.red - 2.yellow - jester
+      "correctly transition to Bidding state" in:
+        val round = Round.start
+        val Card_TrumpResolved = 13.green
+        val TrumpResolved = Option(Card_TrumpResolved).asTrump
+        val customDeck_TrumpResolved = Deck.create(deckCards - Card_TrumpResolved)
+
+        round.initialize(customDeck_TrumpResolved).runA(CoreState.initialize(players, round)).value match
+          case biddingState: GameState.Bidding =>
+            biddingState.core.hands.getHand(p1.id).value.size shouldBe 1
+            biddingState.currentPlayer shouldBe p1.id
+            biddingState.core.trump shouldBe TrumpResolved
+          case _ => ()
+
+      "correctly transition to ChoosingTrump state" in :
+        val round = Round.start
+        val Card_TrumpUnResolved = wizard
+        val TrumpUnResolved = Option(Card_TrumpUnResolved).asTrump
+        val customDeck_TrumpUnresolved = Deck.create(deckCards - Card_TrumpUnResolved)
+
+        round.initialize(customDeck_TrumpUnresolved).runA(CoreState.initialize(players, round)).value match
+          case choosingState: GameState.ChoosingTrump =>
+            choosingState.core.hands.getHand(p1.id).value.size shouldBe 1
+            choosingState.core.trump shouldBe TrumpUnResolved
+          case _ => ()

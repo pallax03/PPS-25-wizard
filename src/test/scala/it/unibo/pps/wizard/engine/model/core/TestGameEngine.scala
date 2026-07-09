@@ -2,7 +2,6 @@ package it.unibo.pps.wizard.engine.model.core
 
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
-import it.unibo.pps.wizard.engine.model.rules.RoundManager.*
 import it.unibo.pps.wizard.engine.model.core.GameError.*
 import it.unibo.pps.wizard.engine.model.core.Reasons.*
 import org.scalatest.wordspec.AnyWordSpec
@@ -17,18 +16,9 @@ class TestGameEngine extends AnyWordSpec with Matchers:
 
   val mockPlayers: Players = Players(p1, p2, p3, p4)
 
-  def createMockCore(roundValue: Int): CoreState = {
+  def createMockCore(roundValue: Int): CoreState =
     val round = Round(roundValue)
-    CoreState(
-      players = mockPlayers,
-      hands = Hands.empty,
-      deck = Deck.create,
-      round = round,
-      trump = Trump.Absent,
-      dealerId = round.firstPlayer(mockPlayers),
-      scoreboard = Scoreboard.empty
-    )
-  }
+    CoreState.initialize(mockPlayers, round)
 
   "A GameEngine" should:
 

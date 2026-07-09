@@ -35,17 +35,16 @@ object RoundManager:
           else State.pure[Deck, Option[Card]](None)
       yield (hands, trump)
 
-    def initialize: State[CoreState, GameState] =
+    def initialize(deck: Deck): State[CoreState, GameState] =
       for
         core <- State.get[CoreState]
 
-        (remainingDeck, (hands, optionTrump)) = round.deal(core.players).run(core.deck).value
+        (hands, optionTrump) = round.deal(core.players).runA(deck).value
 
         firstPlayer = round.firstPlayer(core.players)
 
         newCore = core.copy(
           hands = hands,
-          deck = remainingDeck,
           trump = optionTrump.asTrump
         )
 
