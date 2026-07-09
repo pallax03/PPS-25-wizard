@@ -53,18 +53,13 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     this.initViewAndSubscribe()
 
   private def initViewAndSubscribe(): Unit =
-    context.inboundPort.getState
-      .onComplete:
-        case Success(Running(status: Bidding)) =>
-          runOnUi:
-            buildUI(status)
-            subscribeToEvents()
-
-        case Success(otherState) =>
-          println(s"The game is in an invalid state for the match: $otherState")
-
-        case Failure(exception) =>
-          println(s"Error occurred while fetching the initial game state: ${exception.getMessage}")
+    withRunningStatus:
+      case status: Bidding =>
+        runOnUi:
+          buildUI(status)
+          subscribeToEvents()
+      case other =>
+        println(s"Expected Bidding state but got: $other")
 
   private def buildUI(status: Bidding): Unit =
     this.tableManager = TableManager(this.tableContainer)
@@ -73,9 +68,8 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     val currentPlayerId = status.core.players.toList.head.id
     val playerHand = status.core.hands.getHand(currentPlayerId).getOrElse(Hand.empty)
 
-    this.handManager = HandManager(this.handContainer)
-    this.handManager.initializeHand(
-      playerHand,
+    this.handManager = HandManager(
+      this.handContainer,
       onCardDragged =
         (mouseX, mouseY) => tableManager.setHighlight(tableManager.isOver(mouseX, mouseY)),
       onCardDropped = (card, mouseX, mouseY) =>
@@ -83,6 +77,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
         if tableManager.isOver(mouseX, mouseY) then
           context.inboundPort.submitAction(PlayCard(currentPlayerId, card))
     )
+    this.handManager.updateHand(playerHand)
 
     this.trumpView = new TrumpView(status.core.trump)
     this.trumpContainer.getChildren.add(this.trumpView.delegate)
@@ -149,23 +144,16 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
       println(s"Event received: Cards dealt. Player: $playerId Trump: $trump Hands: $hands")
       this.trumpView = TrumpView(trump)
       val currentPlayerId = this.currentPlayerView.player.id
-      this.handManager.initializeHand(
-        hands.getHand(currentPlayerId).getOrElse(Hand.empty),
-        onCardDragged =
-          (mouseX, mouseY) => tableManager.setHighlight(tableManager.isOver(mouseX, mouseY)),
-        onCardDropped = (card, mouseX, mouseY) => {
-          tableManager.setHighlight(false)
-          if tableManager.isOver(mouseX, mouseY) then
-            context.inboundPort.submitAction(PlayCard(currentPlayerId, card))
-        }
-      )
+      val newHand = hands.getHand(currentPlayerId).getOrElse(Hand.empty)
+      this.handManager.updateHand(newHand)
+      onTurnChanged(playerId)
 
   private def onCardPlayed(playerId: PlayerId, card: Card): Unit =
     runOnUi:
       println(s"Event received: Card played by player $playerId: $card")
       tableManager.addCard(card, playerId, false)
       handManager.removeCard(card)
-      onTurnChanged(playerId)
+      applyCurrentTurn()
 
   private def onTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
     runOnUi:
@@ -177,43 +165,59 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
       println(s"Event received: Bid placed by player $playerId: $bid")
       if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
       else this.opponentsView.updateOpponentBid(playerId, bid)
-      onTurnChanged(playerId)
+      applyCurrentTurn()
 
-  private def onTurnChanged(playerId: PlayerId): Unit =
-    this.currentPlayerView.setTurnActive(playerId == currentPlayerView.player.id)
-    this.opponentsView.updateActiveTurn(playerId)
+  private def onTurnChanged(nextPlayerId: PlayerId): Unit =
+    val isMyTurn = nextPlayerId == currentPlayerView.player.id
+    this.currentPlayerView.setTurnActive(isMyTurn)
+    this.opponentsView.updateActiveTurn(nextPlayerId)
+
+  def applyCurrentTurn(): Unit =
+    withRunningStatus:
+      case status: (Bidding | Playing) =>
+        val nextPlayerId = status match
+          case b: Bidding => b.currentPlayer
+          case p: Playing => p.currentPlayerTurn
+
+        onTurnChanged(nextPlayerId)
+      case other =>
+        println(s"Expected Bidding or Playing state but got: $other")
+
+  private def withRunningStatus(action: GameState => Unit): Unit =
+    context.inboundPort.getState.onComplete:
+      case Success(Running(status)) => action(status)
+      case Success(otherState) =>
+        println(s"Game is not in a valid state for the match: $otherState")
+      case Failure(exception) =>
+        println(s"Error occurred while retrieving the initial state: ${exception.getMessage}")
 
   @FXML
   def openScoreboardWindow(): Unit =
-    context.inboundPort.getState
-      .onComplete:
-        case Success(Running(status: (Bidding | Playing))) =>
-          val core = status match
-            case b: Bidding => b.core
-            case p: Playing => p.core
+    withRunningStatus:
+      case status: (Bidding | Playing) =>
+        val core = status match
+          case b: Bidding => b.core
+          case p: Playing => p.core
 
-          runOnUi:
-            val scoresMap = core.scoreboard
-            val allPlayers = core.players
+        runOnUi:
+          val scoresMap = core.scoreboard
+          val allPlayers = core.players
 
-            val scoreboardView = new ScoreboardView(allPlayers)
+          val scoreboardView = new ScoreboardView(allPlayers)
 
-            val initialRows = RoundRow.createRows(allPlayers, scoresMap)
-            scoreboardView.updateData(initialRows, allPlayers.toList.size)
+          val initialRows = RoundRow.createRows(allPlayers, scoresMap)
+          scoreboardView.updateData(initialRows, allPlayers.toList.size)
 
-            val scoreboardStage = new Stage():
-              initModality(Modality.ApplicationModal)
-              title = "Scoreboard"
-              scene = new Scene(scoreboardView)
-              resizable = false
+          val scoreboardStage = new Stage():
+            initModality(Modality.ApplicationModal)
+            title = "Scoreboard"
+            scene = new Scene(scoreboardView)
+            resizable = false
 
-            scoreboardStage.sizeToScene()
-            scoreboardStage.show()
-        case Success(otherState) =>
-          println(s"Game is not in a valid state for the match: $otherState")
-
-        case Failure(exception) =>
-          println(s"Error occurred while retrieving the initial state: ${exception.getMessage}")
+          scoreboardStage.sizeToScene()
+          scoreboardStage.show()
+      case other =>
+        println(s"Expected Bidding state but got: $other")
 
   @FXML
   def handleScoreboardHover(): Unit =

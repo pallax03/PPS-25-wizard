@@ -7,33 +7,24 @@ import scalafx.animation.{ParallelTransition, ScaleTransition, TranslateTransiti
 import scalafx.scene.layout.HBox
 import scalafx.util.Duration
 
-class HandManager(val container: HBox):
+class HandManager(
+    val container: HBox,
+    onCardDragged: (Double, Double) => Unit,
+    onCardDropped: (Card, Double, Double) => Unit
+):
   private var activeCardNodes: Map[Card, CardView] = Map.empty
 
-  def initializeHand(
-      hand: Hand,
-      onCardDragged: (Double, Double) => Unit,
-      onCardDropped: (Card, Double, Double) => Unit
-  ): Unit =
+  def updateHand(hand: Hand): Unit =
     container.children.clear()
     activeCardNodes = Map.empty
-    hand.toList.foreach(addCard(_, onCardDragged, onCardDropped))
+    hand.toList.foreach(addCard)
 
-  private def addCard(
-      card: Card,
-      onCardDragged: (Double, Double) => Unit,
-      onCardDropped: (Card, Double, Double) => Unit
-  ): Unit =
-    val cardNode = createDraggableCard(card, onCardDragged, onCardDropped)
-
+  private def addCard(card: Card): Unit =
+    val cardNode = createDraggableCard(card)
     activeCardNodes = activeCardNodes + (card -> cardNode)
     container.children.add(cardNode)
 
-  private def createDraggableCard(
-      card: Card,
-      onCardDragged: (Double, Double) => Unit,
-      onCardDropped: (Card, Double, Double) => Unit
-  ): CardView =
+  private def createDraggableCard(card: Card): CardView =
     val cardView = new CardView(card)
 
     cardView.prefWidth = 130.0
