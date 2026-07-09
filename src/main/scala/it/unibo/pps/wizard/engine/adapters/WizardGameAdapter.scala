@@ -37,7 +37,7 @@ class WizardGameAdapter(private val vertx: Vertx, private val outboundPort: Wiza
           val playersAndBots: Players = Players.create(players, config.numberOfBots)
           val initialState = GameEngine.initializeGame(playersAndBots)
           this.currentState = WizardGameState.Running(initialState)
-          this.outboundPort.publishEvent(GameStarted(playersAndBots))
+          this.outboundPort.publishEvent(GameStarted(playersAndBots, config.botsDifficulty))
           this.publishInvitationEvent(initialState)
         case _ =>
 

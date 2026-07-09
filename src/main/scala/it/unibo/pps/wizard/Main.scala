@@ -4,7 +4,7 @@ import io.vertx.core.Vertx
 import it.unibo.pps.wizard.application.WizardApplication
 import it.unibo.pps.wizard.application.bot.BotManagerVerticle
 import it.unibo.pps.wizard.engine.adapters.{VertxEventBusAdapter, WizardGameAdapter}
-import it.unibo.pps.wizard.engine.ports.{WizardInboundPort, WizardOutboundPort}
+import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort, WizardOutboundPort}
 
 object Main:
 
@@ -16,9 +16,10 @@ object Main:
       val wizardOutboundPort: WizardOutboundPort = VertxEventBusAdapter(vertx)
 
       val wizardEnginePort: WizardInboundPort = WizardGameAdapter(vertx, wizardOutboundPort)
+      val wizardAIPort: WizardAIPort = ???
 
       vertx
-        .deployVerticle(BotManagerVerticle(wizardEnginePort))
+        .deployVerticle(BotManagerVerticle(wizardEnginePort, wizardAIPort))
         .onSuccess(_ => println("Bot manager deployed."))
         .onFailure(err => println("Failed to deploy bot manager: " + err.getMessage))
 
