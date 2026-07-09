@@ -1,34 +1,28 @@
-package it.unibo.pps.wizard.application.gui.controllers
+package it.unibo.pps.wizard.application.gui.controllers.gameboard
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
-import it.unibo.pps.wizard.application.gui.components.{
-  GameInfo,
-  HumanPlayerView,
-  OpponentsView,
-  ScoreboardView,
-  TrumpView
-}
+import it.unibo.pps.wizard.application.gui.components.*
+import it.unibo.pps.wizard.application.gui.controllers.Controller
 import it.unibo.pps.wizard.application.gui.managers.{HandManager, TableManager}
 import it.unibo.pps.wizard.engine.adapters.WizardGameState.Running
-import it.unibo.pps.wizard.engine.events.{ActionEvent, InvitationEvent, ProgressEvent}
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
 import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
-import it.unibo.pps.wizard.engine.model.core.{GameAction, GameState}
-import javafx.scene.layout.{BorderPane, HBox, VBox}
-import scalafx.stage.{Modality, Stage}
 import it.unibo.pps.wizard.engine.model.core.GameState.*
+import it.unibo.pps.wizard.engine.model.core.{GameAction, GameState}
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
-import scalafx.scene.control.Label
+import javafx.scene.layout.{BorderPane, HBox, StackPane, VBox}
 import scalafx.scene.Scene
-import javafx.scene.layout.StackPane
+import scalafx.scene.control.Label
+import scalafx.stage.{Modality, Stage}
 import scalafx.util.Duration
 
-import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 
 class GameBoardPageController(stage: Stage)(using context: WizardApplicationContext)
-    extends Controller(stage):
+    extends Controller(stage)
+    with GameBoardView:
 
   @nowarn @FXML private var rootPane: BorderPane = _
   @nowarn @FXML private var tableContainer: HBox = _
@@ -57,7 +51,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
       case status: Bidding =>
         runOnUi:
           buildUI(status)
-          subscribeToEvents()
+          GameBoardEventDispatcher(this).startListening()
       case other =>
         println(s"Expected Bidding state but got: $other")
 
@@ -103,76 +97,57 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     this.gameInfo = GameInfo(status.core.round.value, status.getClass.getSimpleName)
     this.gameInfoContainer.getChildren.add(this.gameInfo)
 
-  private def subscribeToEvents(): Unit =
-    context.inboundPort.subscribe[ActionEvent]:
-      case ActionEvent.CardPlayed(playerId, card)          => onCardPlayed(playerId, card)
-      case ActionEvent.TrumpColorResolved(playerId, color) => onTrumpSelected(playerId, color)
-      case ActionEvent.BidPlaced(playerId, bid)            => onBidPlaced(playerId, bid)
+  override def displayWaitingForTrump(value: PlayerId): Unit =
+    println(s"Event received: Waiting for Trump selection from player $value")
+    if value == currentPlayerView.player.id then currentPlayerView.setTrumpSelectionEnabled(true)
+    else currentPlayerView.setTrumpSelectionEnabled(false)
 
-    context.inboundPort.subscribe[ProgressEvent]:
-      case ProgressEvent.CardsDealt(playerId, hands, trump, round) =>
-        onCardsDealt(playerId, hands, trump, round)
-      case ProgressEvent.TrickWon(winnerId, trickedCards) => onTrickWon(winnerId, trickedCards)
-      case ProgressEvent.RoundScored(scoreboard)          => ???
-      case ProgressEvent.PhaseChanged(phase)              => onPhaseChanged(phase)
+  override def displayTrickWon(winnerId: PlayerId, trickedCards: List[Card]): Unit =
+    println(s"Event received: Trick won by player $winnerId with cards: $trickedCards")
+    tableManager.initializeTable(Table.empty, None)
+    onTurnChanged(winnerId)
 
-    context.inboundPort.subscribe[InvitationEvent]:
-      case InvitationEvent.WaitingForTrump(context) => onWaitingForTrump(context.playerId)
-      case _                                        =>
+  override def displayPhaseChanged(phase: String): Unit =
+    GameInfo.changePhase(this.gameInfo, phase)
+    if phase == "Bidding" then currentPlayerView.setBidTextFieldEnabled(true)
+    else currentPlayerView.setBidTextFieldEnabled(false)
 
-  private def onWaitingForTrump(value: PlayerId): Unit =
-    runOnUi:
-      println(s"Event received: Waiting for Trump selection from player $value")
-      if value == currentPlayerView.player.id then currentPlayerView.setTrumpSelectionEnabled(true)
-      else currentPlayerView.setTrumpSelectionEnabled(false)
+  override def displayCardsDealt(
+      playerId: PlayerId,
+      hands: Hands,
+      trump: Trump,
+      round: Round
+  ): Unit =
+    GameInfo.incrementRound(this.gameInfo, round.value)
+    println(s"Event received: Cards dealt. Player: $playerId Trump: $trump Hands: $hands")
+    this.trumpView = TrumpView(trump)
+    val currentPlayerId = this.currentPlayerView.player.id
+    val newHand = hands.getHand(currentPlayerId).getOrElse(Hand.empty)
+    this.handManager.updateHand(newHand)
+    onTurnChanged(playerId)
 
-  private def onTrickWon(winnerId: PlayerId, trickedCards: List[Card]): Unit =
-    runOnUi:
-      println(s"Event received: Trick won by player $winnerId with cards: $trickedCards")
-      tableManager.initializeTable(Table.empty, None)
-      onTurnChanged(winnerId)
+  override def displayCardPlayed(playerId: PlayerId, card: Card): Unit =
+    println(s"Event received: Card played by player $playerId: $card")
+    tableManager.addCard(card, playerId, false)
+    handManager.removeCard(card)
+    applyCurrentTurn()
 
-  private def onPhaseChanged(phase: String): Unit =
-    runOnUi:
-      GameInfo.changePhase(this.gameInfo, phase)
-      if phase == "Bidding" then currentPlayerView.setBidTextFieldEnabled(true)
-      else currentPlayerView.setBidTextFieldEnabled(false)
+  override def displayTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
+    println(s"Event received: Trump selected by player $playerId: $color")
+    trumpView.updateTrumpColor(color)
 
-  private def onCardsDealt(playerId: PlayerId, hands: Hands, trump: Trump, round: Round): Unit =
-    runOnUi:
-      GameInfo.incrementRound(this.gameInfo, round.value)
-      println(s"Event received: Cards dealt. Player: $playerId Trump: $trump Hands: $hands")
-      this.trumpView = TrumpView(trump)
-      val currentPlayerId = this.currentPlayerView.player.id
-      val newHand = hands.getHand(currentPlayerId).getOrElse(Hand.empty)
-      this.handManager.updateHand(newHand)
-      onTurnChanged(playerId)
-
-  private def onCardPlayed(playerId: PlayerId, card: Card): Unit =
-    runOnUi:
-      println(s"Event received: Card played by player $playerId: $card")
-      tableManager.addCard(card, playerId, false)
-      handManager.removeCard(card)
-      applyCurrentTurn()
-
-  private def onTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
-    runOnUi:
-      println(s"Event received: Trump selected by player $playerId: $color")
-      trumpView.updateTrumpColor(color)
-
-  private def onBidPlaced(playerId: PlayerId, bid: Bid): Unit =
-    runOnUi:
-      println(s"Event received: Bid placed by player $playerId: $bid")
-      if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
-      else this.opponentsView.updateOpponentBid(playerId, bid)
-      applyCurrentTurn()
+  override def displayBidPlaced(playerId: PlayerId, bid: Bid): Unit =
+    println(s"Event received: Bid placed by player $playerId: $bid")
+    if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
+    else this.opponentsView.updateOpponentBid(playerId, bid)
+    applyCurrentTurn()
 
   private def onTurnChanged(nextPlayerId: PlayerId): Unit =
     val isMyTurn = nextPlayerId == currentPlayerView.player.id
     this.currentPlayerView.setTurnActive(isMyTurn)
     this.opponentsView.updateActiveTurn(nextPlayerId)
 
-  def applyCurrentTurn(): Unit =
+  private def applyCurrentTurn(): Unit =
     withRunningStatus:
       case status: (Bidding | Playing) =>
         val nextPlayerId = status match

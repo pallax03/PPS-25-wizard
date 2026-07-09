@@ -1,7 +1,8 @@
-package it.unibo.pps.wizard.application.gui.controllers
+package it.unibo.pps.wizard.application.gui.controllers.scoreboard
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.components.ScoreboardView
+import it.unibo.pps.wizard.application.gui.controllers.Controller
 import it.unibo.pps.wizard.engine.model.basic.{Players, RoundRow, Scoreboard}
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.layout.StackPane

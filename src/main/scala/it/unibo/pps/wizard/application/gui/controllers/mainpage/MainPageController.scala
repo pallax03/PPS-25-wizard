@@ -1,6 +1,7 @@
-package it.unibo.pps.wizard.application.gui.controllers
+package it.unibo.pps.wizard.application.gui.controllers.mainpage
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
+import it.unibo.pps.wizard.application.gui.controllers.Controller
 import it.unibo.pps.wizard.application.gui.pages.GameBoardPage
 import it.unibo.pps.wizard.engine.model.basic.{Player, PlayerId, PlayerName, Players}
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
