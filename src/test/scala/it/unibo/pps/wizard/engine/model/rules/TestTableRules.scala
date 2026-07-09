@@ -44,6 +44,10 @@ class TestTableRules extends AnyWordSpec with Matchers:
         val table = Table.empty + (p1 plays 4.blue)
         myWizard.validateAgainst(table, hand) shouldBe Right(())
 
+      "always allow any standard card if table have a wizard" in:
+        val table = Table.empty + (p1 plays 4.blue) + (p1 plays myWizard)
+        c2.validateAgainst(table, hand) shouldBe Right(())
+
   "TableRules Winner Evaluation" should:
     val p1 = PlayerId(1)
     val p2 = PlayerId(2)

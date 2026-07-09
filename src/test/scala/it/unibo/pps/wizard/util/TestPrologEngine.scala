@@ -14,6 +14,7 @@ class TestPrologEngine extends AnyWordSpec with Matchers:
       solutions.headOption.exists(_.isYes) shouldBe true
       val failedSolutions = engine("member(4, [1, 2, 3])")
       failedSolutions.headOption.exists(_.isNo) shouldBe true
+      failedSolutions.take(1).map(PrologEngine.extractVars).toList shouldBe List(Map.empty)
 
     "Resolve Backtracking" in:
       val theory = """

@@ -7,16 +7,21 @@ import it.unibo.pps.wizard.engine.events.FailureEvent.ActionFailed
 import it.unibo.pps.wizard.engine.events.LifecycleEvent.GameStarted
 import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
-import it.unibo.pps.wizard.engine.model.game.WizardGameState
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameEngine, GameState}
 import it.unibo.pps.wizard.engine.model.view.InvitationContextFactory
-import it.unibo.pps.wizard.engine.ports.WizardPort
+import it.unibo.pps.wizard.engine.ports.{WizardInboundPort, WizardOutboundPort}
 import it.unibo.pps.wizard.util.{Id, VerticleExecutor}
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
 
-class WizardGameAdapter(private val vertx: Vertx) extends WizardPort:
+enum WizardGameState:
+  case NotConfigured
+  case Running(state: GameState)
+  case Finished
+
+class WizardGameAdapter(private val vertx: Vertx, private val outboundPort: WizardOutboundPort)
+    extends WizardInboundPort:
   private var currentState: WizardGameState = WizardGameState.NotConfigured
   private val verticleExecutor: VerticleExecutor = VerticleExecutor(this.vertx)
   private var subscriptions: Map[String, MessageConsumer[?]] = Map.empty
@@ -32,7 +37,7 @@ class WizardGameAdapter(private val vertx: Vertx) extends WizardPort:
           val playersAndBots: Players = Players.create(players, config.numberOfBots)
           val initialState = GameEngine.initializeGame(playersAndBots)
           this.currentState = WizardGameState.Running(initialState)
-          this.publish(GameStarted(playersAndBots))
+          this.outboundPort.publishEvent(GameStarted(playersAndBots))
           this.publishInvitationEvent(initialState)
         case _ =>
 
@@ -43,12 +48,12 @@ class WizardGameAdapter(private val vertx: Vertx) extends WizardPort:
           GameEngine.processAction(oldState, action) match
             case Left(error) =>
               println(s"Error processing action: $error")
-              this.publish(ActionFailed(action.playerId, error.toString))
+              this.outboundPort.publishEvent(ActionFailed(action.playerId, error.toString))
             case Right(newState) =>
               this.currentState = WizardGameState.Running(newState)
               val actionEvent = ActionEvent.from(action)
               val progressEvents = ProgressEvent.fromTransition(oldState, newState, action)
-              this.publishAll(actionEvent +: progressEvents)
+              this.outboundPort.publishAllEvents(actionEvent +: progressEvents)
               this.publishInvitationEvent(newState)
         case _ =>
 
@@ -71,26 +76,10 @@ class WizardGameAdapter(private val vertx: Vertx) extends WizardPort:
             consumer.unregister()
             this.subscriptions -= subscriptionId
 
-  private def publishAll(events: List[WizardEvent]): Unit = events.foreach(publish)
-
-  private def publish(event: WizardEvent): Unit =
-    println(s"Publishing event: $event")
-    eventAddresses(event).foreach: address =>
-      this.vertx.eventBus().publish(address, event)
-
   private def runOnVerticle[T](activityName: String)(activity: => T): Future[T] =
     this.verticleExecutor.runLater:
       println(s"Running activity '$activityName' on verticle...")
       activity
 
   private def publishInvitationEvent(state: GameState): Unit =
-    InvitationContextFactory.fromState(state).foreach(publish)
-
-  private def eventAddresses(event: WizardEvent): List[String] =
-    val familyAddress = event match
-      case _: ActionEvent     => addressOf[ActionEvent]
-      case _: FailureEvent    => addressOf[FailureEvent]
-      case _: InvitationEvent => addressOf[InvitationEvent]
-      case _: LifecycleEvent  => addressOf[LifecycleEvent]
-      case _: ProgressEvent   => addressOf[ProgressEvent]
-    List(event.getClass.getSimpleName, familyAddress, addressOf[WizardEvent]).distinct
+    InvitationContextFactory.fromState(state).foreach(this.outboundPort.publishEvent)

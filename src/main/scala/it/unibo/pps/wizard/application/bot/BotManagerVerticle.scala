@@ -5,25 +5,25 @@ import it.unibo.pps.wizard.application.bot.strategy.{BotStrategy, DumbBotStrateg
 import it.unibo.pps.wizard.engine.events.*
 import it.unibo.pps.wizard.engine.model.basic.{PlayerId, Players}
 import it.unibo.pps.wizard.engine.model.core.GameAction
-import it.unibo.pps.wizard.engine.ports.WizardPort
+import it.unibo.pps.wizard.engine.ports.WizardInboundPort
 
 class BotManagerVerticle(
-    wizardPort: WizardPort,
+    wizardInboundPort: WizardInboundPort,
     strategyFactory: PlayerId => BotStrategy = _ => DumbBotStrategy()
 ) extends AbstractVerticle:
   private var bots: Map[PlayerId, BotStrategy] = Map.empty
 
   override def start(): Unit =
-    wizardPort.subscribe[LifecycleEvent]:
+    wizardInboundPort.subscribe[LifecycleEvent]:
       case LifecycleEvent.GameStarted(players) => registerBots(players)
       case _: LifecycleEvent.GameEnded         => bots = Map.empty
 
-    wizardPort.subscribe[InvitationEvent]: invitation =>
+    wizardInboundPort.subscribe[InvitationEvent]: invitation =>
       bots
         .get(invitation.playerId)
         .foreach: strategy =>
           vertx.setTimer(
-            2000,
+            1000,
             _ => {
               submit(strategy.decide(invitation))
             }
@@ -35,4 +35,4 @@ class BotManagerVerticle(
       .map(player => player.id -> strategyFactory(player.id))
       .toMap
 
-  private def submit(action: GameAction): Unit = wizardPort.submitAction(action)
+  private def submit(action: GameAction): Unit = wizardInboundPort.submitAction(action)

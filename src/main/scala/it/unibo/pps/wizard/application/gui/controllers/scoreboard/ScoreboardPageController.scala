@@ -1,18 +1,15 @@
-package it.unibo.pps.wizard.application.gui.controllers
+package it.unibo.pps.wizard.application.gui.controllers.scoreboard
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.components.ScoreboardView
-import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
+import it.unibo.pps.wizard.application.gui.controllers.Controller
 import it.unibo.pps.wizard.engine.model.basic.{Players, RoundRow, Scoreboard}
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.layout.StackPane
 import scalafx.stage.Stage
 
-import scala.annotation.nowarn
-
-class ScoreboardController(override protected val stage: Stage)(using
-    protected val context: WizardApplicationContext
-) extends FXMLController:
+class ScoreboardPageController(stage: Stage)(using context: WizardApplicationContext)
+    extends Controller(stage):
   @nowarn @FXML private var scoreboardContainer: StackPane = _
   @nowarn private var view: ScoreboardView = _
 

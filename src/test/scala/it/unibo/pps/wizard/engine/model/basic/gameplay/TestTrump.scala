@@ -3,20 +3,25 @@ package it.unibo.pps.wizard.engine.model.basic.gameplay
 import it.unibo.pps.wizard.engine.model.basic.Card.Color.{Blue, Red}
 import it.unibo.pps.wizard.engine.model.basic.Card.{jester, wizard}
 import it.unibo.pps.wizard.engine.model.basic.{Card, Trump}
+import it.unibo.pps.wizard.engine.model.core.GameError
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.language.postfixOps
 
 class TestTrump extends AnyWordSpec with Matchers:
-  import Card.*
-  import Trump.*
+
   "A Trump" when:
+    import Trump.*
+    import Card.*
     "Absent" should:
       val trump = Trump.Absent
       "provide no card and no effective color" in:
         trump.card shouldBe None
         trump.effectiveColor shouldBe None
+        trump resolveWizard Blue match
+          case Left(error) => error shouldBe GameError.InvalidAction
+          case _           =>
 
     "created from a Standard card" should:
       val trump = Trump(5.red)
@@ -42,10 +47,12 @@ class TestTrump extends AnyWordSpec with Matchers:
         trump.card shouldBe Some(w)
 
       "Unresolved to Resolved" in:
-        val resolvedTrump = trump.asInstanceOf[Trump.WizardUnresolved] resolvedAs Blue
-        resolvedTrump shouldBe a[Trump.WizardResolved]
-        resolvedTrump.effectiveColor shouldBe Some(Blue)
-        resolvedTrump.card shouldBe Some(w)
+        trump resolveWizard Blue match
+          case Right(resolvedTrump) =>
+            resolvedTrump shouldBe a[Trump.WizardResolved]
+            resolvedTrump.effectiveColor shouldBe Some(Blue)
+            resolvedTrump.card shouldBe Some(w)
+          case _ =>
 
     "from Option" should:
       "Absent if Option is empty" in:

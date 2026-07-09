@@ -10,7 +10,7 @@ object GameEngine:
       case (currentState: GameState.ChoosingTrump, GameAction.ResolveTrumpColor(playerId, color)) =>
         for
           _ <- currentState.core.dealerId.validateTurnOf(playerId)
-          updatedTrump <- currentState.core.trump.resolveWizard(color)
+          updatedTrump <- currentState.core.trump resolveWizard color
         yield GameState.Bidding(
           currentState.core.updateTrump(updatedTrump),
           Bids.empty,
@@ -73,16 +73,7 @@ object GameEngine:
 
   def initializeGame(players: Players): GameState =
     val round = Round.start
-    val core = CoreState(
-      players = players,
-      hands = Hands.empty,
-      deck = Deck.create,
-      trump = Trump.Absent,
-      round = round,
-      dealerId = PlayerId(0),
-      scoreboard = Scoreboard.empty
-    )
-    round.initialize.runA(core).value
+    round.initialize(Deck.create).runA(CoreState.initialize(players, round)).value
 
   private def completeTrick(
       state: GameState.Playing,
@@ -120,6 +111,9 @@ object GameEngine:
     else
       val nextRound = core.round.next
       val nextDealer = core.players.nextAfter(core.dealerId).getOrElse(core.dealerId)
-      nextRound.initialize.runA(core.copy(round = nextRound, dealerId = nextDealer)).value
+      nextRound
+        .initialize(Deck.create)
+        .runA(core.copy(round = nextRound, dealerId = nextDealer))
+        .value
 
   private def isRoundComplete(hands: Hands): Boolean = hands.areEmpty
