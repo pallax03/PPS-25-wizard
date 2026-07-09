@@ -13,7 +13,6 @@ import it.unibo.pps.wizard.engine.model.core.{GameAction, GameState}
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import javafx.scene.layout.{BorderPane, HBox, StackPane, VBox}
 import scalafx.scene.Scene
-import scalafx.scene.control.Label
 import scalafx.stage.{Modality, Stage}
 import scalafx.util.Duration
 
@@ -38,7 +37,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
   @nowarn private var opponentsManager: OpponentsManager = _
   @nowarn private var trumpView: TrumpView = _
   @nowarn private var currentPlayerView: HumanPlayerView = _
-  @nowarn private var gameInfo: Label = _
+  @nowarn private var gameInfo: GameInfoView = _
 
   @FXML
   def initialize(): Unit =
@@ -94,8 +93,8 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     this.opponentsManager = OpponentsManager(playersContainer)
     this.opponentsManager.renderAllOpponents(allOtherPlayers)
 
-    this.gameInfo = GameInfo(status.core.round.value, status.getClass.getSimpleName)
-    this.gameInfoContainer.getChildren.add(this.gameInfo)
+    this.gameInfo = GameInfoView(status.core.round.value, status.getClass.getSimpleName)
+    this.gameInfoContainer.getChildren.add(this.gameInfo.delegate)
 
   override def displayWaitingForTrump(value: PlayerId): Unit =
     println(s"Event received: Waiting for Trump selection from player $value")
@@ -108,7 +107,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     onTurnChanged(winnerId)
 
   override def displayPhaseChanged(phase: String): Unit =
-    GameInfo.changePhase(this.gameInfo, phase)
+    this.gameInfo.changePhase(phase)
     if phase == "Bidding" then currentPlayerView.setBidTextFieldEnabled(true)
     else currentPlayerView.setBidTextFieldEnabled(false)
 
@@ -118,7 +117,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
       trump: Trump,
       round: Round
   ): Unit =
-    GameInfo.incrementRound(this.gameInfo, round.value)
+    this.gameInfo.incrementRound(round.value)
     println(s"Event received: Cards dealt. Player: $playerId Trump: $trump Hands: $hands")
     this.trumpView = TrumpView(trump)
     val currentPlayerId = this.currentPlayerView.player.id

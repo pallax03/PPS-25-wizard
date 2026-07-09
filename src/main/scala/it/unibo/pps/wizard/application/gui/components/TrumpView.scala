@@ -2,7 +2,7 @@ package it.unibo.pps.wizard.application.gui.components
 
 import it.unibo.pps.wizard.engine.model.basic
 import it.unibo.pps.wizard.engine.model.basic.Card.Color
-import it.unibo.pps.wizard.engine.model.basic.Trump
+import it.unibo.pps.wizard.engine.model.basic.{Card, Trump}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.control.Label
 import scalafx.scene.layout.HBox
@@ -15,13 +15,8 @@ class TrumpView(trump: Trump) extends HBox:
 //  style = "-fx-background-color: #A0A2A180; -fx-background-radius: 15;"
   trump.card match
     case Some(card) =>
-      val cardView = new CardView(card)
-      val ch = 240.0
-      cardView.prefHeight = ch
-      cardView.prefWidth = ch / 1.2
-
+      val cardView: CardView = createCardView(card)
       trump.effectiveColor.foreach(color => cardView.setGlow(CardView.fxColor(color)))
-
       children = cardView
     case None =>
       val placeholder = new Label("No Trump"):
@@ -33,13 +28,17 @@ class TrumpView(trump: Trump) extends HBox:
 
       children = placeholder
 
+  private def createCardView(card: Card) =
+    val cardView = new CardView(card)
+    val ch = 240.0
+    cardView.prefHeight = ch
+    cardView.prefWidth = ch / 1.2
+    cardView
+
   def updateTrumpColor(color: Color): Unit =
     trump match
       case Trump.WizardUnresolved(c) =>
-        val cardView = new CardView(c)
-        val ch = 240.0
-        cardView.prefHeight = ch
-        cardView.prefWidth = ch / 1.2
+        val cardView = createCardView(c)
         cardView.setGlow(CardView.fxColor(color))
         children = cardView
       case _ =>
