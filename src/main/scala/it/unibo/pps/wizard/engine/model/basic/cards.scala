@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger
 sealed trait Card
 sealed trait SpecialCard extends Card:
   def id: Int
+
 object Card:
   enum Color:
     case Blue, Green, Red, Yellow
@@ -69,6 +70,7 @@ object Card:
  *     deck need to contain 60 unique cards, and every player cannot receive a duplicate.
  */
 opaque type Deck = List[Card]
+
 object Deck:
   import cats.data.State
 
@@ -111,6 +113,7 @@ object Deck:
       Random.shuffle(standards ++ wizards ++ jesters)
 
 opaque type Hand = List[Card]
+
 object Hand:
   def empty: Hand = List.empty
   def apply(cards: List[Card]): Hand = cards
@@ -131,6 +134,7 @@ object Hand:
     infix def -(card: Card): Hand = h.remove(card)
 
 opaque type Hands = Map[PlayerId, Hand]
+
 object Hands:
   def empty: Hands = Map.empty
   def apply(hands: Map[PlayerId, Hand]): Hands = hands

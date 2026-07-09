@@ -3,6 +3,7 @@ package it.unibo.pps.wizard.engine.model.basic
 import it.unibo.pps.wizard.engine.model.core.GameError
 
 opaque type Table = List[(PlayerId, Card)]
+
 object Table:
   def empty: Table = List.empty
 
@@ -16,10 +17,12 @@ object Table:
     def playerOf(card: Card): Option[PlayerId] = t.find(_._2 == card).map(_._1)
 
     def followingCard: Option[Card.Standard] =
-      t.playedCards
-        .dropWhile(_.isInstanceOf[Card.Jester])
-        .headOption
-        .collect { case s: Card.Standard => s }
+      if t.playedCards.exists(c => c.isInstanceOf[Card.Wizard]) then Option.empty
+      else
+        t.playedCards
+          .dropWhile(_.isInstanceOf[Card.Jester])
+          .headOption
+          .collect { case s: Card.Standard => s }
 
     infix def +(play: (PlayerId, Card)): Table = t :+ play
 
@@ -58,6 +61,7 @@ object Trump:
       Trump.WizardResolved(t.c, color)
 
 opaque type Round = Int
+
 object Round:
   def start: Round = 1
   def apply(value: Int): Round = value

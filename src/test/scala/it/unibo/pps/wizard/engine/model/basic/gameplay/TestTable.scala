@@ -45,8 +45,8 @@ class TestTable extends AnyWordSpec with Matchers:
         val t = Table.empty + (p1 plays jester) + (p2 plays 8.green) + (p3 plays 2.green)
         t.followingCard shouldBe Some(8 of Green)
 
-      "have NO leader if the first non-Jester card is a Wizard" in:
-        val t = Table.empty + (p1 plays jester) + (p2 plays wizard) + (p3 plays 10.yellow)
+      "have NO leader there is a Wizard" in:
+        val t = Table.empty + (p1 plays jester) + (p3 plays 10.yellow) + (p2 plays wizard)
         t.followingCard shouldBe None
 
       "have NO leader if only Jesters are played" in:
