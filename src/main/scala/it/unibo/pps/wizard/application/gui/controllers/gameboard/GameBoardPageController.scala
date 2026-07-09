@@ -12,6 +12,7 @@ import it.unibo.pps.wizard.engine.model.core.GameState.*
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameState}
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import javafx.scene.layout.{HBox, StackPane, VBox}
+import scalafx.animation.PauseTransition
 import scalafx.scene.Scene
 import scalafx.stage.{Modality, Stage}
 import scalafx.util.Duration
@@ -38,6 +39,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
   @nowarn private var trumpView: TrumpView = _
   @nowarn private var currentPlayerView: HumanPlayerView = _
   @nowarn private var gameInfo: GameInfoView = _
+  private var phase: String = "Bidding"
 
   @FXML
   def initialize(): Unit =
@@ -103,10 +105,14 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
   override def displayTrickWon(winnerId: PlayerId, trickedCards: List[Card]): Unit =
     println(s"Event received: Trick won by player $winnerId with cards: $trickedCards")
-    tableManager.initializeTable(Table.empty, None)
-    onTurnChanged(winnerId)
+    val timer = new PauseTransition(Duration(millis = 3000))
+    timer.setOnFinished(_ => tableManager.initializeTable(Table.empty, None))
+    timer.play()
+    this.currentPlayerView.resetBid()
+    this.opponentsManager.resetOpponentsBid()
 
   override def displayPhaseChanged(phase: String): Unit =
+    this.phase = phase
     this.gameInfo.changePhase(phase)
     if phase == "Bidding" then currentPlayerView.setBidTextFieldEnabled(true)
     else currentPlayerView.setBidTextFieldEnabled(false)
@@ -143,8 +149,8 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
   private def onTurnChanged(nextPlayerId: PlayerId): Unit =
     val isMyTurn = nextPlayerId == currentPlayerView.player.id
-    this.currentPlayerView.setTurnActive(isMyTurn)
-    this.opponentsManager.updateActiveTurn(nextPlayerId)
+    this.currentPlayerView.setTurnActive(isMyTurn, this.phase)
+    this.opponentsManager.updateActiveTurn(nextPlayerId, this.phase)
 
   private def applyCurrentTurn(): Unit =
     withRunningStatus:

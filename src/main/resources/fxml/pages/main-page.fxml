@@ -29,7 +29,6 @@
         <ComboBox fx:id="opponentsCombo" maxWidth="100.0" style="-fx-font-size: 14px;">
             <items>
                 <FXCollections fx:factory="observableArrayList">
-                    <Integer fx:value="1"/>
                     <Integer fx:value="2"/>
                     <Integer fx:value="3"/>
                     <Integer fx:value="4"/>

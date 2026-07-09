@@ -16,10 +16,12 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
 
   protected val normalStyle =
     "-fx-background-color: rgba(45, 52, 54, 0.7); -fx-background-radius: 10; -fx-border-color: #636e72; -fx-border-width: 1; -fx-border-radius: 10;"
-  protected val activeTurnStyle =
-    "-fx-background-color: rgba(230, 126, 34, 0.2); -fx-background-radius: 10; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 10;"
+  protected val biddingTurnStyle =
+    "-fx-background-color: rgba(230, 126, 34, 0.2);-fx-background-radius: 10; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 10;"
+  protected val playingTurnStyle =
+    "-fx-background-color: rgba(46, 204, 113, 0.2); -fx-background-radius: 10; -fx-border-color: #2ecc71; -fx-border-width: 2; -fx-border-radius: 10;"
 
-  style = if isCurrentTurn then activeTurnStyle else normalStyle
+  style = if isCurrentTurn then biddingTurnStyle else normalStyle
 
   protected val avatarIndicator = new Circle:
     radius = 12
@@ -29,16 +31,22 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
     font = Font.font("Arial", FontWeight.Bold, 15)
     textFill = Color.White
 
-  protected var bidLabel = new Label(s"Bid: 0"):
+  protected var bidLabel = new Label(s"Bid: -"):
     font = Font.font("Arial", FontWeight.Normal, 13)
     textFill = Color.rgb(178, 190, 195)
 
   def updateBid(bid: Bid): Unit =
     bidLabel.text = s"Bid: ${bid.value}"
 
-  def setTurnActive(active: Boolean = true): Unit =
-    style = if active then activeTurnStyle else normalStyle
-    avatarIndicator.fill = if active then Color.rgb(230, 126, 34) else Color.rgb(178, 190, 195)
+  def resetBid(): Unit =
+    bidLabel.text = s"Bid: -"
+
+  def setTurnActive(active: Boolean = true, phase: String): Unit =
+    style = if active then
+      phase match
+        case "Bidding" => biddingTurnStyle
+        case "Playing" => playingTurnStyle
+    else normalStyle
 
 class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
     extends BasePlayerView(player, isCurrentTurn):

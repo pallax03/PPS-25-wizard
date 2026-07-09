@@ -23,8 +23,13 @@ class OpponentsManager(val container: HBox):
         opponentView.updateBid(bid)
       case _ => println(s"Opponent with ID $playerId not found.")
 
-  def updateActiveTurn(currentTurnPlayerId: PlayerId): Unit =
+  def updateActiveTurn(currentTurnPlayerId: PlayerId, phase: String): Unit =
     opponents.foreach: (id, view) =>
       view match
-        case bot: BasePlayerView => bot.setTurnActive(id == currentTurnPlayerId)
+        case bot: BasePlayerView => bot.setTurnActive(id == currentTurnPlayerId, phase)
         case _                   =>
+
+  def resetOpponentsBid(): Unit =
+    opponents.values.foreach:
+      case bot: BotPlayerView => bot.resetBid()
+      case _                  =>
