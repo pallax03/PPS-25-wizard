@@ -36,6 +36,10 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
   def updateBid(bid: Bid): Unit =
     bidLabel.text = s"Bid: ${bid.value}"
 
+  def setTurnActive(active: Boolean = true): Unit =
+    style = if active then activeTurnStyle else normalStyle
+    avatarIndicator.fill = if active then Color.rgb(230, 126, 34) else Color.rgb(178, 190, 195)
+
 class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
     extends BasePlayerView(player, isCurrentTurn):
   private val roleLabel = new Label("Bot"):

@@ -3,6 +3,7 @@ package it.unibo.pps.wizard.engine.model.basic
 import it.unibo.pps.wizard.engine.model.core.GameError
 
 opaque type Table = List[(PlayerId, Card)]
+
 object Table:
   def empty: Table = List.empty
 
@@ -58,6 +59,7 @@ object Trump:
       case _                         => Left(GameError.InvalidAction)
 
 opaque type Round = Int
+
 object Round:
   def start: Round = 1
   def apply(value: Int): Round = value

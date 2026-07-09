@@ -1,20 +1,23 @@
-package it.unibo.pps.wizard.application.gui.pages.template
+package it.unibo.pps.wizard.application.gui.pages
 
-import it.unibo.pps.wizard.application.gui.controllers.template.FXMLController
+import it.unibo.pps.wizard.application.gui.FXComponent
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import scalafx.scene.Scene
+import scalafx.stage.Stage
 
-abstract class FXMLPage[C <: FXMLController](
+abstract class Page[C](
     protected val controller: C,
     protected val fxmlPath: String
-) extends Page:
-  private val fxmlLoader: FXMLLoader = FXMLPage.createFXMLLoader(this.fxmlPath)
+) extends FXComponent:
+  protected def stage: Stage
+
+  private val fxmlLoader: FXMLLoader = createFXMLLoader(this.fxmlPath)
   this.fxmlLoader.setController(this.controller)
 
-  override def getScene: Scene = Scene(this.fxmlLoader.load[Parent])
-
-object FXMLPage:
+  stage.scene = Scene(this.fxmlLoader.load[Parent])
+  stage.sizeToScene()
+  stage.centerOnScreen()
 
   private def createFXMLLoader(fxmlPath: String): FXMLLoader =
     FXMLLoader(
