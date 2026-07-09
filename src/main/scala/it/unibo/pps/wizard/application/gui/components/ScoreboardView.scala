@@ -26,12 +26,12 @@ class ScoreboardView(players: Players) extends StackPane:
   players.toList.foreach { player =>
     val playerGroupCol = new TableColumn[RoundRow, String](player.name.toString)
 
-    val scoreCol = new TableColumn[RoundRow, String]("Punti"):
+    val scoreCol = new TableColumn[RoundRow, String]("Points"):
       prefWidth = 60
       style = "-fx-alignment: CENTER;"
       cellValueFactory = data => StringProperty(data.value.getScore(player.id))
 
-    val bidCol = new TableColumn[RoundRow, String]("Prese"):
+    val bidCol = new TableColumn[RoundRow, String]("Bids"):
       prefWidth = 60
       style = "-fx-alignment: CENTER;"
       cellValueFactory = data => StringProperty(data.value.getBid(player.id))

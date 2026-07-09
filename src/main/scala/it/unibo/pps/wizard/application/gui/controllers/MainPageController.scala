@@ -9,7 +9,6 @@ import scalafx.application.Platform
 import javafx.scene.control.{Button, ComboBox, TextField}
 import scalafx.stage.Stage
 
-import scala.annotation.nowarn
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
@@ -21,13 +20,14 @@ class MainPageController(protected val stage: Stage)(using
   @nowarn @FXML private var opponentsCombo: ComboBox[Integer] = _
   @nowarn @FXML private var btnStart: Button = _
 
-  @nowarn @FXML
-  private def handleStartGameClick(): Unit =
+  @FXML
+  def handleStartGameClick(): Unit =
     val playerName = nameField.text.value
     val opponentsNum = opponentsCombo.value.value
-    val players = Players(Player.human(PlayerId(0), PlayerName(playerName)))
+    val actualPlayer = Player.human(PlayerId(0), PlayerName(playerName))
+    val players = Players(actualPlayer)
 
-    println(s"Giocatore: $playerName, Avversari: $opponentsNum")
+    println(s"Configuration:\n  Player Name: $playerName, Opponents: $opponentsNum")
     context.inboundPort
       .startGame(players, GameConfiguration(playerName, opponentsNum))
       .onComplete:

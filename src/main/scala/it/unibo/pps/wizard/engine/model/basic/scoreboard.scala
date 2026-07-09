@@ -29,6 +29,7 @@ object RoundRow:
     }.toList
 
 opaque type Score = Int
+
 object Score:
   def apply(points: Int): Score = points
   def zero: Score = 0
@@ -36,6 +37,7 @@ object Score:
   extension (s: Score) def value: Int = s
 
 opaque type Scoreboard = Map[PlayerId, Map[Round, (Score, Bid)]]
+
 object Scoreboard:
   def empty: Scoreboard = Map.empty
 

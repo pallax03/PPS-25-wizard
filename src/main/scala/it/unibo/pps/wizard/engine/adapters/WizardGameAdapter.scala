@@ -7,7 +7,6 @@ import it.unibo.pps.wizard.engine.events.FailureEvent.ActionFailed
 import it.unibo.pps.wizard.engine.events.LifecycleEvent.GameStarted
 import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
-import it.unibo.pps.wizard.engine.model.game.WizardGameState
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameEngine, GameState}
 import it.unibo.pps.wizard.engine.model.view.InvitationContextFactory
 import it.unibo.pps.wizard.engine.ports.{WizardInboundPort, WizardOutboundPort}
@@ -15,6 +14,11 @@ import it.unibo.pps.wizard.util.{Id, VerticleExecutor}
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
+
+enum WizardGameState:
+  case NotConfigured
+  case Running(state: GameState)
+  case Finished
 
 class WizardGameAdapter(private val vertx: Vertx, private val outboundPort: WizardOutboundPort)
     extends WizardInboundPort:

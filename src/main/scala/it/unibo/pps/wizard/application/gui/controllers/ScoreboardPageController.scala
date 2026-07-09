@@ -8,8 +8,6 @@ import scalafx.collections.ObservableBuffer
 import scalafx.scene.layout.StackPane
 import scalafx.stage.Stage
 
-import scala.annotation.nowarn
-
 class ScoreboardPageController(protected val stage: Stage)(using
     protected val context: WizardApplicationContext
 ) extends FXComponent:

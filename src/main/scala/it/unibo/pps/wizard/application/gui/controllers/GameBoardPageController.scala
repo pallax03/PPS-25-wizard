@@ -2,16 +2,10 @@ package it.unibo.pps.wizard.application.gui.controllers
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.FXComponent
-import it.unibo.pps.wizard.application.gui.components.{
-  GameInfo,
-  HumanPlayerView,
-  OpponentsView,
-  ScoreboardView,
-  TrumpView
-}
+import it.unibo.pps.wizard.application.gui.components.{GameInfo, HumanPlayerView, OpponentsView, ScoreboardView, TrumpView}
 import it.unibo.pps.wizard.application.gui.managers.{HandManager, TableManager}
+import it.unibo.pps.wizard.engine.adapters.WizardGameState.Running
 import it.unibo.pps.wizard.engine.events.{ActionEvent, InvitationEvent, ProgressEvent}
-import it.unibo.pps.wizard.engine.model.game.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
 import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
@@ -26,7 +20,6 @@ import scalafx.scene.Scene
 import javafx.scene.layout.StackPane
 import scalafx.util.Duration
 
-import scala.annotation.nowarn
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -52,27 +45,24 @@ class GameBoardPageController(protected val stage: Stage)(using
 
   @FXML
   def initialize(): Unit =
-    println("GameBoardController istanziato")
     List(tableContainer, handContainer, trumpContainer, currentPlayerContainer, playersContainer)
       .foreach(_.getChildren.clear())
     this.initViewAndSubscribe()
 
   private def initViewAndSubscribe(): Unit =
-    println("Richiesta dello stato iniziale del gioco al proxy...")
+    context.inboundPort
+      .getState
+      .onComplete:
+        case Success(Running(status: Bidding)) =>
+          Platform.runLater:
+            buildUI(status)
+            subscribeToEvents()
 
-    context.inboundPort.getState.onComplete:
-      case Success(Running(status: Bidding)) =>
-        Platform.runLater:
-          println("Stato di gioco ricevuto. Generazione componenti e iscrizione eventi...")
+        case Success(otherState) =>
+          println(s"The game is in an invalid state for the match: $otherState")
 
-          buildUI(status)
-          subscribeToEvents()
-
-      case Success(otherState) =>
-        println(s"Il gioco non è in uno stato valido per la partita: $otherState")
-
-      case Failure(exception) =>
-        println(s"Errore nel recupero dello stato iniziale: ${exception.getMessage}")
+        case Failure(exception) =>
+          println(s"Error occurred while fetching the initial game state: ${exception.getMessage}")
 
   private def buildUI(status: Bidding): Unit =
     this.tableManager = TableManager(this.tableContainer)
@@ -117,7 +107,6 @@ class GameBoardPageController(protected val stage: Stage)(using
     this.gameInfoContainer.getChildren.add(this.gameInfo)
 
   private def subscribeToEvents(): Unit =
-    println("Subscribed to game events")
     context.inboundPort.subscribe[ActionEvent]:
       case ActionEvent.CardPlayed(playerId, card)          => onCardPlayed(playerId, card)
       case ActionEvent.TrumpColorResolved(playerId, color) => onTrumpSelected(playerId, color)
@@ -128,8 +117,6 @@ class GameBoardPageController(protected val stage: Stage)(using
         onCardsDealt(playerId, hands, trump, round)
       case ProgressEvent.TrickWon(winnerId, trickedCards) => onTrickWon(winnerId, trickedCards)
       case ProgressEvent.RoundScored(scoreboard)          => ???
-//          Platform.runLater:
-//          println(s"Evento ricevuto: Round completato. Classifica aggiornata: $scoreboard")
       case ProgressEvent.PhaseChanged(phase) => onPhaseChanged(phase)
 
     context.inboundPort.subscribe[InvitationEvent]:
@@ -138,13 +125,13 @@ class GameBoardPageController(protected val stage: Stage)(using
 
   private def onWaitingForTrump(value: PlayerId): Unit =
     Platform.runLater:
-      println(s"Evento ricevuto: Attesa selezione Trump dal giocatore $value")
+      println(s"Event received: Waiting for Trump selection from player $value")
       if value == currentPlayerView.player.id then currentPlayerView.setTrumpSelectionEnabled(true)
       else currentPlayerView.setTrumpSelectionEnabled(false)
 
   private def onTrickWon(winnerId: PlayerId, trickedCards: List[Card]): Unit =
     Platform.runLater:
-      println(s"Evento ricevuto: Trick vinto dal giocatore $winnerId con le carte: $trickedCards")
+      println(s"Event received: Trick won by player $winnerId with cards: $trickedCards")
       tableManager.initializeTable(Table.empty, None)
 
   private def onPhaseChanged(phase: String): Unit =
@@ -156,8 +143,7 @@ class GameBoardPageController(protected val stage: Stage)(using
   private def onCardsDealt(playerId: PlayerId, hands: Hands, trump: Trump, round: Round): Unit =
     Platform.runLater:
       GameInfo.incrementRound(this.gameInfo, round.value)
-      println(s"Evento ricevuto: Carte distribuite. Player: $playerId Trump: $trump Hands: $hands")
-      // this.handManager.update(hands.getHand(this.currentPlayerView.player.id).getOrElse(Hand.empty))
+      println(s"Event received: Cards dealt. Player: $playerId Trump: $trump Hands: $hands")
       this.trumpView = TrumpView(trump)
       val currentPlayerId = this.currentPlayerView.player.id
       this.handManager.initializeHand(
@@ -173,51 +159,53 @@ class GameBoardPageController(protected val stage: Stage)(using
 
   private def onCardPlayed(playerId: PlayerId, card: Card): Unit =
     Platform.runLater:
-      println(s"Evento ricevuto: Carta giocata dal giocatore $playerId: $card")
+      println(s"Event received: Card played by player $playerId: $card")
       tableManager.addCard(card, playerId, false)
       handManager.removeCard(card)
 
   private def onTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
     Platform.runLater:
-      println(s"Evento ricevuto: Trump selezionato dal giocatore $playerId: $color")
+      println(s"Event received: Trump selected by player $playerId: $color")
       trumpView.updateTrumpColor(color)
 
   private def onBidPlaced(playerId: PlayerId, bid: Bid): Unit =
     Platform.runLater:
-      println(s"Evento ricevuto: Offerta piazzata dal giocatore $playerId: $bid")
+      println(s"Event received: Bid placed by player $playerId: $bid")
       if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
       else this.opponentsView.updateOpponentBid(playerId, bid)
 
   @FXML
   def openScoreboardWindow(): Unit =
-    context.inboundPort.getState.onComplete:
-      case Success(Running(status: (Bidding | Playing))) =>
-        val core = status match
-          case b: Bidding => b.core
-          case p: Playing => p.core
+    context.inboundPort
+      .getState
+      .onComplete:
+        case Success(Running(status: (Bidding | Playing))) =>
+          val core = status match
+            case b: Bidding => b.core
+            case p: Playing => p.core
 
-        Platform.runLater:
-          val scoresMap = core.scoreboard
-          val allPlayers = core.players
+          Platform.runLater:
+            val scoresMap = core.scoreboard
+            val allPlayers = core.players
 
-          val scoreboardView = new ScoreboardView(allPlayers)
+            val scoreboardView = new ScoreboardView(allPlayers)
 
-          val initialRows = RoundRow.createRows(allPlayers, scoresMap)
-          scoreboardView.updateData(initialRows, allPlayers.toList.size)
+            val initialRows = RoundRow.createRows(allPlayers, scoresMap)
+            scoreboardView.updateData(initialRows, allPlayers.toList.size)
 
-          val scoreboardStage = new Stage():
-            initModality(Modality.ApplicationModal)
-            title = "Classifica Round per Round"
-            scene = new Scene(scoreboardView)
-            resizable = false
+            val scoreboardStage = new Stage():
+              initModality(Modality.ApplicationModal)
+              title = "Scoreboard"
+              scene = new Scene(scoreboardView)
+              resizable = false
 
-          scoreboardStage.sizeToScene()
-          scoreboardStage.show()
-      case Success(otherState) =>
-        println(s"Il gioco non è in uno stato valido per la partita: $otherState")
+            scoreboardStage.sizeToScene()
+            scoreboardStage.show()
+        case Success(otherState) =>
+          println(s"Game is not in a valid state for the match: $otherState")
 
-      case Failure(exception) =>
-        println(s"Errore nel recupero dello stato iniziale: ${exception.getMessage}")
+        case Failure(exception) =>
+          println(s"Error occurred while retrieving the initial state: ${exception.getMessage}")
 
   @FXML
   def handleScoreboardHover(): Unit =
