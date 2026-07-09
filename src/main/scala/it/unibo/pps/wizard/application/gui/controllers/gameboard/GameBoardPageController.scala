@@ -11,7 +11,7 @@ import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
 import it.unibo.pps.wizard.engine.model.core.GameState.*
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameState}
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
-import javafx.scene.layout.{BorderPane, HBox, StackPane, VBox}
+import javafx.scene.layout.{HBox, StackPane, VBox}
 import scalafx.scene.Scene
 import scalafx.stage.{Modality, Stage}
 import scalafx.util.Duration
@@ -23,7 +23,6 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     extends Controller(stage)
     with GameBoardView:
 
-  @nowarn @FXML private var rootPane: BorderPane = _
   @nowarn @FXML private var tableContainer: HBox = _
   @nowarn @FXML private var handContainer: HBox = _
   @nowarn @FXML private var trumpContainer: VBox = _
@@ -31,6 +30,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
   @nowarn @FXML private var playersContainer: HBox = _
   @nowarn @FXML private var gameInfoContainer: VBox = _
   @nowarn @FXML private var scoreboardContainer: StackPane = _
+  @nowarn @FXML private var rulesPanel: VBox = _
 
   @nowarn private var tableManager: TableManager = _
   @nowarn private var handManager: HandManager = _
@@ -218,3 +218,10 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
       val parallel = new ParallelTransition(scale, translate)
       parallel.play()
+
+  @FXML
+  def toggleRulesPanel(): Unit =
+    if rulesPanel != null then
+      val isVisible = rulesPanel.isVisible
+      rulesPanel.setVisible(!isVisible)
+      rulesPanel.setManaged(!isVisible)
