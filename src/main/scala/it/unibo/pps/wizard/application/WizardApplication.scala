@@ -6,18 +6,14 @@ import it.unibo.pps.wizard.engine.ports.WizardInboundPort
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-
 object WizardApplication extends JFXApp3:
   private val contextBuilder: WizardApplicationContextBuilder = WizardApplicationContext.builder
 
   given applicationContext: WizardApplicationContext = this.contextBuilder.build
 
   def launch(inboundPort: WizardInboundPort)(args: Array[String]): Unit =
-    Future:
-      this.contextBuilder.setInboundPort(inboundPort)
-      this.main(args)
+    this.contextBuilder.setInboundPort(inboundPort)
+    this.main(args)
 
   override def start(): Unit =
     stageConfiguration()
