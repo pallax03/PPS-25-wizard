@@ -3,7 +3,7 @@ package it.unibo.pps.wizard.application.gui.controllers.gameboard
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.components.*
 import it.unibo.pps.wizard.application.gui.controllers.Controller
-import it.unibo.pps.wizard.application.gui.managers.{HandManager, TableManager}
+import it.unibo.pps.wizard.application.gui.managers.{HandManager, OpponentsManager, TableManager}
 import it.unibo.pps.wizard.engine.adapters.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
@@ -35,9 +35,9 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
   @nowarn private var tableManager: TableManager = _
   @nowarn private var handManager: HandManager = _
+  @nowarn private var opponentsManager: OpponentsManager = _
   @nowarn private var trumpView: TrumpView = _
   @nowarn private var currentPlayerView: HumanPlayerView = _
-  @nowarn private var opponentsView: OpponentsView = _
   @nowarn private var gameInfo: Label = _
 
   @FXML
@@ -91,8 +91,8 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     this.currentPlayerContainer.getChildren.add(this.currentPlayerView.delegate)
 
     val allOtherPlayers = status.core.players.filter(_.id != currentPlayerId)
-    this.opponentsView = OpponentsView(playersContainer)
-    this.opponentsView.renderAllOpponents(allOtherPlayers)
+    this.opponentsManager = OpponentsManager(playersContainer)
+    this.opponentsManager.renderAllOpponents(allOtherPlayers)
 
     this.gameInfo = GameInfo(status.core.round.value, status.getClass.getSimpleName)
     this.gameInfoContainer.getChildren.add(this.gameInfo)
@@ -139,13 +139,13 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
   override def displayBidPlaced(playerId: PlayerId, bid: Bid): Unit =
     println(s"Event received: Bid placed by player $playerId: $bid")
     if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
-    else this.opponentsView.updateOpponentBid(playerId, bid)
+    else this.opponentsManager.updateOpponentBid(playerId, bid)
     applyCurrentTurn()
 
   private def onTurnChanged(nextPlayerId: PlayerId): Unit =
     val isMyTurn = nextPlayerId == currentPlayerView.player.id
     this.currentPlayerView.setTurnActive(isMyTurn)
-    this.opponentsView.updateActiveTurn(nextPlayerId)
+    this.opponentsManager.updateActiveTurn(nextPlayerId)
 
   private def applyCurrentTurn(): Unit =
     withRunningStatus:

@@ -1,10 +1,11 @@
-package it.unibo.pps.wizard.application.gui.components
+package it.unibo.pps.wizard.application.gui.managers
 
+import it.unibo.pps.wizard.application.gui.components.{BasePlayerView, BotPlayerView}
 import it.unibo.pps.wizard.engine.model.basic.{Bid, PlayerId, Players}
 import scalafx.scene.Node
 import scalafx.scene.layout.HBox
 
-class OpponentsView(val container: HBox):
+class OpponentsManager(val container: HBox):
 
   private var opponents: Map[PlayerId, Node] = Map.empty
 
