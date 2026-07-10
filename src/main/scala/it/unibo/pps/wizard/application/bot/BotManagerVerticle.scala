@@ -10,9 +10,9 @@ import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class BotManagerVerticle(
-                          wizardInboundPort: WizardInboundPort,
-                          wizardAIPort: WizardAIPort
-                        ) extends AbstractVerticle:
+    wizardInboundPort: WizardInboundPort,
+    wizardAIPort: WizardAIPort
+) extends AbstractVerticle:
 
   private var bots: Map[PlayerId, BotStrategy] = Map.empty
 
@@ -22,9 +22,13 @@ class BotManagerVerticle(
       case _: LifecycleEvent.GameEnded                     => bots = Map.empty
 
     wizardInboundPort.subscribe[InvitationEvent]: invitation =>
-      bots.get(invitation.playerId).foreach: strategy =>
-        strategy.resolveInvitationEvents(invitation).foreach: action =>
-          wizardInboundPort.submitAction(action)
+      bots
+        .get(invitation.playerId)
+        .foreach: strategy =>
+          strategy
+            .resolveInvitationEvents(invitation)
+            .foreach: action =>
+              wizardInboundPort.submitAction(action)
     wizardInboundPort.subscribe[FailureEvent]: failure =>
       bots.get(failure.playerId)
 
