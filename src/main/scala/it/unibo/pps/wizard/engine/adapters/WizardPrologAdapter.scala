@@ -27,7 +27,7 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort)
     inboundPort.getState.map:
       case WizardGameState.Running(state) =>
         InvitationContextFactory.fromState(state) match
-          case Some(InvitationEvent.WaitingForCard(context)) if context.playerId == playerId =>
+          case Some(InvitationEvent.WaitingForCard(playerId, context)) if playerId == playerId =>
             bestCardFrom(context)
           case _ =>
             throw IllegalStateException(s"Player $playerId is not waiting for a card")

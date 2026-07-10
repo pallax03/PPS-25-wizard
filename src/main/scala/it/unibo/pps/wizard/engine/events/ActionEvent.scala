@@ -6,8 +6,8 @@ import it.unibo.pps.wizard.engine.model.core.GameAction
 sealed trait ActionEvent extends WizardEvent
 
 object ActionEvent:
-  case class CardPlayed(playerId: PlayerId, card: Card) extends ActionEvent
   case class TrumpColorResolved(playerId: PlayerId, color: Card.Color) extends ActionEvent
+  case class CardPlayed(playerId: PlayerId, card: Card) extends ActionEvent
   case class BidPlaced(playerId: PlayerId, bid: Bid) extends ActionEvent
 
   def from(action: GameAction): ActionEvent = action match

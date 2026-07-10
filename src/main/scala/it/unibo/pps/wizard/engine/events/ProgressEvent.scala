@@ -11,6 +11,7 @@ object ProgressEvent:
   case class CardsDealt(playerId: PlayerId, hands: Hands, trump: Trump, round: Round)
       extends ProgressEvent
   case class TrickWon(winnerId: PlayerId, trickedCards: List[Card]) extends ProgressEvent
+  case class IsTurnOf(currentPlayer: PlayerId) extends ProgressEvent
   case class RoundScored(scoreboard: Scoreboard) extends ProgressEvent
   case class PhaseChanged(phaseName: String) extends ProgressEvent
 
@@ -22,10 +23,13 @@ object ProgressEvent:
     (oldState, newState, action) match
       case (
             oldS: GameState.Playing,
-            GameState.Playing(_, _, newTable, _, _),
+            newS: GameState.Playing,
             GameAction.PlayCard(playerId, card)
-          ) if oldS.table.playedCards.nonEmpty && newTable.playedCards.isEmpty =>
-        List(trickWon(oldS, playerId, card))
+          ) if oldS.table.playedCards.nonEmpty && newS.table.playedCards.isEmpty =>
+        List(
+          trickWon(oldS, playerId, card),
+          IsTurnOf(newS.currentPlayerTurn)
+        )
       case (
             oldS: GameState.Playing,
             newS: GameState.Bidding,
@@ -33,6 +37,7 @@ object ProgressEvent:
           ) =>
         List(
           trickWon(oldS, playerId, card),
+          IsTurnOf(newS.currentPlayer),
           RoundScored(newS.core.scoreboard),
           CardsDealt(playerId, newS.core.hands, newS.core.trump, newS.core.round),
           PhaseChanged(newS.getClass.getSimpleName)

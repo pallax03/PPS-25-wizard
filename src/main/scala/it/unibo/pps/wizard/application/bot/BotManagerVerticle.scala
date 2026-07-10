@@ -2,7 +2,7 @@ package it.unibo.pps.wizard.application.bot
 
 import io.vertx.core.AbstractVerticle
 import it.unibo.pps.wizard.application.bot.strategy.BotStrategy
-import it.unibo.pps.wizard.engine.events.{InvitationEvent, LifecycleEvent}
+import it.unibo.pps.wizard.engine.events.{FailureEvent, InvitationEvent, LifecycleEvent}
 import it.unibo.pps.wizard.engine.model.basic.{PlayerId, Players}
 import it.unibo.pps.wizard.engine.model.configuration.BotsDifficulty
 import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
@@ -23,8 +23,10 @@ class BotManagerVerticle(
 
     wizardInboundPort.subscribe[InvitationEvent]: invitation =>
       bots.get(invitation.playerId).foreach: strategy =>
-        strategy.decide(invitation).foreach: action =>
+        strategy.resolveInvitationEvents(invitation).foreach: action =>
           wizardInboundPort.submitAction(action)
+    wizardInboundPort.subscribe[FailureEvent]: failure =>
+      bots.get(failure.playerId)
 
   private def registerBots(players: Players, difficulty: BotsDifficulty): Unit =
     bots = players.toList

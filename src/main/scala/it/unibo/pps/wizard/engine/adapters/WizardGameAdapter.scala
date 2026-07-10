@@ -48,7 +48,7 @@ class WizardGameAdapter(private val vertx: Vertx, private val outboundPort: Wiza
           GameEngine.processAction(oldState, action) match
             case Left(error) =>
               println(s"Error processing action: $error")
-              this.outboundPort.publishEvent(ActionFailed(action.playerId, error.toString))
+              this.outboundPort.publishEvent(ActionFailed(action.playerId, error))
             case Right(newState) =>
               this.currentState = WizardGameState.Running(newState)
               val actionEvent = ActionEvent.from(action)

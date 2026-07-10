@@ -11,12 +11,14 @@ object InvitationContextFactory:
     case GameState.ChoosingTrump(core) =>
       Some(
         InvitationEvent.WaitingForTrump(
+          core.dealerId,
           TrumpContext(core.dealerId, core.hands.getHand(core.dealerId).head, core.trump)
         )
       )
     case GameState.Bidding(core, currentBids, playerId) =>
       Some(
         InvitationEvent.WaitingForBid(
+          core.dealerId,
           BidContext(
             playerId = playerId,
             hand = core.hands.getHand(playerId).head,
@@ -32,6 +34,7 @@ object InvitationContextFactory:
       val hand = core.hands.getHand(playerId).head
       Some(
         InvitationEvent.WaitingForCard(
+          playerId, 
           PlayCardContext(
             playerId = playerId,
             hand = hand,
