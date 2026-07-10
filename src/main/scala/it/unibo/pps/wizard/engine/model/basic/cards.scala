@@ -42,9 +42,9 @@ object Card:
   final case class Jester(id: Int) extends SpecialCard
 
   private val specialIdGenWizard = new AtomicInteger(0)
-  def wizard: Wizard = Wizard(specialIdGenWizard.incrementAndGet())
+  def wizard: Wizard = Wizard(specialIdGenWizard.incrementAndGet() % Deck.TOTAL_WIZARD)
   private val specialIdGenJester = new AtomicInteger(0)
-  def jester: Jester = Jester(specialIdGenJester.incrementAndGet())
+  def jester: Jester = Jester(specialIdGenJester.incrementAndGet() % Deck.TOTAL_JESTER)
 
   extension (value: Int)
     infix def of(color: Color): Card = Standard(color, Rank.values.find(_.value == value).get)
@@ -74,8 +74,8 @@ opaque type Deck = List[Card]
 object Deck:
   import cats.data.State
 
-  private final val TOTAL_WIZARD: Int = 4
-  private final val TOTAL_JESTER: Int = 4
+  final val TOTAL_WIZARD: Int = 4
+  final val TOTAL_JESTER: Int = 4
   final val TOTAL_SIZE: Int =
     TOTAL_JESTER + TOTAL_WIZARD + (Card.Rank.values.length * Card.Color.values.length)
 
