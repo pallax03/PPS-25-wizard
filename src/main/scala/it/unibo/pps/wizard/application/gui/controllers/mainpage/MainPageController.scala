@@ -20,6 +20,11 @@ class MainPageController(stage: Stage)(using context: WizardApplicationContext)
   @nowarn @FXML private var btnStart: Button = _
 
   @FXML
+  def initialize(): Unit =
+    botsDifficultyCombo.getItems.setAll(BotsDifficulty.values*)
+    botsDifficultyCombo.setValue(BotsDifficulty.Dumb)
+
+  @FXML
   def handleStartGameClick(): Unit =
     val playerName = nameField.text.value
     val opponentsNum = opponentsCombo.value.value
