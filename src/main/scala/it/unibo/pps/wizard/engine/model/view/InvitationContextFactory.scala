@@ -18,7 +18,7 @@ object InvitationContextFactory:
     case GameState.Bidding(core, currentBids, playerId) =>
       Some(
         InvitationEvent.WaitingForBid(
-          core.dealerId,
+          playerId,
           BidContext(
             playerId = playerId,
             hand = core.hands.getHand(playerId).head,
