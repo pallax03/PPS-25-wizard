@@ -8,7 +8,6 @@ import it.unibo.pps.wizard.engine.events.LifecycleEvent.GameStarted
 import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameEngine, GameState}
-import it.unibo.pps.wizard.engine.model.view.InvitationContextFactory
 import it.unibo.pps.wizard.engine.ports.{WizardInboundPort, WizardOutboundPort}
 import it.unibo.pps.wizard.util.{Id, VerticleExecutor}
 
@@ -36,9 +35,9 @@ class WizardGameAdapter(private val vertx: Vertx, private val outboundPort: Wiza
         case WizardGameState.NotConfigured =>
           val playersAndBots: Players = Players.create(players, config.numberOfBots)
           val initialState = GameEngine.initializeGame(playersAndBots)
-          this.currentState = WizardGameState.Running(initialState)
-          this.outboundPort.publishEvent(GameStarted(playersAndBots))
-          this.publishInvitationEvent(initialState)
+          this.currentState = WizardGameState.Running(initialState.state)
+          this.outboundPort.publishEvent(GameStarted(playersAndBots, config.botsDifficulty))
+          this.outboundPort.publishAllEvents(initialState.events)
         case _ =>
 
   override def submitAction(action: GameAction): Future[Unit] =
@@ -48,13 +47,10 @@ class WizardGameAdapter(private val vertx: Vertx, private val outboundPort: Wiza
           GameEngine.processAction(oldState, action) match
             case Left(error) =>
               println(s"Error processing action: $error")
-              this.outboundPort.publishEvent(ActionFailed(action.playerId, error.toString))
+              this.outboundPort.publishEvent(ActionFailed(action.playerId, error))
             case Right(newState) =>
-              this.currentState = WizardGameState.Running(newState)
-              val actionEvent = ActionEvent.from(action)
-              val progressEvents = ProgressEvent.fromTransition(oldState, newState, action)
-              this.outboundPort.publishAllEvents(actionEvent +: progressEvents)
-              this.publishInvitationEvent(newState)
+              this.currentState = WizardGameState.Running(newState.state)
+              this.outboundPort.publishAllEvents(newState.events)
         case _ =>
 
   override def subscribe[T <: Event: ClassTag](handler: T => Unit): Future[String] =
@@ -80,6 +76,3 @@ class WizardGameAdapter(private val vertx: Vertx, private val outboundPort: Wiza
     this.verticleExecutor.runLater:
       println(s"Running activity '$activityName' on verticle...")
       activity
-
-  private def publishInvitationEvent(state: GameState): Unit =
-    InvitationContextFactory.fromState(state).foreach(this.outboundPort.publishEvent)
