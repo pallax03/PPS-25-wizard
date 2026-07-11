@@ -6,6 +6,7 @@ import it.unibo.pps.wizard.engine.model.basic.{PlayerId, Card, Bid}
 import scala.concurrent.Future
 
 trait WizardAIPort:
-  def getResolvedTrumpColor(playerId: PlayerId): Future[Color]
-  def getPlaceBid(playerId: PlayerId): Future[Bid]
-  def getBestCard(playerId: PlayerId): Future[Card]
+  def resolvedTrumpColor(playerId: PlayerId): Future[Color]
+  def placeBid(playerId: PlayerId): Future[Bid]
+  def adjustBid(playerId: PlayerId): Future[Bid]
+  def bestCard(playerId: PlayerId): Future[Card]

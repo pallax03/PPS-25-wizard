@@ -143,7 +143,9 @@ object GameEngine:
       updatedCore: CoreState,
       completedTable: Table
   ): GameEngine =
-    val winnerId = completedTable.evaluateTrick(updatedCore.trump)._1
+    val winnerId =
+      completedTable.playerOf(completedTable.evaluateTrick(updatedCore.trump).head).head
+
     val updatedTricks = state.tricksWon.addTrickTo(winnerId)
     if isRoundComplete(updatedCore.hands) then
       completeRound(state, updatedCore, updatedTricks).addEvents(

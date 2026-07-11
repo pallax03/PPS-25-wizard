@@ -1,61 +1,65 @@
 package it.unibo.pps.wizard.engine.adapters
 
-import it.unibo.pps.wizard.engine.model.basic.{Bid, Card, PlayerId}
+import it.unibo.pps.wizard.engine.model.basic.{Bid, Card, Hand, PlayerId, Table}
+import it.unibo.pps.wizard.engine.model.core.GameState
 import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
-import it.unibo.pps.wizard.util.PrologEngine
-import it.unibo.tuprolog.theory.Theory
+import it.unibo.pps.wizard.engine.prolog.WizardPrologEngine
+import it.unibo.pps.wizard.engine.model.rules.TableRules.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Using
 
 class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends WizardAIPort:
-  val prologEngine = PrologEngine.buildEngine(defineTheory)
 
-  private def defineTheory: Theory =
-    import PrologEngine.given
-    Using.resource(scala.io.Source.fromFile("prolog/all.pl"))(_.mkString)
+  private val engine = WizardPrologEngine()
 
-  override def getResolvedTrumpColor(playerId: PlayerId): Future[Card.Color] = ???
+  private def onRunningPhase[T](actionName: String)(
+      phaseLogic: PartialFunction[GameState, Future[T]]
+  ): Future[T] =
+    inboundPort.getState.flatMap:
+      case WizardGameState.Running(state) =>
+        phaseLogic.applyOrElse(
+          state,
+          _ => Future.failed(IllegalStateException(s"Cannot $actionName: invalid game phase"))
+        )
+      case _ => Future.failed(IllegalStateException("Game is not running"))
 
-  override def getPlaceBid(playerId: PlayerId): Future[Bid] = ???
+  private def withHand[T](handOpt: Option[Hand])(prologLogic: Hand => T): Future[T] =
+    handOpt match
+      case Some(hand) => Future.successful(prologLogic(hand))
+      case None       => Future.failed(IllegalArgumentException("Player not found in game state"))
 
-  override def getBestCard(playerId: PlayerId): Future[Card] =
-    inboundPort.getState.map:
-      case WizardGameState.Running(state) => ???
-      case _ =>
-        throw IllegalStateException("Game is not running")
+  override def resolvedTrumpColor(playerId: PlayerId): Future[Card.Color] =
+    onRunningPhase("choose trump color"):
+      case GameState.ChoosingTrump(core) =>
+        withHand(core.hands.getHand(playerId)): hand =>
+          engine.chooseTrumpColor(hand).getOrElse(Card.Color.values.head)
 
-//  private def bestCardFrom(context: PlayCardContext): Card =
-//    import PrologEngine.given
-//    val goal =
-//      s"""best_playable_card(
-//         |${cardsTerm(context.hand.toList)},
-//         |${cardTerm(context.currentWinningCard)},
-//         |${colorTerm(context.followingColor)},
-//         |${trumpColorTerm(context.trump)},
-//         |${context.bid.value},
-//         |${context.tricksWon},
-//         |BestCard
-//         |)""".stripMargin
-//    prologEngine(goal)
-//      .find(_.isYes)
-//      .flatMap(solution => PrologEngine.extractVars(solution).get("BestCard"))
-//      .flatMap(term => context.legalCards.find(cardTerm(_) == term.toString))
-//      .getOrElse(context.legalCards.head)
-//
-//  private def cardsTerm(cards: List[Card]): String = cards.map(cardTerm).mkString("[", ",", "]")
-//
-//  private def cardTerm(card: Option[Card]): String = card.map(cardTerm).getOrElse("none")
-//
-//  private def cardTerm(card: Card): String = card match
-//    case Card.Standard(color, rank) => s"card(${rank.value},${colorTerm(color)})"
-//    case _: Card.Wizard             => "wizard"
-//    case _: Card.Jester             => "jester"
-//
-//  private def trumpColorTerm(trump: Trump): String = colorTerm(trump.effectiveColor)
-//
-//  private def colorTerm(color: Option[Card.Color]): String = color.map(colorTerm).getOrElse("none")
-//
-//  private def colorTerm(color: Card.Color): String = color.toString.toLowerCase
-//
+  override def placeBid(playerId: PlayerId): Future[Bid] =
+    onRunningPhase("place bid"):
+      case GameState.Bidding(core, _, _) =>
+        withHand(core.hands.getHand(playerId)): hand =>
+          engine.placeBid(hand, core.trump).getOrElse(Bid(0))
+
+  override def adjustBid(playerId: PlayerId): Future[Bid] =
+    onRunningPhase("adjust bid"):
+      case GameState.Bidding(core, _, _) =>
+        withHand(core.hands.getHand(playerId)): hand =>
+          val rejectedBid = engine.placeBid(hand, core.trump).getOrElse(Bid(0))
+          engine.adjustBid(hand, rejectedBid).getOrElse(Bid(rejectedBid.value + 1))
+
+  override def bestCard(playerId: PlayerId): Future[Card] =
+    onRunningPhase("play best card"):
+      case GameState.Playing(core, bids, table, _, tricks) =>
+        withHand(core.hands.getHand(playerId)): hand =>
+          val legalCards = hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
+          engine
+            .bestPlayableCard(
+              hand = hand,
+              winningCard = table.evaluateTrick(core.trump),
+              followingColor = table.followingCard.collect { case Card.Standard(c, _) => c },
+              trump = core.trump,
+              playerBid = bids(playerId),
+              playerTrick = Bid(tricks(playerId)) // TODO: Bid and Trick need to be refactored
+            )
+            .getOrElse(legalCards.head)

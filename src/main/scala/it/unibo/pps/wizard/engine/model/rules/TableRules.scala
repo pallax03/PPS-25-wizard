@@ -27,7 +27,7 @@ object TableRules:
               else Right(())
 
   extension (table: Table)
-    def evaluateTrick(trump: Trump): (PlayerId, Card) =
+    def evaluateTrick(trump: Trump): Option[Card] =
       val cards = table.playedCards
       val trumpColor = trump.effectiveColor
       val followingColor = table.followingCard.map(_.color)
@@ -37,12 +37,10 @@ object TableRules:
           .collect { case c @ Card.Standard(color, rank) if targetColor.contains(color) => c }
           .maxByOption(_.rank.value)
 
-      val winningCard = cards
+      cards
         .find(_.isInstanceOf[Card.Wizard])
         .orElse(highestOf(trumpColor))
         .orElse(highestOf(followingColor))
-        .getOrElse(cards.head)
-
-      (table.playerOf(winningCard).get, winningCard)
+        .orElse(cards.headOption)
 
 export TableRules.*
