@@ -11,10 +11,10 @@ class TestPrologEngine extends AnyWordSpec with Matchers:
     "Resolve a basic query with member" in:
       val engine = PrologEngine.buildEngine("")
       val solutions = engine("member(2, [1, 2, 3])")
-      solutions.headOption.exists(_.isYes) shouldBe true
+      solutions.headOption.exists(_.isSuccess) shouldBe true
       val failedSolutions = engine("member(4, [1, 2, 3])")
-      failedSolutions.headOption.exists(_.isNo) shouldBe true
-      failedSolutions.take(1).map(PrologEngine.extractVars).toList shouldBe List(Map.empty)
+      failedSolutions.headOption.exists(_.isSuccess) shouldBe false
+      failedSolutions.take(1).map(PrologEngine.extractVars).toList shouldBe List()
 
     "Resolve Backtracking" in:
       val theory = """
