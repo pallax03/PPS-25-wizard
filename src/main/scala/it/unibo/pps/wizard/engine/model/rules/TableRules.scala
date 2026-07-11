@@ -2,7 +2,7 @@ package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.core.GameError
-import it.unibo.pps.wizard.engine.model.core.Reasons.{CardNotInHand, MustFollowLeader}
+import it.unibo.pps.wizard.engine.model.core.CardNotAllowedReasons.{CardNotInHand, MustFollowLeader}
 
 object TableRules:
 
