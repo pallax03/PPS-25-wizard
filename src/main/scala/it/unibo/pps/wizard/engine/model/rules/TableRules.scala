@@ -15,27 +15,32 @@ object TableRules:
   extension (cardPlayed: Card)
     private def isLegal(table: Table, hand: Hand): Boolean =
       if !hand.contains(cardPlayed) then false
-      else cardPlayed match
-        case _: SpecialCard => true
-        case Card.Standard(playedColor, _) =>
-          table.followingCard match
-            case Some(Card.Standard(followingColor, _)) =>
-              playedColor == followingColor || !hand.hasColor(followingColor)
-            case _ => true
+      else
+        cardPlayed match
+          case _: SpecialCard => true
+          case Card.Standard(playedColor, _) =>
+            table.followingCard match
+              case Some(Card.Standard(followingColor, _)) =>
+                playedColor == followingColor || !hand.hasColor(followingColor)
+              case _ => true
 
-    // 3. Logica di business: usa l'Either ed espone l'errore ricco
     def validateAgainst(table: Table, hand: Hand): Either[GameError, Unit] =
       if !hand.contains(cardPlayed) then
         Left(GameError.CardNotAllowed(CardNotInHand(hand.legalCards(table))))
-      else cardPlayed match
-        case _: SpecialCard => Right(())
-        case Card.Standard(playedColor, _) =>
-          table.followingCard match
-            case Some(Card.Standard(followingColor, _)) if playedColor != followingColor =>
-              if hand.hasColor(followingColor) then
-                Left(GameError.CardNotAllowed(MustFollowColor(followingColor, hand.legalCards(table))))
-              else Right(())
-            case _ => Right(())
+      else
+        cardPlayed match
+          case _: SpecialCard => Right(())
+          case Card.Standard(playedColor, _) =>
+            table.followingCard match
+              case Some(Card.Standard(followingColor, _)) if playedColor != followingColor =>
+                if hand.hasColor(followingColor) then
+                  Left(
+                    GameError.CardNotAllowed(
+                      MustFollowColor(followingColor, hand.legalCards(table))
+                    )
+                  )
+                else Right(())
+              case _ => Right(())
 
   extension (table: Table)
     def evaluateTrick(trump: Trump): Option[Card] =

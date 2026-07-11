@@ -45,7 +45,7 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
     onRunningPhase("adjust bid"):
       case GameState.Bidding(core, currentBids, _) =>
         withHand(core.hands.getHand(playerId)): hand =>
-          val rejectedBid = Bid(core.round.value - currentBids.total.value) 
+          val rejectedBid = Bid(core.round.value - currentBids.total.value)
           engine.adjustBid(hand, rejectedBid).getOrElse(Bid(rejectedBid.value + 1))
 
   override def bestCard(playerId: PlayerId): Future[Card] =

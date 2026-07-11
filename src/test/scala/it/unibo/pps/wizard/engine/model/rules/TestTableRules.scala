@@ -34,7 +34,9 @@ class TestTableRules extends AnyWordSpec with Matchers:
       "player HAS to follow the following color" in:
         val table = Table.empty + (p1 plays 4.blue)
         val result = c2.validateAgainst(table, hand)
-        result shouldBe Left(GameError.CardNotAllowed(MustFollowColor(Blue, hand.legalCards(table))))
+        result shouldBe Left(
+          GameError.CardNotAllowed(MustFollowColor(Blue, hand.legalCards(table)))
+        )
 
       "player LACKS the following color" in:
         val table = Table.empty + (p1 plays 4.yellow)
