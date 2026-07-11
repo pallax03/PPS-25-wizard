@@ -35,7 +35,7 @@ object GameEngine:
               ActionEvent.TrumpColorResolved(playerId, color),
               ProgressEvent.PhaseChanged(nextState.getClass.getSimpleName),
               ProgressEvent.IsTurnOf(nextState.currentPlayer),
-              InvitationEvent.WaitingForBid(nextState.currentPlayer)
+              InvitationEvent.WaitingForBid(nextState.currentPlayer, nextState.core.round)
             )
           )
 
@@ -68,7 +68,7 @@ object GameEngine:
                 ProgressEvent.IsTurnOf(firstPlayer),
                 InvitationEvent.WaitingForCard(
                   firstPlayer,
-                  hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
+                  hand.legalCards(Table.empty)
                 )
               )
             )
@@ -83,7 +83,7 @@ object GameEngine:
               List(
                 ActionEvent.BidPlaced(playerId, bid),
                 ProgressEvent.IsTurnOf(nextPlayer),
-                InvitationEvent.WaitingForBid(nextPlayer)
+                InvitationEvent.WaitingForBid(nextPlayer, currentState.core.round)
               )
             )
 
@@ -121,7 +121,7 @@ object GameEngine:
                       ProgressEvent.IsTurnOf(nextPlayer),
                       InvitationEvent.WaitingForCard(
                         nextPlayer,
-                        hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
+                        hand.legalCards(updatedTable)
                       )
                     )
                   )
@@ -141,7 +141,7 @@ object GameEngine:
       case bidding: GameState.Bidding =>
         List(
           ProgressEvent.IsTurnOf(bidding.currentPlayer),
-          InvitationEvent.WaitingForBid(bidding.currentPlayer)
+          InvitationEvent.WaitingForBid(bidding.currentPlayer, round)
         )
       case _ => Nil
 
@@ -233,7 +233,7 @@ object GameEngine:
         case bidding: GameState.Bidding =>
           List(
             ProgressEvent.IsTurnOf(bidding.currentPlayer),
-            InvitationEvent.WaitingForBid(bidding.currentPlayer)
+            InvitationEvent.WaitingForBid(bidding.currentPlayer, nextRound)
           )
         case _ => Nil
 

@@ -30,7 +30,13 @@ class BotManagerVerticle(
             .foreach: action =>
               wizardInboundPort.submitAction(action)
     wizardInboundPort.subscribe[FailureEvent]: failure =>
-      bots.get(failure.playerId)
+      bots
+        .get(failure.playerId)
+        .foreach: strategy =>
+          strategy
+            .resolveFailedEvents(failure)
+            .foreach: action =>
+              wizardInboundPort.submitAction(action)
 
   private def registerBots(players: Players, difficulty: BotsDifficulty): Unit =
     bots = players.toList

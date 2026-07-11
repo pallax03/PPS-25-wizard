@@ -2,7 +2,7 @@ package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.core.GameError
-import it.unibo.pps.wizard.engine.model.core.CardNotAllowedReasons.{CardNotInHand, MustFollowLeader}
+import it.unibo.pps.wizard.engine.model.core.CardNotAllowedReasons.*
 
 object TableRules:
 
@@ -10,21 +10,37 @@ object TableRules:
     private def hasColor(color: Card.Color): Boolean = h.toList.exists:
       case Card.Standard(c, _) => c == color
       case _                   => false
+    def legalCards(table: Table): List[Card] = h.toList.filter(_.isLegal(table, h))
 
   extension (cardPlayed: Card)
-    def validateAgainst(table: Table, hand: Hand): Either[GameError, Unit] =
-      if !hand.contains(cardPlayed) then return Left(GameError.CardNotAllowed(CardNotInHand))
+    private def isLegal(table: Table, hand: Hand): Boolean =
+      if !hand.contains(cardPlayed) then false
+      else
+        cardPlayed match
+          case _: SpecialCard => true
+          case Card.Standard(playedColor, _) =>
+            table.followingCard match
+              case Some(Card.Standard(followingColor, _)) =>
+                playedColor == followingColor || !hand.hasColor(followingColor)
+              case _ => true
 
-      cardPlayed match
-        case _: SpecialCard => Right(())
-        case Card.Standard(playedColor, _) =>
-          table.followingCard match
-            case None => Right(())
-            case Some(Card.Standard(leaderColor, _)) =>
-              if playedColor == leaderColor then Right(())
-              else if hand.hasColor(leaderColor) then
-                Left(GameError.CardNotAllowed(MustFollowLeader(leaderColor)))
-              else Right(())
+    def validateAgainst(table: Table, hand: Hand): Either[GameError, Unit] =
+      if !hand.contains(cardPlayed) then
+        Left(GameError.CardNotAllowed(CardNotInHand(hand.legalCards(table))))
+      else
+        cardPlayed match
+          case _: SpecialCard => Right(())
+          case Card.Standard(playedColor, _) =>
+            table.followingCard match
+              case Some(Card.Standard(followingColor, _)) if playedColor != followingColor =>
+                if hand.hasColor(followingColor) then
+                  Left(
+                    GameError.CardNotAllowed(
+                      MustFollowColor(followingColor, hand.legalCards(table))
+                    )
+                  )
+                else Right(())
+              case _ => Right(())
 
   extension (table: Table)
     def evaluateTrick(trump: Trump): Option[Card] =

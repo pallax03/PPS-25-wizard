@@ -3,7 +3,7 @@ package it.unibo.pps.wizard.engine.prolog
 import it.unibo.pps.wizard.engine.model.basic.Card.*
 import it.unibo.pps.wizard.engine.model.basic.Hand.*
 import it.unibo.pps.wizard.engine.model.basic.{Table, Bid}
-import it.unibo.pps.wizard.engine.model.rules.TableRules.validateAgainst
+import it.unibo.pps.wizard.engine.model.rules.TableRules.*
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -28,7 +28,7 @@ class TestWizardPrologEngine extends AnyWordSpec with Matchers:
       bid.value should be <= hand.size
 
     "best playable card" in:
-      val legalCards = hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
+      val legalCards = hand.legalCards(Table.empty)
       val bestCard = engine
         .bestPlayableCard(
           hand = hand,

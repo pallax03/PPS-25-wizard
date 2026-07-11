@@ -1,0 +1,30 @@
+name: Project Build and Test
+# https://github.com/sbt/setup-sbt
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Current Repo
+        uses: actions/checkout@v6
+
+      - name: Setup JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'sbt'
+
+      - name: Install SBT
+        uses: sbt/setup-sbt@v1
+
+      - name: Check formatting with Scalafmt
+        run: sbt scalafmtCheckAll
