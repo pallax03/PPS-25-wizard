@@ -22,8 +22,7 @@ class BotManagerVerticle(
       case _: LifecycleEvent.GameEnded                     => bots = Map.empty
 
     wizardInboundPort.subscribe[InvitationEvent]: invitation =>
-      bots
-        .get(invitation.playerId)
+      bots.get(invitation.playerId)
         .foreach: strategy =>
           strategy
             .resolveInvitationEvents(invitation)
@@ -31,7 +30,12 @@ class BotManagerVerticle(
               wizardInboundPort.submitAction(action)
     wizardInboundPort.subscribe[FailureEvent]: failure =>
       bots.get(failure.playerId)
-
+        .foreach: strategy =>
+          strategy
+          .resolveFailedEvents(failure)
+          .foreach: action =>
+            wizardInboundPort.submitAction(action)
+  
   private def registerBots(players: Players, difficulty: BotsDifficulty): Unit =
     bots = players.toList
       .filter(_.isBot)
