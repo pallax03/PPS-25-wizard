@@ -1,25 +1,35 @@
 package it.unibo.pps.wizard.util
 
-import it.unibo.tuprolog.core.{Struct, Term}
-import it.unibo.tuprolog.theory.Theory
-import it.unibo.tuprolog.theory.parsing.ClausesReader
-import it.unibo.tuprolog.core.parsing.TermParser
-import it.unibo.tuprolog.solve.{Solution, Solver}
+import alice.tuprolog.{Prolog, SolveInfo, Term, Theory}
 
-import java.io.StringReader
 import scala.jdk.CollectionConverters.*
 
 object PrologEngine:
 
-  given Conversion[String, Term] = TermParser.withDefaultOperators().parseTerm(_)
-  given Conversion[String, Struct] = TermParser.withDefaultOperators().parseStruct(_)
-  given Conversion[String, Theory] = s =>
-    ClausesReader.withDefaultOperators().readTheory(new StringReader(s))
+  given Conversion[String, Theory] = Theory.parseWithStandardOperators(_)
 
-  def buildEngine(theory: Theory): Struct => LazyList[Solution] =
-    val solver = Solver.prolog().newBuilder().staticKb(theory).build()
-    goal => solver.solve(goal).iterator().asScala.to(LazyList)
+  def buildEngine(theory: Theory): String => LazyList[SolveInfo] =
+    val solver = Prolog()
+    solver.setTheory(theory)
+    goal =>
+      new Iterable[SolveInfo]:
+        override def iterator: Iterator[SolveInfo] = new Iterator[SolveInfo]:
+          private var solution: Option[SolveInfo] = Some(solver.solve(goal))
 
-  def extractVars(solution: Solution): Map[String, Term] =
-    if solution.isYes then solution.getSubstitution.asScala.map((v, t) => v.getName -> t).toMap
+          override def hasNext: Boolean =
+            solution.exists(current => current.isSuccess || current.hasOpenAlternatives)
+
+          override def next(): SolveInfo =
+            try solution.get
+            finally
+              solution =
+                if solution.get.hasOpenAlternatives then Some(solver.solveNext())
+                else None
+      .to(LazyList)
+
+  def extractVars(solution: SolveInfo): Map[String, Term] =
+    if solution.isSuccess then
+      solution.getBindingVars.asScala
+        .map(variable => variable.getName -> solution.getTerm(variable.getName))
+        .toMap
     else Map.empty

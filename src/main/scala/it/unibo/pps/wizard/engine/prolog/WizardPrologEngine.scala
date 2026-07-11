@@ -4,8 +4,7 @@ import it.unibo.pps.wizard.engine.model.basic.{Bid, Card, Hand, Trump}
 import it.unibo.pps.wizard.engine.model.basic.Card.Color
 import it.unibo.pps.wizard.engine.prolog.WizardTermMapper.*
 import it.unibo.pps.wizard.util.PrologEngine
-import it.unibo.tuprolog.core.Term
-import it.unibo.tuprolog.theory.Theory
+import alice.tuprolog.{Term, Theory}
 
 import scala.util.Using
 
@@ -14,14 +13,7 @@ class WizardPrologEngine:
 
   private def defineTheory: Theory =
     import PrologEngine.given
-    Seq(
-      "prolog/utils.pl",
-      "prolog/engine_basic.pl",
-      "prolog/engine_rules.pl",
-      "prolog/strategy_helper.pl",
-      "prolog/strategy.pl",
-      "prolog/api.pl"
-    ).map(f => Using.resource(scala.io.Source.fromFile(f))(_.mkString)).mkString("\n")
+    Using.resource(scala.io.Source.fromFile("prolog/all.pl"))(_.mkString)
 
   def chooseTrumpColor(hand: Hand): Option[Color] =
     query(s"choose_trump(${cardsTerm(hand.toList)}, TrumpColor)", "TrumpColor").flatMap(term =>
@@ -59,7 +51,6 @@ class WizardPrologEngine:
   ).flatMap(term => hand.toList.find(cardTerm(_) == term.toString))
 
   private def query[B](goal: String, extractTerm: String): Option[Term] =
-    import PrologEngine.given
     prologEngine(goal)
-      .find(_.isYes)
+      .find(_.isSuccess)
       .flatMap(solution => PrologEngine.extractVars(solution).get(extractTerm))

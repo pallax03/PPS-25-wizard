@@ -8,6 +8,7 @@ import it.unibo.pps.wizard.engine.model.configuration.BotsDifficulty
 import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Failure
 
 class BotManagerVerticle(
     wizardInboundPort: WizardInboundPort,
@@ -27,6 +28,9 @@ class BotManagerVerticle(
         .foreach: strategy =>
           strategy
             .resolveInvitationEvents(invitation)
+            .andThen:
+              case Failure(error) =>
+                println(s"Bot ${invitation.playerId} failed on $invitation: ${error.getMessage}")
             .foreach: action =>
               wizardInboundPort.submitAction(action)
     wizardInboundPort.subscribe[FailureEvent]: failure =>
@@ -35,6 +39,11 @@ class BotManagerVerticle(
         .foreach: strategy =>
           strategy
             .resolveFailedEvents(failure)
+            .andThen:
+              case Failure(error) =>
+                println(
+                  s"Bot ${failure.playerId} failed to recover from $failure: ${error.getMessage}"
+                )
             .foreach: action =>
               wizardInboundPort.submitAction(action)
 

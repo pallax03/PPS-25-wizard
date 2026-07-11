@@ -9,6 +9,7 @@ import scala.concurrent.{Future, Promise}
 import scala.util.Random
 
 class DumbBotStrategy(vertx: Vertx, random: Random = Random()) extends BotStrategy:
+  private var bid: (Round, Bid) = Round.start -> Bid(0)
 
   private def delayed[T](delayMs: Long)(action: => T): Future[T] =
     val promise = Promise[T]()
@@ -19,9 +20,10 @@ class DumbBotStrategy(vertx: Vertx, random: Random = Random()) extends BotStrate
     delayed(1000):
       invitation match
         case InvitationEvent.WaitingForBid(playerId, round) =>
+          bid = round -> Bid(random.nextInt(round.value + 1))
           GameAction.PlaceBid(
             playerId,
-            Bid(random.nextInt(round.value + 1))
+            bid._2
           )
 
         case InvitationEvent.WaitingForCard(playerId, legalCards) =>
@@ -37,7 +39,9 @@ class DumbBotStrategy(vertx: Vertx, random: Random = Random()) extends BotStrate
         case FailureEvent.ActionFailed(playerId, reason) =>
           reason match
             case GameError.InvalidBid =>
-              GameAction.PlaceBid(playerId, Bid(0))
+              val (round, lastBid) = bid
+              bid = round -> Bid((lastBid.value + 1) % (round.value + 1))
+              GameAction.PlaceBid(playerId, bid._2)
 
             case GameError.CardNotAllowed(notAllowedReason) =>
               GameAction.PlayCard(playerId, notAllowedReason.legitCards.head)

@@ -1,9 +1,10 @@
 package it.unibo.pps.wizard.engine.adapters
 
-import it.unibo.pps.wizard.engine.model.basic.{Bid, Card, Hand, PlayerId, Table}
+import it.unibo.pps.wizard.engine.model.basic.{Bid, Bids, Card, Hand, PlayerId, Round, Table}
 import it.unibo.pps.wizard.engine.model.core.GameState
 import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
 import it.unibo.pps.wizard.engine.prolog.WizardPrologEngine
+import it.unibo.pps.wizard.engine.model.rules.BiddingRules.*
 import it.unibo.pps.wizard.engine.model.rules.TableRules.*
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -37,16 +38,25 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
 
   override def placeBid(playerId: PlayerId): Future[Bid] =
     onRunningPhase("place bid"):
-      case GameState.Bidding(core, _, _) =>
+      case GameState.Bidding(core, currentBids, _) =>
         withHand(core.hands.getHand(playerId)): hand =>
-          engine.placeBid(hand, core.trump).getOrElse(Bid(0))
+          val isValid = (bid: Bid) =>
+            bid.validateBid(core.round, currentBids, core.players.totalPlayers).isRight
+          val proposedBid = engine.placeBid(hand, core.trump)
+          proposedBid
+            .filter(isValid)
+            .orElse(proposedBid.flatMap(engine.adjustBid(hand, _)).filter(isValid))
+            .getOrElse(firstValidBid(core.round, currentBids, core.players.totalPlayers))
 
   override def adjustBid(playerId: PlayerId): Future[Bid] =
     onRunningPhase("adjust bid"):
       case GameState.Bidding(core, currentBids, _) =>
         withHand(core.hands.getHand(playerId)): hand =>
           val rejectedBid = Bid(core.round.value - currentBids.total.value)
-          engine.adjustBid(hand, rejectedBid).getOrElse(Bid(rejectedBid.value + 1))
+          engine
+            .adjustBid(hand, rejectedBid)
+            .filter(_.validateBid(core.round, currentBids, core.players.totalPlayers).isRight)
+            .getOrElse(firstValidBid(core.round, currentBids, core.players.totalPlayers))
 
   override def bestCard(playerId: PlayerId): Future[Card] =
     onRunningPhase("play best card"):
@@ -62,4 +72,11 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
               playerBid = bids(playerId),
               playerTrick = Bid(tricks(playerId)) // TODO: Bid and Trick need to be refactored
             )
+            .filter(legalCards.contains)
             .getOrElse(legalCards.head)
+
+  private def firstValidBid(round: Round, bids: Bids, totalPlayers: Int): Bid =
+    (0 to round.value)
+      .map(Bid(_))
+      .find(_.validateBid(round, bids, totalPlayers).isRight)
+      .getOrElse(Bid.zero)
