@@ -32,8 +32,8 @@ class TestWizardPrologEngine extends AnyWordSpec with Matchers:
       val bestCard = engine
         .bestPlayableCard(
           hand = hand,
-          winningCard = 10.yellow,
-          followingColor = Yellow,
+          winningCard = Option(10.yellow),
+          followingColor = Option(Yellow),
           trump = Option(5.blue).asTrump,
           playerBid = Bid(5),
           playerTrick = Bid(3)

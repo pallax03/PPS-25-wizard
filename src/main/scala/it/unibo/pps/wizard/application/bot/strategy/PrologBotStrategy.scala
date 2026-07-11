@@ -13,7 +13,7 @@ class PrologBotStrategy(port: WizardAIPort) extends BotStrategy:
   override def resolveInvitationEvents(invitation: InvitationEvent): Future[GameAction] =
     invitation match
       case InvitationEvent.WaitingForCard(playerId, _) =>
-        port.getBestCard(playerId).map(card => GameAction.PlayCard(playerId, card))
+        port.bestCard(playerId).map(card => GameAction.PlayCard(playerId, card))
       case InvitationEvent.WaitingForBid(playerId)   => ???
       case InvitationEvent.WaitingForTrump(playerId) => ???
 

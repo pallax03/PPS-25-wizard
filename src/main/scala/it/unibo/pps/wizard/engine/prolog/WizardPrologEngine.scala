@@ -40,8 +40,8 @@ class WizardPrologEngine:
 
   def bestPlayableCard(
       hand: Hand,
-      winningCard: Card,
-      followingColor: Color,
+      winningCard: Option[Card],
+      followingColor: Option[Color],
       trump: Trump,
       playerBid: Bid,
       playerTrick: Bid
