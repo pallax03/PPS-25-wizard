@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.core.Reasons.{CardNotInHand, MustFollowLeader}
+import it.unibo.pps.wizard.engine.model.core.CardNotAllowedReasons.*
 import it.unibo.pps.wizard.engine.model.core.GameError
 
 import org.scalatest.matchers.should.Matchers
@@ -22,7 +22,7 @@ class TestTableRules extends AnyWordSpec with Matchers:
       "return a CardNotInHand reason" in:
         val hand = 5.blue.asHand
         val result = 10.red.validateAgainst(Table.empty, hand)
-        result shouldBe Left(GameError.CardNotAllowed(CardNotInHand))
+        result shouldBe Left(GameError.CardNotAllowed(CardNotInHand(hand.legalCards(Table.empty))))
 
     "evaluating standard rules" should:
       val c1: Card = 5.blue
@@ -34,7 +34,7 @@ class TestTableRules extends AnyWordSpec with Matchers:
       "player HAS to follow the following color" in:
         val table = Table.empty + (p1 plays 4.blue)
         val result = c2.validateAgainst(table, hand)
-        result shouldBe Left(GameError.CardNotAllowed(MustFollowLeader(Blue)))
+        result shouldBe Left(GameError.CardNotAllowed(MustFollowColor(Blue, hand.legalCards(table))))
 
       "player LACKS the following color" in:
         val table = Table.empty + (p1 plays 4.yellow)

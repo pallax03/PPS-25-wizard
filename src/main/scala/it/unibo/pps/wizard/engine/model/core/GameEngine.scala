@@ -61,7 +61,7 @@ object GameEngine:
                 ProgressEvent.IsTurnOf(firstPlayer),
                 InvitationEvent.WaitingForCard(
                   firstPlayer,
-                  hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
+                  hand.legalCards(Table.empty)
                 )
               )
             )
@@ -76,7 +76,7 @@ object GameEngine:
               List(
                 ActionEvent.BidPlaced(playerId, bid),
                 ProgressEvent.IsTurnOf(nextPlayer),
-                InvitationEvent.WaitingForBid(nextPlayer)
+                InvitationEvent.WaitingForBid(nextPlayer, currentState.core.round)
               )
             )
 
@@ -115,7 +115,7 @@ object GameEngine:
                 ProgressEvent.IsTurnOf(nextPlayer),
                 InvitationEvent.WaitingForCard(
                   nextPlayer,
-                  hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
+                  hand.legalCards(Table.empty)
                 )
               )
             )
@@ -130,7 +130,7 @@ object GameEngine:
 
     val specificEvents = gameState match
       case _: GameState.ChoosingTrump => List(InvitationEvent.WaitingForTrump(core.dealerId))
-      case _: GameState.Bidding       => List(InvitationEvent.WaitingForBid(core.dealerId))
+      case _: GameState.Bidding       => List(InvitationEvent.WaitingForBid(core.dealerId, round))
       case _                          => Nil
 
     (gameState, specificEvents).addEvents(
@@ -165,7 +165,7 @@ object GameEngine:
           ProgressEvent.IsTurnOf(winnerId),
           InvitationEvent.WaitingForCard(
             winnerId,
-            hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
+            hand.legalCards(Table.empty)
           )
         )
       )
@@ -199,8 +199,8 @@ object GameEngine:
 
       val specificEvents = gameState match
         case _: GameState.ChoosingTrump => List(InvitationEvent.WaitingForTrump(nextDealer))
-        case _: GameState.Bidding       => List(InvitationEvent.WaitingForBid(nextDealer))
-        case _                          => Nil
+        case _: GameState.Bidding => List(InvitationEvent.WaitingForBid(nextDealer, nextRound))
+        case _                    => Nil
 
       (gameState, specificEvents).addEvents(
         ProgressEvent.CardsDealt(newCore.dealerId, newCore.hands, newCore.trump, newCore.round),

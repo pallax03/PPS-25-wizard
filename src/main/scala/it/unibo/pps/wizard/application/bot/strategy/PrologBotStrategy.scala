@@ -1,6 +1,5 @@
 package it.unibo.pps.wizard.application.bot.strategy
 
-import it.unibo.pps.wizard.application.bot.strategy.BotStrategy
 import it.unibo.pps.wizard.engine.events.{FailureEvent, InvitationEvent}
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameError}
 import it.unibo.pps.wizard.engine.ports.WizardAIPort
@@ -14,12 +13,23 @@ class PrologBotStrategy(port: WizardAIPort) extends BotStrategy:
     invitation match
       case InvitationEvent.WaitingForCard(playerId, _) =>
         port.bestCard(playerId).map(card => GameAction.PlayCard(playerId, card))
-      case InvitationEvent.WaitingForBid(playerId)   => ???
-      case InvitationEvent.WaitingForTrump(playerId) => ???
+
+      case InvitationEvent.WaitingForBid(playerId, _) =>
+        port.placeBid(playerId).map(bid => GameAction.PlaceBid(playerId, bid))
+
+      case InvitationEvent.WaitingForTrump(playerId) =>
+        port
+          .resolvedTrumpColor(playerId)
+          .map(color => GameAction.ResolveTrumpColor(playerId, color))
 
   override def resolveFailedEvents(failure: FailureEvent): Future[GameAction] = failure match
     case FailureEvent.ActionFailed(playerId, reason) =>
       reason match
-        case GameError.InvalidBid             => ???
-        case GameError.CardNotAllowed(reason) => ???
-        case _                                => ???
+        case GameError.InvalidBid =>
+          port.adjustBid(playerId).map(bid => GameAction.PlaceBid(playerId, bid))
+
+        case GameError.CardNotAllowed(notAllowedReason) =>
+          Future.successful(GameAction.PlayCard(playerId, notAllowedReason.legitCards.head))
+
+        case _ =>
+          Future.failed(IllegalStateException(s"AI cannot recover from $reason"))

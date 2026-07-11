@@ -52,7 +52,7 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
     onRunningPhase("play best card"):
       case GameState.Playing(core, bids, table, _, tricks) =>
         withHand(core.hands.getHand(playerId)): hand =>
-          val legalCards = hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
+          val legalCards = hand.legalCards(table)
           engine
             .bestPlayableCard(
               hand = hand,
