@@ -9,4 +9,3 @@ trait WizardAIPort:
   def getResolvedTrumpColor(playerId: PlayerId): Future[Color]
   def getPlaceBid(playerId: PlayerId): Future[Bid]
   def getBestCard(playerId: PlayerId): Future[Card]
-  

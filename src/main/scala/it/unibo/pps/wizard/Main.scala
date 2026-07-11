@@ -3,7 +3,11 @@ package it.unibo.pps.wizard
 import io.vertx.core.Vertx
 import it.unibo.pps.wizard.application.WizardApplication
 import it.unibo.pps.wizard.application.bot.BotManagerVerticle
-import it.unibo.pps.wizard.engine.adapters.{VertxEventBusAdapter, WizardGameAdapter, WizardPrologAdapter}
+import it.unibo.pps.wizard.engine.adapters.{
+  VertxEventBusAdapter,
+  WizardGameAdapter,
+  WizardPrologAdapter
+}
 import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort, WizardOutboundPort}
 
 object Main:

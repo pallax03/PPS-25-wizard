@@ -12,7 +12,6 @@ trait BotStrategy:
   def resolveInvitationEvents(invitation: InvitationEvent): Future[GameAction]
   def resolveFailedEvents(failure: FailureEvent): Future[GameAction]
 
-
 object BotStrategy:
   def apply(difficulty: BotsDifficulty): (WizardAIPort, Vertx) => BotStrategy = difficulty match
     case BotsDifficulty.Dumb   => (_, vertx) => new DumbBotStrategy(vertx)

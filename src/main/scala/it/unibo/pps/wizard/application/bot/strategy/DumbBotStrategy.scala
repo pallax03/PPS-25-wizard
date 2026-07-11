@@ -16,16 +16,20 @@ class DumbBotStrategy(vertx: Vertx, random: Random = Random()) extends BotStrate
     promise.future
 
   private def dumbResolver(invitation: InvitationEvent): GameAction = invitation match
-    case InvitationEvent.WaitingForBid(playerId, _) =>
-      GameAction.PlaceBid(playerId, Bid(1))//random.between(Round.start.value, context.round.value)))
-    case InvitationEvent.WaitingForCard(playerId, context) =>
-      GameAction.PlayCard(playerId, context.legalCards.head)
-    case InvitationEvent.WaitingForTrump(playerId, _) =>
+    case InvitationEvent.WaitingForBid(playerId) =>
+      GameAction.PlaceBid(
+        playerId,
+        Bid(1)
+      ) // random.between(Round.start.value, context.round.value)))
+    case InvitationEvent.WaitingForCard(playerId, legalCards) =>
+      GameAction.PlayCard(playerId, legalCards.head)
+    case InvitationEvent.WaitingForTrump(playerId) =>
       val colors = Card.Color.values
       GameAction.ResolveTrumpColor(playerId, colors(random.nextInt(colors.length)))
 
   override def resolveFailedEvents(failure: FailureEvent): Future[GameAction] = failure match
-    case FailureEvent.ActionFailed(playerId, reason) => reason match
-      case GameError.InvalidBid => ???
-      case GameError.CardNotAllowed(reason) => ???
-      case _ => ???
+    case FailureEvent.ActionFailed(playerId, reason) =>
+      reason match
+        case GameError.InvalidBid             => ???
+        case GameError.CardNotAllowed(reason) => ???
+        case _                                => ???
