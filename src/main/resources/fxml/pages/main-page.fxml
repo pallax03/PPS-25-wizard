@@ -41,6 +41,11 @@
         </ComboBox>
     </VBox>
 
+    <VBox alignment="CENTER" spacing="5.0">
+        <Label text="Difficoltà Bot:" style="-fx-text-fill: #b2bec3; -fx-font-size: 14px;"/>
+        <ComboBox fx:id="botsDifficultyCombo" maxWidth="120.0" style="-fx-font-size: 14px;"/>
+    </VBox>
+
     <!-- Pulsante Avvia -->
     <Button fx:id="btnStart" text="CREA PARTITA" onAction="#handleStartGameClick"
             style="-fx-font-family: 'sans-serif'; -fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #2ecc71; -fx-text-fill: white; -fx-padding: 10 30 10 30; -fx-background-radius: 20; -fx-cursor: hand;"/>

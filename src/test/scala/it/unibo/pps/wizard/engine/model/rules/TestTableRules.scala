@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.core.Reasons.{CardNotInHand, MustFollowLeader}
+import it.unibo.pps.wizard.engine.model.core.CardNotAllowedReasons.*
 import it.unibo.pps.wizard.engine.model.core.GameError
 
 import org.scalatest.matchers.should.Matchers
@@ -22,7 +22,7 @@ class TestTableRules extends AnyWordSpec with Matchers:
       "return a CardNotInHand reason" in:
         val hand = 5.blue.asHand
         val result = 10.red.validateAgainst(Table.empty, hand)
-        result shouldBe Left(GameError.CardNotAllowed(CardNotInHand))
+        result shouldBe Left(GameError.CardNotAllowed(CardNotInHand(hand.legalCards(Table.empty))))
 
     "evaluating standard rules" should:
       val c1: Card = 5.blue
@@ -34,7 +34,9 @@ class TestTableRules extends AnyWordSpec with Matchers:
       "player HAS to follow the following color" in:
         val table = Table.empty + (p1 plays 4.blue)
         val result = c2.validateAgainst(table, hand)
-        result shouldBe Left(GameError.CardNotAllowed(MustFollowLeader(Blue)))
+        result shouldBe Left(
+          GameError.CardNotAllowed(MustFollowColor(Blue, hand.legalCards(table)))
+        )
 
       "player LACKS the following color" in:
         val table = Table.empty + (p1 plays 4.yellow)
@@ -55,20 +57,24 @@ class TestTableRules extends AnyWordSpec with Matchers:
     "award the trick to the first Wizard played" in:
       val winningTrick = p2 plays wizard
       val table = Table.empty + (p1 plays 10.red) + winningTrick + (p3 plays wizard)
-      table.evaluateTrick(Trump.Absent) shouldBe winningTrick
+      val winner = table.evaluateTrick(Trump.Absent).flatMap(c => table.playerOf(c).map((_, c)))
+      winner shouldBe Some(winningTrick)
 
     "award the trick to the highest trump (no Wizard)" in:
       val winningTrick = p3 plays 5.red
       val table = Table.empty + (p1 plays 10.blue) + (p2 plays 2.red) + winningTrick
-      table.evaluateTrick(Trump(1.red)) shouldBe winningTrick
+      val winner = table.evaluateTrick(Trump(1.red)).flatMap(c => table.playerOf(c).map((_, c)))
+      winner shouldBe Some(winningTrick)
 
     "award the trick to the highest following card (no Trump and no Wizard)" in:
       val winningTrick = p2 plays 10.blue
       val table = Table.empty + (p1 plays 5.blue) + (p2 plays 10.blue) + (p3 plays 2.yellow)
       val trump = Trump(1.green) // trump color differ from played cards
-      table.evaluateTrick(trump) shouldBe winningTrick
+      val winner = table.evaluateTrick(trump).flatMap(c => table.playerOf(c).map((_, c)))
+      winner shouldBe Some(winningTrick)
 
     "award the trick to the first played Jester if ONLY Jesters are on table" in:
       val winningTrick = p1 plays jester
       val table = Table.empty + winningTrick + (p2 plays jester) + (p3 plays jester)
-      table.evaluateTrick(Trump.Absent) shouldBe winningTrick
+      val winner = table.evaluateTrick(Trump.Absent).flatMap(c => table.playerOf(c).map((_, c)))
+      winner shouldBe Some(winningTrick)
