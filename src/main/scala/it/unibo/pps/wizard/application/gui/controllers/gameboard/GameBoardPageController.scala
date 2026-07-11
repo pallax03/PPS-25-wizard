@@ -135,7 +135,6 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     println(s"Event received: Card played by player $playerId: $card")
     tableManager.addCard(card, playerId, false)
     handManager.removeCard(card)
-    applyCurrentTurn()
 
   override def displayTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
     println(s"Event received: Trump selected by player $playerId: $color")
@@ -145,23 +144,14 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     println(s"Event received: Bid placed by player $playerId: $bid")
     if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
     else this.opponentsManager.updateOpponentBid(playerId, bid)
-    applyCurrentTurn()
+
+  override def displayTurnChanged(playerId: PlayerId): Unit =
+    onTurnChanged(playerId)
 
   private def onTurnChanged(nextPlayerId: PlayerId): Unit =
     val isMyTurn = nextPlayerId == currentPlayerView.player.id
     this.currentPlayerView.setTurnActive(isMyTurn, this.phase)
     this.opponentsManager.updateActiveTurn(nextPlayerId, this.phase)
-
-  private def applyCurrentTurn(): Unit =
-    withRunningStatus:
-      case status: (Bidding | Playing) =>
-        val nextPlayerId = status match
-          case b: Bidding => b.currentPlayer
-          case p: Playing => p.currentPlayerTurn
-
-        onTurnChanged(nextPlayerId)
-      case other =>
-        println(s"Expected Bidding or Playing state but got: $other")
 
   private def withRunningStatus(action: GameState => Unit): Unit =
     context.inboundPort.getState.onComplete:
