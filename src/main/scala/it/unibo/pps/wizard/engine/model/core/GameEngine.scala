@@ -3,6 +3,10 @@ package it.unibo.pps.wizard.engine.model.core
 import GameError.*
 import it.unibo.pps.wizard.engine.events.*
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.core.InconsistentStateReasons.{
+  HandNotFoundFor,
+  TableNoWinner
+}
 import it.unibo.pps.wizard.engine.model.rules.*
 
 opaque type GameEngine = (GameState, List[WizardEvent])
@@ -12,8 +16,6 @@ object GameEngine:
   extension (engine: GameEngine)
     def state: GameState = engine._1
     def events: List[WizardEvent] = engine._2
-    private def addEvents(newEvents: WizardEvent*): GameEngine =
-      (engine.state, engine.events ++ newEvents)
 
   def processAction(state: GameState, action: GameAction): Either[GameError, GameEngine] =
     (state, action) match
@@ -21,16 +23,21 @@ object GameEngine:
         for
           _ <- currentState.core.dealerId.validateTurnOf(playerId)
           updatedTrump <- currentState.core.trump resolveWizard color
-        yield (
-          GameState.Bidding(
+        yield
+          val nextState = GameState.Bidding(
             currentState.core.updateTrump(updatedTrump),
             Bids.empty,
             currentState.core.dealerId
-          ),
-          List(
-            ActionEvent.TrumpColorResolved(playerId, color)
           )
-        )
+          (
+            nextState,
+            List(
+              ActionEvent.TrumpColorResolved(playerId, color),
+              ProgressEvent.PhaseChanged(nextState.getClass.getSimpleName),
+              ProgressEvent.IsTurnOf(nextState.currentPlayer),
+              InvitationEvent.WaitingForBid(nextState.currentPlayer)
+            )
+          )
 
       case (currentState: GameState.Bidding, GameAction.PlaceBid(playerId, bid)) =>
         for
@@ -85,40 +92,40 @@ object GameEngine:
         for
           _ <- currentState.currentPlayerTurn.validateTurnOf(playerId)
           _ <- card.validateAgainst(currentState.table, playerHand)
-        yield
-          val updatedCore =
-            currentState.core.copy(hands = currentState.core.hands.remove(playerId, card))
-          val updatedTable = currentState.table + (playerId, card)
-          if updatedTable.isTrickComplete(updatedCore.players.totalPlayers) then
-            completeTrick(currentState, updatedCore, updatedTable).addEvents(
-              ProgressEvent.IsTurnOf(
-                currentState.core.players
-                  .nextAfter(playerId)
-                  .getOrElse(currentState.currentPlayerTurn)
-              ),
-              ActionEvent.CardPlayed(playerId, card)
-            )
-          else
-            val nextPlayer =
-              currentState.core.players
+
+          updatedCore = currentState.core.copy(hands =
+            currentState.core.hands.remove(playerId, card)
+          )
+          updatedTable = currentState.table + (playerId, card)
+
+          finalEngine <-
+            if updatedTable.isTrickComplete(updatedCore.players.totalPlayers) then
+              completeTrick(currentState, updatedCore, updatedTable).map: engine =>
+                (engine.state, ActionEvent.CardPlayed(playerId, card) +: engine.events)
+            else
+              val nextPlayer = currentState.core.players
                 .nextAfter(playerId)
                 .getOrElse(currentState.currentPlayerTurn)
-            val hand = currentState.core.hands.getHand(nextPlayer).head
-            (
-              currentState.copy(
-                core = updatedCore,
-                table = updatedTable,
-                currentPlayerTurn = nextPlayer
-              ),
-              List(
-                ActionEvent.CardPlayed(playerId, card),
-                ProgressEvent.IsTurnOf(nextPlayer),
-                InvitationEvent.WaitingForCard(
-                  nextPlayer,
-                  hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
-                )
-              )
-            )
+              updatedCore.hands
+                .getHand(nextPlayer)
+                .toRight(GameError.InconsistentState(HandNotFoundFor(nextPlayer)))
+                .map: hand =>
+                  (
+                    currentState.copy(
+                      core = updatedCore,
+                      table = updatedTable,
+                      currentPlayerTurn = nextPlayer
+                    ),
+                    List(
+                      ActionEvent.CardPlayed(playerId, card),
+                      ProgressEvent.IsTurnOf(nextPlayer),
+                      InvitationEvent.WaitingForCard(
+                        nextPlayer,
+                        hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
+                      )
+                    )
+                  )
+        yield finalEngine
 
       case (_, _) => Left(InvalidAction)
 
@@ -129,46 +136,70 @@ object GameEngine:
       round.initialize(Deck.create).run(CoreState.initialize(players, round)).value
 
     val specificEvents = gameState match
-      case _: GameState.ChoosingTrump => List(InvitationEvent.WaitingForTrump(core.dealerId))
-      case _: GameState.Bidding       => List(InvitationEvent.WaitingForBid(core.dealerId))
-      case _                          => Nil
+      case _: GameState.ChoosingTrump =>
+        List(ProgressEvent.IsTurnOf(core.dealerId), InvitationEvent.WaitingForTrump(core.dealerId))
+      case bidding: GameState.Bidding =>
+        List(
+          ProgressEvent.IsTurnOf(bidding.currentPlayer),
+          InvitationEvent.WaitingForBid(bidding.currentPlayer)
+        )
+      case _ => Nil
 
-    (gameState, specificEvents).addEvents(
-      ProgressEvent.CardsDealt(core.dealerId, core.hands, core.trump, core.round),
-      ProgressEvent.PhaseChanged(gameState.getClass.getSimpleName)
+    (
+      gameState,
+      List(
+        ProgressEvent.CardsDealt(core.dealerId, core.hands, core.trump, core.round),
+        ProgressEvent.PhaseChanged(gameState.getClass.getSimpleName)
+      ) ++ specificEvents
     )
 
   private def completeTrick(
       state: GameState.Playing,
       updatedCore: CoreState,
       completedTable: Table
-  ): GameEngine =
-    val winnerId =
-      completedTable.playerOf(completedTable.evaluateTrick(updatedCore.trump).head).head
+  ): Either[GameError, GameEngine] =
+    for
+      winningCard <- completedTable
+        .evaluateTrick(updatedCore.trump)
+        .toRight(GameError.InconsistentState(TableNoWinner))
 
-    val updatedTricks = state.tricksWon.addTrickTo(winnerId)
-    if isRoundComplete(updatedCore.hands) then
-      completeRound(state, updatedCore, updatedTricks).addEvents(
-        ProgressEvent.TrickWon(winnerId, completedTable.playedCards)
-      )
-    else
-      val hand = updatedCore.hands.getHand(winnerId).head
-      (
-        state.copy(
-          core = updatedCore,
-          table = Table.empty,
-          currentPlayerTurn = winnerId,
-          tricksWon = updatedTricks
-        ),
-        List(
-          ProgressEvent.TrickWon(winnerId, completedTable.playedCards),
-          ProgressEvent.IsTurnOf(winnerId),
-          InvitationEvent.WaitingForCard(
-            winnerId,
-            hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
+      winnerId <- completedTable
+        .playerOf(winningCard)
+        .toRight(GameError.InconsistentState(TableNoWinner))
+
+      engine <-
+        if isRoundComplete(updatedCore.hands) then
+          val updatedTricks = state.tricksWon.addTrickTo(winnerId)
+          val completedRound = completeRound(state, updatedCore, updatedTricks)
+          Right(
+            (
+              completedRound.state,
+              ProgressEvent.TrickWon(winnerId, completedTable.playedCards) +: completedRound.events
+            )
           )
-        )
-      )
+        else
+          updatedCore.hands
+            .getHand(winnerId)
+            .toRight(GameError.InconsistentState(HandNotFoundFor(winnerId)))
+            .map: hand =>
+              val updatedTricks = state.tricksWon.addTrickTo(winnerId)
+              (
+                state.copy(
+                  core = updatedCore,
+                  table = Table.empty,
+                  currentPlayerTurn = winnerId,
+                  tricksWon = updatedTricks
+                ),
+                List(
+                  ProgressEvent.TrickWon(winnerId, completedTable.playedCards),
+                  ProgressEvent.IsTurnOf(winnerId),
+                  InvitationEvent.WaitingForCard(
+                    winnerId,
+                    hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
+                  )
+                )
+              )
+    yield engine
 
   private def completeRound(
       state: GameState.Playing,
@@ -182,9 +213,8 @@ object GameEngine:
       updatedCore.round,
       updatedCore.scoreboard
     )
-    nextRoundOrEnd(updatedCore.copy(scoreboard = updatedScoreboard)).addEvents(
-      ProgressEvent.RoundScored(updatedScoreboard)
-    )
+    val next = nextRoundOrEnd(updatedCore.copy(scoreboard = updatedScoreboard))
+    (next.state, ProgressEvent.RoundScored(updatedScoreboard) +: next.events)
 
   private def nextRoundOrEnd(core: CoreState): GameEngine =
     if core.round.isLastRound(core.players) then
@@ -198,13 +228,21 @@ object GameEngine:
         .value
 
       val specificEvents = gameState match
-        case _: GameState.ChoosingTrump => List(InvitationEvent.WaitingForTrump(nextDealer))
-        case _: GameState.Bidding       => List(InvitationEvent.WaitingForBid(nextDealer))
-        case _                          => Nil
+        case _: GameState.ChoosingTrump =>
+          List(ProgressEvent.IsTurnOf(nextDealer), InvitationEvent.WaitingForTrump(nextDealer))
+        case bidding: GameState.Bidding =>
+          List(
+            ProgressEvent.IsTurnOf(bidding.currentPlayer),
+            InvitationEvent.WaitingForBid(bidding.currentPlayer)
+          )
+        case _ => Nil
 
-      (gameState, specificEvents).addEvents(
-        ProgressEvent.CardsDealt(newCore.dealerId, newCore.hands, newCore.trump, newCore.round),
-        ProgressEvent.PhaseChanged(gameState.getClass.getSimpleName)
+      (
+        gameState,
+        List(
+          ProgressEvent.CardsDealt(newCore.dealerId, newCore.hands, newCore.trump, newCore.round),
+          ProgressEvent.PhaseChanged(gameState.getClass.getSimpleName)
+        ) ++ specificEvents
       )
 
   private def isRoundComplete(hands: Hands): Boolean = hands.areEmpty
