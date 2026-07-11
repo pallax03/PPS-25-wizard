@@ -11,6 +11,9 @@ min_max([H | T], H, Min) :- min_max(T, Mx, Min), H > Mx, !.
 min_max([H | T], Max, H) :- min_max(T, Max, Mn), H < Mn, !.
 min_max([H | T], Max, Min) :- min_max(T, Max, Min).
 
+length([], 0).
+length([_|T], N) :- length(T, N1), N is N1 + 1.
+
 find([E|_], E).
 find([_|T], E) :- find(T, E).
 distinct([], []).

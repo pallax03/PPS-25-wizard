@@ -8,7 +8,7 @@ choose_trump(Hand, TrumpColor) :- dominant_color(Hand, TrumpColor), is_valid_col
 % choose_trump([wizard, jester, wizard], TrumpColor). -> no (just pick casually)
 
 
-% place_bid(+Hand, -TrumpColor, -Bid) -> return the best Bid based on STRATEGY: cards matching safe_trick OR risky_trick: add a Bid
+% place_bid(+Hand, ?TrumpColor, -Bid) -> return the best Bid based on STRATEGY: cards matching safe_trick OR risky_trick: add a Bid
 place_bid(Hand, TrumpColor, Bid) :-
     findall(Card, (member(Card, Hand), (safe_trick(Card, Hand, TrumpColor) ; risky_trick(Card, Hand, TrumpColor))), Cards),
     length(Cards, Bid).

@@ -1,8 +1,7 @@
-package it.unibo.pps.wizard.engine.model.prolog
+package it.unibo.pps.wizard.engine.prolog
 
 import it.unibo.pps.wizard.engine.model.basic.Trump
 import it.unibo.pps.wizard.engine.model.basic.Card.*
-import it.unibo.pps.wizard.engine.prolog.WizardTermMapper.*
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -10,6 +9,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class TestWizardTermMapper extends AnyWordSpec with Matchers:
 
   "WizardTermMapper" when:
+    import WizardTermMapper.*
     "mapping color to term" should:
       "a valid color" in:
         colorTerm(Blue) shouldBe "blue"
@@ -22,7 +22,7 @@ class TestWizardTermMapper extends AnyWordSpec with Matchers:
       "Absent Trump No color" in:
         val trump = Trump.Absent
         trumpColorTerm(trump) shouldBe NO_VALUE
-      "Standard Trump have same color of the card" in :
+      "Standard Trump have same color of the card" in:
         val trump = Option(5.red).asTrump
         trumpColorTerm(trump) shouldBe "red"
 
@@ -32,8 +32,8 @@ class TestWizardTermMapper extends AnyWordSpec with Matchers:
       "a special card" in:
         cardTerm(jester) shouldBe "jester"
         cardTerm(wizard) shouldBe "wizard"
-      "a standard card" in :
-          cardTerm(5.red) shouldBe "card(5,red)"
+      "a standard card" in:
+        cardTerm(5.red) shouldBe "card(5,red)"
 
     "mapping cards to term" should:
       val cards = 5.red - wizard - jester
