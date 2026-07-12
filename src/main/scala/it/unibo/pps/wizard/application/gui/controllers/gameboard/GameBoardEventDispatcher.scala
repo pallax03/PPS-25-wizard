@@ -19,7 +19,7 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
         runOnUi(view.displayCardsDealt(playerId, hands, trump, round))
       case ProgressEvent.TrickWon(winnerId, trickedCards) =>
         runOnUi(view.displayTrickWon(winnerId, trickedCards))
-      case ProgressEvent.RoundScored(scoreboard) => ???
+      case ProgressEvent.RoundScored(scoreboard) => runOnUi(view.displayRoundScored(scoreboard))
       case ProgressEvent.PhaseChanged(phase)     => runOnUi(view.displayPhaseChanged(phase))
       case ProgressEvent.IsTurnOf(playerId)      => runOnUi(view.displayTurnChanged(playerId))
 

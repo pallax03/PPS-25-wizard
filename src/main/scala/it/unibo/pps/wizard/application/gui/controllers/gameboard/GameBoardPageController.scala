@@ -40,7 +40,6 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
   @nowarn private var gameInfo: GameInfoView = _
   @nowarn private var activeScoreboardStage: Option[Stage] = _
   private var activeScoreboardPage: Option[ScoreboardPage] = None
-//  private var activeScoreboardView: Option[ScoreboardView] = None
   private var phase: String = "Bidding"
 
   @FXML
@@ -116,7 +115,6 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     this.gameInfo.changePhase(phase)
     if phase == "Bidding" then currentPlayerView.setBidTextFieldEnabled(true)
     else currentPlayerView.setBidTextFieldEnabled(false)
-    refreshScoreboardIfOpen()
 
   override def displayCardsDealt(
       playerId: PlayerId,
@@ -148,6 +146,10 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
   override def displayTurnChanged(playerId: PlayerId): Unit =
     onTurnChanged(playerId)
+
+  override def displayRoundScored(scoreboard: Scoreboard): Unit =
+    println(s"Event received: Round scored. Scoreboard: $scoreboard")
+    refreshScoreboardIfOpen()
 
   private def onTurnChanged(nextPlayerId: PlayerId): Unit =
     val isMyTurn = nextPlayerId == currentPlayerView.player.id
