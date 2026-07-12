@@ -1,24 +1,90 @@
 package it.unibo.pps.wizard.application.gui.controllers.scoreboard
 
 import it.unibo.pps.wizard.application.WizardApplicationContext
-import it.unibo.pps.wizard.application.gui.components.ScoreboardView
 import it.unibo.pps.wizard.application.gui.controllers.Controller
-import it.unibo.pps.wizard.engine.model.basic.{Players, RoundRow, Scoreboard}
+import it.unibo.pps.wizard.engine.model.basic.{Players, RoundRow}
+import javafx.scene.control.{TableColumn => FXTableColumn, TableView => FXTableView}
+import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
-import scalafx.scene.layout.StackPane
 import scalafx.stage.Stage
+import scala.annotation.nowarn
+import scala.jdk.CollectionConverters._
 
 class ScoreboardPageController(stage: Stage)(using context: WizardApplicationContext)
     extends Controller(stage):
-  @nowarn @FXML private var scoreboardContainer: StackPane = _
-  @nowarn private var view: ScoreboardView = _
+
+  @nowarn @FXML private var scoreboardTable: FXTableView[RoundRow] = _
+  @nowarn @FXML private var colRound: FXTableColumn[RoundRow, String] = _
+
+  private var isStructureInitialized = false
 
   def init(players: Players): Unit =
-    view = new ScoreboardView(players)
-    scoreboardContainer.children.add(view)
+    if (!isStructureInitialized) {
+      scoreboardTable.setSelectionModel(null)
+      scoreboardTable.setSortPolicy(_ => false)
+      scoreboardTable.setFocusTraversable(false)
 
-    refresh(players, Scoreboard.empty)
+      colRound.setCellValueFactory(data => StringProperty(data.getValue.round.toString))
 
-  def refresh(players: Players, scoreboard: Scoreboard): Unit =
-    val rows = RoundRow.createRows(players, scoreboard)
-    view.updateData(rows, players.toList.size)
+      players.toList.foreach { player =>
+        val playerGroupCol = new FXTableColumn[RoundRow, String](player.name.toString)
+        playerGroupCol.setResizable(false)
+        playerGroupCol.setSortable(false)
+
+        val scoreCol = new FXTableColumn[RoundRow, String]("Points")
+        scoreCol.setPrefWidth(60.0)
+        scoreCol.setStyle("-fx-alignment: CENTER;")
+        scoreCol.setCellValueFactory(data => StringProperty(data.getValue.getScore(player.id)))
+        scoreCol.setResizable(false)
+        scoreCol.setSortable(false)
+
+        val bidCol = new FXTableColumn[RoundRow, String]("Bids")
+        bidCol.setPrefWidth(60.0)
+        bidCol.setStyle("-fx-alignment: CENTER;")
+        bidCol.setCellValueFactory(data => StringProperty(data.getValue.getBid(player.id)))
+        bidCol.setResizable(false)
+        bidCol.setSortable(false)
+
+        playerGroupCol.getColumns.addAll(scoreCol, bidCol)
+
+        lockColumnOrder(playerGroupCol.getColumns)
+        scoreboardTable.getColumns.add(playerGroupCol)
+      }
+
+      lockColumnOrder(scoreboardTable.getColumns)
+      isStructureInitialized = true
+    }
+
+    updateTableData(List.empty, players.toList.size)
+
+  def updateTableData(rows: List[RoundRow], numPlayers: Int): Unit =
+    scoreboardTable.setItems(ObservableBuffer(rows*).delegate)
+
+    val exactWidth = 60.0 + (numPlayers * 120.0) + 5.0
+    scoreboardTable.setPrefWidth(exactWidth)
+    scoreboardTable.setMinWidth(exactWidth)
+    scoreboardTable.setMaxWidth(exactWidth)
+
+    val headerHeight = 65.0
+    val exactHeight = (rows.size * scoreboardTable.getFixedCellSize) + headerHeight + 5.0
+    scoreboardTable.setPrefHeight(exactHeight)
+    scoreboardTable.setMinHeight(exactHeight)
+    scoreboardTable.setMaxHeight(exactHeight)
+
+    scoreboardTable.refresh()
+
+  private def lockColumnOrder(
+      columnsList: javafx.collections.ObservableList[FXTableColumn[RoundRow, ?]]
+  ): Unit =
+    val permanentOrder: List[FXTableColumn[RoundRow, ?]] = columnsList.asScala.toList
+    columnsList.addListener(new javafx.collections.ListChangeListener[FXTableColumn[RoundRow, ?]] {
+      private var updating = false
+      override def onChanged(
+          c: javafx.collections.ListChangeListener.Change[? <: FXTableColumn[RoundRow, ?]]
+      ): Unit =
+        if (!updating) {
+          updating = true
+          columnsList.setAll(permanentOrder.asJavaCollection)
+          updating = false
+        }
+    })

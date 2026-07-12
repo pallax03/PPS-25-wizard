@@ -4,6 +4,8 @@ import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.components.*
 import it.unibo.pps.wizard.application.gui.controllers.Controller
 import it.unibo.pps.wizard.application.gui.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
+import it.unibo.pps.wizard.application.gui.managers.{HandManager, OpponentsManager, TableManager}
+import it.unibo.pps.wizard.application.gui.pages.ScoreboardPage
 import it.unibo.pps.wizard.engine.adapters.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
@@ -12,8 +14,6 @@ import it.unibo.pps.wizard.engine.model.core.GameState.*
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameState}
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import javafx.scene.layout.{HBox, StackPane, VBox}
-import scalafx.animation.PauseTransition
-import scalafx.scene.Scene
 import scalafx.stage.{Modality, Stage}
 import scalafx.util.Duration
 
@@ -39,6 +39,8 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
   @nowarn private var trumpManager: TrumpManager = _
   @nowarn private var currentPlayerView: HumanPlayerView = _
   @nowarn private var gameInfo: GameInfoView = _
+  @nowarn private var activeScoreboardStage: Option[Stage] = _
+  private var activeScoreboardPage: Option[ScoreboardPage] = None
   private var phase: String = "Bidding"
 
   @FXML
@@ -52,8 +54,8 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 //  private def initManagers: Unit =
 //    this.tableManager = TableManager(this.tableContainer)
 //    this.trumpManager = TrumpManager(this.trumpContainer)
-    
-  
+
+
 //   todo: NO SUBSCRIBE ON GET STATUS
   private def initViewAndSubscribe(): Unit =
     withRunningStatus:
@@ -113,9 +115,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
   override def displayTrickWon(winnerId: PlayerId, trickedCards: List[Card]): Unit =
     println(s"Event received: Trick won by player $winnerId with cards: $trickedCards")
-    val timer = new PauseTransition(Duration(millis = 3000))
-    timer.setOnFinished(_ => tableManager.initializeTable(Table.empty, None))
-    timer.play()
+    tableManager.initializeTable(Table.empty, None)
     this.currentPlayerView.resetBid()
     this.opponentsManager.resetOpponentsBid()
 
@@ -156,6 +156,10 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
   override def displayTurnChanged(playerId: PlayerId): Unit =
     onTurnChanged(playerId)
 
+  override def displayRoundScored(scoreboard: Scoreboard): Unit =
+    println(s"Event received: Round scored. Scoreboard: $scoreboard")
+    refreshScoreboardIfOpen()
+
   private def onTurnChanged(nextPlayerId: PlayerId): Unit =
     val isMyTurn = nextPlayerId == currentPlayerView.player.id
     this.currentPlayerView.setTurnActive(isMyTurn, this.phase)
@@ -171,6 +175,36 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
   @FXML
   def openScoreboardWindow(): Unit =
+    activeScoreboardStage match
+      case Some(stg) if stg.isShowing =>
+        stg.toFront()
+
+      case _ =>
+        withScoreboardData: (allPlayers, rows) =>
+          val scoreboardStage = new Stage():
+            initModality(Modality.None)
+            title = "Scoreboard"
+            resizable = false
+            onCloseRequest = _ =>
+              activeScoreboardStage = None
+              activeScoreboardPage = None
+
+          val scoreboardPage = ScoreboardPage(scoreboardStage)
+
+          scoreboardPage.initializeTable(allPlayers)
+          scoreboardPage.updateData(rows, allPlayers.toList.size)
+
+          scoreboardStage.show()
+
+          activeScoreboardStage = Some(scoreboardStage)
+          activeScoreboardPage = Some(scoreboardPage)
+
+  private def refreshScoreboardIfOpen(): Unit =
+    activeScoreboardPage.foreach: page =>
+      withScoreboardData: (allPlayers, rows) =>
+        page.updateData(rows, allPlayers.toList.size)
+
+  private def withScoreboardData(action: (Players, List[RoundRow]) => Unit): Unit =
     withRunningStatus:
       case status: (Bidding | Playing) =>
         val core = status match
@@ -178,24 +212,12 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
           case p: Playing => p.core
 
         runOnUi:
-          val scoresMap = core.scoreboard
           val allPlayers = core.players
+          val rows = RoundRow.createRows(allPlayers, core.scoreboard)
+          action(allPlayers, rows)
 
-          val scoreboardView = new ScoreboardView(allPlayers)
-
-          val initialRows = RoundRow.createRows(allPlayers, scoresMap)
-          scoreboardView.updateData(initialRows, allPlayers.toList.size)
-
-          val scoreboardStage = new Stage():
-            initModality(Modality.ApplicationModal)
-            title = "Scoreboard"
-            scene = new Scene(scoreboardView)
-            resizable = false
-
-          scoreboardStage.sizeToScene()
-          scoreboardStage.show()
       case other =>
-        println(s"Expected Bidding state but got: $other")
+        println(s"Scoreboard action skipped: Game is not in a valid state ($other).")
 
   @FXML
   def handleScoreboardHover(): Unit =

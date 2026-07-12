@@ -11,3 +11,4 @@ trait GameBoardView:
   def displayTrumpSelected(playerId: PlayerId, color: Card.Color): Unit
   def displayBidPlaced(playerId: PlayerId, bid: Bid): Unit
   def displayTurnChanged(playerId: PlayerId): Unit
+  def displayRoundScored(scoreboard: Scoreboard): Unit

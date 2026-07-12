@@ -5,9 +5,15 @@
 
 <StackPane xmlns="http://javafx.com/javafx/17"
            xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="it.unibo.pps.wizard.application.gui.controllers.scoreboard.ScoreboardPageController"
            style="-fx-background-color: white;">
 
     <TableView fx:id="scoreboardTable"
-               style="-fx-font-size: 16px; -fx-table-cell-border-color: transparent;" />
+               fixedCellSize="25.0"
+               style="-fx-font-size: 14px; -fx-background-color: white; -fx-table-cell-border-color: #a0a0a0;">
+        <columns>
+            <TableColumn fx:id="colRound" text="Round" prefWidth="60.0"
+                         resizable="false" sortable="false"
+                         style="-fx-alignment: CENTER; -fx-font-weight: bold; -fx-background-color: #f0f0f0;"/>
+        </columns>
+    </TableView>
 </StackPane>

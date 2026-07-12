@@ -82,7 +82,9 @@ object Deck:
   def create(cards: List[Card]): Deck = cards.toList.distinct
   def create: Deck = DeckFactory.create()
 
-  extension (d: Deck) def length: Int = d.length
+  extension (d: Deck)
+    def length: Int = d.length
+    def cards: List[Card] = d
 
   /**
    * @param n
@@ -145,3 +147,4 @@ object Hands:
     def remove(player: PlayerId, card: Card): Hands =
       hands.updated(player, Hand.without(hands(player), card))
     def areEmpty: Boolean = hands.values.forall(_.isEmpty)
+    def toList: List[(PlayerId, Hand)] = hands.toList
