@@ -14,5 +14,5 @@ trait BotStrategy:
 
 object BotStrategy:
   def apply(difficulty: BotsDifficulty): (WizardAIPort, Vertx) => BotStrategy = difficulty match
-    case BotsDifficulty.Dumb   => (_, vertx) => new DumbBotStrategy(vertx)
+    case BotsDifficulty.Dumb   => (_, _) => new DumbBotStrategy()
     case BotsDifficulty.Prolog => (aiPort, _) => new PrologBotStrategy(aiPort)
