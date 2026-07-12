@@ -34,7 +34,7 @@ class BotManagerVerticle(
   private def registerBots(players: Players, difficulty: BotsDifficulty): Unit =
     bots = players.toList
       .filter(_.isBot)
-      .map(player => player.id -> BotStrategy(difficulty)(wizardAIPort, vertx))
+      .map(player => player.id -> BotStrategy(difficulty, wizardAIPort))
       .toMap
 
   private def delayed[T](delayMs: Long)(action: => Future[T]): Future[T] =
