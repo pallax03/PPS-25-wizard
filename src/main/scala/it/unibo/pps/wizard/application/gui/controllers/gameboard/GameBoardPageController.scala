@@ -3,7 +3,7 @@ package it.unibo.pps.wizard.application.gui.controllers.gameboard
 import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.components.*
 import it.unibo.pps.wizard.application.gui.controllers.Controller
-import it.unibo.pps.wizard.application.gui.managers.{HandManager, OpponentsManager, TableManager}
+import it.unibo.pps.wizard.application.gui.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
 import it.unibo.pps.wizard.engine.adapters.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
@@ -36,7 +36,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
   @nowarn private var tableManager: TableManager = _
   @nowarn private var handManager: HandManager = _
   @nowarn private var opponentsManager: OpponentsManager = _
-  @nowarn private var trumpView: TrumpView = _
+  @nowarn private var trumpManager: TrumpManager = _
   @nowarn private var currentPlayerView: HumanPlayerView = _
   @nowarn private var gameInfo: GameInfoView = _
   private var phase: String = "Bidding"
@@ -45,8 +45,16 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
   def initialize(): Unit =
     List(tableContainer, handContainer, trumpContainer, currentPlayerContainer, playersContainer)
       .foreach(_.getChildren.clear())
+//    initManagers
+//    GameBoardEventDispatcher(this).startListening()
     this.initViewAndSubscribe()
 
+//  private def initManagers: Unit =
+//    this.tableManager = TableManager(this.tableContainer)
+//    this.trumpManager = TrumpManager(this.trumpContainer)
+    
+  
+//   todo: NO SUBSCRIBE ON GET STATUS
   private def initViewAndSubscribe(): Unit =
     withRunningStatus:
       case status: Bidding =>
@@ -57,7 +65,10 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
         println(s"Expected Bidding state but got: $other")
 
   private def buildUI(status: Bidding): Unit =
+    // todo: remove this and put a starting method for cantainer and managers
     this.tableManager = TableManager(this.tableContainer)
+    this.trumpManager = TrumpManager(this.trumpContainer)
+
     this.tableManager.initializeTable(Table.empty, None)
 
     val currentPlayerId = status.core.players.toList.head.id
@@ -73,9 +84,6 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
           context.inboundPort.submitAction(PlayCard(currentPlayerId, card))
     )
     this.handManager.updateHand(playerHand)
-
-    this.trumpView = new TrumpView(status.core.trump)
-    this.trumpContainer.getChildren.add(this.trumpView.delegate)
 
     val currentPlayer = status.core.players.toList.head
     val isMyTurn = status.currentPlayer == currentPlayer.id
@@ -125,7 +133,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
   ): Unit =
     this.gameInfo.incrementRound(round.value)
     println(s"Event received: Cards dealt. Player: $playerId Trump: $trump Hands: $hands")
-    this.trumpView = TrumpView(trump)
+    this.trumpManager.initialize(trump)
     val currentPlayerId = this.currentPlayerView.player.id
     val newHand = hands.getHand(currentPlayerId).getOrElse(Hand.empty)
     this.handManager.updateHand(newHand)
@@ -138,7 +146,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
   override def displayTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
     println(s"Event received: Trump selected by player $playerId: $color")
-    trumpView.updateTrumpColor(color)
+    trumpManager.glowTrump(color)
 
   override def displayBidPlaced(playerId: PlayerId, bid: Bid): Unit =
     println(s"Event received: Bid placed by player $playerId: $bid")

@@ -23,7 +23,8 @@ class TableManager(val container: HBox):
     activeCardNodes = activeCardNodes + (card -> cardWrapperNode)
     container.children.add(cardWrapperNode)
 
-  def updateCard(card: Card): Unit =
+  // todo: winning and following card
+  def updateCard(card: Card, isWinningCard: Boolean, isFollowingCard: Boolean): Unit =
     ???
 
   def setHighlight(active: Boolean): Unit =
