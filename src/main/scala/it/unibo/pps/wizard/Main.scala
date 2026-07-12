@@ -28,7 +28,7 @@ object Main:
         .onFailure(err => println("Failed to deploy bot manager: " + err.getMessage))
 
       println("Launching wizard application...")
-      WizardApplication.launch(wizardEnginePort)(Array.empty)
+      WizardApplication.launch(wizardEnginePort, wizardAIPort)(Array.empty)
 
     catch
       case error: Throwable =>
