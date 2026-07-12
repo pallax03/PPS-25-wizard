@@ -55,6 +55,16 @@ class TestRoundManager extends AnyWordSpec with Matchers:
         trump shouldBe empty
         deckAfter.length shouldBe 0
         maxRound.isLastRound(players) shouldBe true
+        
+      "popped trump should not be in deck or in any player's hand" in:
+        val initialDeck = Deck.create
+        val round = Round.start.next.next.next.next.next.next
+        val (deckAfter, (hands, trump)) = round.deal(players).run(initialDeck).value
+
+        trump.foreach { t =>
+          deckAfter.cards should not contain t
+          hands.toList.flatMap(_._2.toList).toSet should not contain t
+        }
 
     "validating the turn of a player" should:
       "succeed if the action player matches the expected player" in:
