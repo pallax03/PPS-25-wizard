@@ -4,7 +4,6 @@ import it.unibo.pps.wizard.application.WizardApplicationContext
 import it.unibo.pps.wizard.application.gui.components.*
 import it.unibo.pps.wizard.application.gui.controllers.Controller
 import it.unibo.pps.wizard.application.gui.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
-import it.unibo.pps.wizard.application.gui.managers.{HandManager, OpponentsManager, TableManager}
 import it.unibo.pps.wizard.application.gui.pages.ScoreboardPage
 import it.unibo.pps.wizard.engine.adapters.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
@@ -36,7 +35,7 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
   @nowarn private var tableManager: TableManager = _
   @nowarn private var handManager: HandManager = _
   @nowarn private var opponentsManager: OpponentsManager = _
-  @nowarn private var trumpView: TrumpView = _
+  @nowarn private var trumpManager: TrumpManager = _
   @nowarn private var currentPlayerView: HumanPlayerView = _
   @nowarn private var gameInfo: GameInfoView = _
   @nowarn private var activeScoreboardStage: Option[Stage] = _
@@ -80,6 +79,8 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
     val currentPlayerId = core.players.toList.head.id
     val playerHand = core.hands.getHand(currentPlayerId).getOrElse(Hand.empty)
+
+    this.trumpManager.initialize(core.trump)
 
     this.handManager = HandManager(
       this.handContainer,
