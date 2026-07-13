@@ -12,3 +12,4 @@ trait GameBoardView:
   def displayBidPlaced(playerId: PlayerId, bid: Bid): Unit
   def displayTurnChanged(playerId: PlayerId, phase: String): Unit
   def displayRoundScored(scoreboard: Scoreboard): Unit
+  def displayGameStarted(players: Players): Unit

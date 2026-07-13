@@ -29,15 +29,17 @@ class MainPageController(stage: Stage)(using context: WizardApplicationContext)
     val playerName = nameField.text.value
     val opponentsNum = opponentsCombo.value.value
     val botsDifficulty = botsDifficultyCombo.value.value
-    val actualPlayer = Player.human(PlayerId(0), PlayerName(playerName))
+    val currentPlayerId = PlayerId(0)
+    val actualPlayer = Player.human(currentPlayerId, PlayerName(playerName))
     val players = Players(actualPlayer)
-
+    val gameBoardPage = GameBoardPage(stage, currentPlayerId)
+    
     println(s"Configuration:\n  Player Name: $playerName, Opponents: $opponentsNum")
     context.inboundPort
       .startGame(players, GameConfiguration(playerName, opponentsNum, botsDifficulty))
       .onComplete:
         case Success(_) =>
           runOnUi:
-            GameBoardPage(stage)
+            gameBoardPage._1.show()
         case Failure(exception) =>
           throw exception

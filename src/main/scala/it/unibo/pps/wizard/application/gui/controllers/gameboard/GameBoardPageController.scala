@@ -19,7 +19,7 @@ import scalafx.util.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-class GameBoardPageController(stage: Stage)(using context: WizardApplicationContext)
+class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using context: WizardApplicationContext)
     extends Controller(stage)
     with GameBoardView:
 
@@ -43,43 +43,17 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
   @FXML
   def initialize(): Unit =
-    List(tableContainer, handContainer, trumpContainer, currentPlayerContainer, playersContainer)
-      .foreach(_.getChildren.clear())
-    this.initViewAndSubscribe()
+    println("Initializing GameBoardPageController...")
+    GameBoardEventDispatcher(this).startListening()
 
-  private def initViewAndSubscribe(): Unit =
-    withRunningStatus:
-      case status: (Bidding | ChoosingTrump) =>
-        runOnUi:
-          buildUI(status)
-          GameBoardEventDispatcher(this).startListening()
+    runOnUi:
+      List(tableContainer, handContainer, trumpContainer, currentPlayerContainer, playersContainer)
+        .foreach(_.getChildren.clear())
+      buildUI()
 
-          val core = status match
-            case b: Bidding       => b.core
-            case c: ChoosingTrump => c.core
-
-          status match
-            case _: ChoosingTrump =>
-              displayWaitingForTrump(core.dealerId)
-            case _ =>
-      case other =>
-        println(s"Expected Bidding state but got: $other")
-
-  private def buildUI(status: GameState): Unit =
-    val (core, activePlayerId) = status match
-      case b: Bidding       => (b.core, b.currentPlayer)
-      case c: ChoosingTrump => (c.core, c.core.dealerId)
-      case _ => throw new IllegalStateException(s"Cannot build UI for state: $status")
-
+  private def buildUI(): Unit =
     this.tableManager = TableManager(this.tableContainer)
     this.trumpManager = TrumpManager(this.trumpContainer)
-
-    this.tableManager.initializeTable(Table.empty, None)
-
-    val currentPlayerId = core.players.toList.head.id
-    val playerHand = core.hands.getHand(currentPlayerId).getOrElse(Hand.empty)
-
-    this.trumpManager.initialize(core.trump)
 
     this.handManager = HandManager(
       this.handContainer,
@@ -90,28 +64,26 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
         if tableManager.isOver(mouseX, mouseY) then
           context.inboundPort.submitAction(PlayCard(currentPlayerId, card))
     )
-    this.handManager.updateHand(playerHand)
 
-    val currentPlayer = core.players.toList.head
-    val isMyTurn = activePlayerId == currentPlayer.id
+    this.opponentsManager = OpponentsManager(playersContainer)
+
+    this.gameInfo = GameInfoView()
+    this.gameInfoContainer.getChildren.add(this.gameInfo.delegate)
+
+  override def displayGameStarted(players: Players): Unit =
+    println(s"Event received: Game started with players: $players")
+    this.opponentsManager.renderAllOpponents(players.filter(_.id != currentPlayerId))
+    val currentPlayer = players.findById(currentPlayerId).get
     this.currentPlayerView = HumanPlayerView(
       currentPlayer,
-      isMyTurn,
       onBidSubmitted =
-        bid => context.inboundPort.submitAction(GameAction.PlaceBid(currentPlayer.id, bid)),
+        bid => context.inboundPort.submitAction(GameAction.PlaceBid(currentPlayerId, bid)),
       onTrumpSelected = color =>
         context.inboundPort.submitAction(
           GameAction.ResolveTrumpColor(currentPlayer.id, color)
         )
     )
     this.currentPlayerContainer.getChildren.add(this.currentPlayerView.delegate)
-
-    val allOtherPlayers = core.players.filter(_.id != currentPlayerId)
-    this.opponentsManager = OpponentsManager(playersContainer)
-    this.opponentsManager.renderAllOpponents(allOtherPlayers)
-
-    this.gameInfo = GameInfoView(core.round.value, status.getClass.getSimpleName)
-    this.gameInfoContainer.getChildren.add(this.gameInfo.delegate)
 
   override def displayWaitingForTrump(value: PlayerId): Unit =
     println(s"Event received: Waiting for Trump selection from player $value")
@@ -138,7 +110,6 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     this.gameInfo.incrementRound(round.value)
     println(s"Event received: Cards dealt. Player: $playerId Trump: $trump Hands: $hands")
     this.trumpManager.initialize(trump)
-    val currentPlayerId = this.currentPlayerView.player.id
     val newHand = hands.getHand(currentPlayerId).getOrElse(Hand.empty)
     this.handManager.updateHand(newHand)
 
@@ -153,11 +124,11 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
   override def displayBidPlaced(playerId: PlayerId, bid: Bid): Unit =
     println(s"Event received: Bid placed by player $playerId: $bid")
-    if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
+    if playerId == currentPlayerId then this.currentPlayerView.updateBid(bid)
     else this.opponentsManager.updateOpponentBid(playerId, bid)
 
   override def displayTurnChanged(nextPlayerId: PlayerId, phase: String): Unit =
-    val isMyTurn = nextPlayerId == currentPlayerView.player.id
+    val isMyTurn = nextPlayerId == currentPlayerId
     this.currentPlayerView.setTurnActive(isMyTurn, phase)
     this.opponentsManager.updateActiveTurn(nextPlayerId, phase)
 
