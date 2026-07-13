@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.application
+package it.unibo.pps.wizard.application.scalafx
 
 import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
 import scalafx.stage.Stage

@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.application.gui.components
+package it.unibo.pps.wizard.application.scalafx.components
 
 import scalafx.scene.control.Label
 import scalafx.scene.text.{Font, FontWeight}

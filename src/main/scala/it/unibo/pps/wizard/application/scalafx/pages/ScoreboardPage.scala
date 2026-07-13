@@ -1,7 +1,7 @@
-package it.unibo.pps.wizard.application.gui.pages
+package it.unibo.pps.wizard.application.scalafx.pages
 
-import it.unibo.pps.wizard.application.WizardApplicationContext
-import it.unibo.pps.wizard.application.gui.controllers.scoreboard.ScoreboardPageController
+import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
+import it.unibo.pps.wizard.application.scalafx.controllers.scoreboard.ScoreboardPageController
 import it.unibo.pps.wizard.engine.model.basic.{Players, RoundRow}
 import scalafx.stage.Stage
 

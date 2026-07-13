@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard
 
 import io.vertx.core.Vertx
-import it.unibo.pps.wizard.application.WizardApplication
+import it.unibo.pps.wizard.application.scalafx.WizardApplication
 import it.unibo.pps.wizard.application.bot.BotManagerVerticle
 import it.unibo.pps.wizard.engine.adapters.{
   VertxEventBusAdapter,

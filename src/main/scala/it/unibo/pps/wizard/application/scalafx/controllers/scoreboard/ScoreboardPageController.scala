@@ -1,7 +1,7 @@
-package it.unibo.pps.wizard.application.gui.controllers.scoreboard
+package it.unibo.pps.wizard.application.scalafx.controllers.scoreboard
 
-import it.unibo.pps.wizard.application.WizardApplicationContext
-import it.unibo.pps.wizard.application.gui.controllers.Controller
+import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
+import it.unibo.pps.wizard.application.scalafx.controllers.Controller
 import it.unibo.pps.wizard.engine.model.basic.{Players, RoundRow}
 import javafx.scene.control.{TableColumn => FXTableColumn, TableView => FXTableView}
 import scalafx.beans.property.StringProperty

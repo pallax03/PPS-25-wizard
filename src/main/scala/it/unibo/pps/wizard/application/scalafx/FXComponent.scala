@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.application.gui
+package it.unibo.pps.wizard.application.scalafx
 
 trait FXComponent:
   export javafx.fxml.FXML
