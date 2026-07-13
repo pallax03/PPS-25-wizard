@@ -29,19 +29,4 @@ object BiddingRules:
     private def isLastPlayerInvalid(round: Round, currentBids: Bids, totalPlayers: Int): Boolean =
       val isLastPlayer = currentBids.isComplete(totalPlayers - 1)
       isLastPlayer && (currentBids.total + bid) == round
-
-//  DSL SE BiddingRules OPERASSE SOLO DA VALIDATORE E LASCIASSE LA LOGICA DI AGGIORNAMENTO DEI BIDS A ROUND MANAGER, SI POTREBBE FARE COSI:
-//      extension (bid: Bid)
-//        def validate(round: Round, bids: Bids, totalPlayers: Int): Either[GameError, Unit] =
-//          if bid.isInvalidBounds(round) then Left(GameError.InvalidBid)
-//          else if bid.isForbiddenTotal(round, bids, totalPlayers) then Left(GameError.InvalidBid)
-//          else Right(())
-//
-//        private def isInvalidBounds(round: Round): Boolean =
-//          !(bid >= Bid.zero && bid.isValid(round))
-//
-//        private def isForbiddenTotal(round: Round, bids: Bids, totalPlayers: Int): Boolean =
-//          val isLastPlayer = bids.isComplete(totalPlayers - 1)
-//          isLastPlayer && (bids.total + bid) == round
-
 export BiddingRules.*
