@@ -50,19 +50,33 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
 
   private def initViewAndSubscribe(): Unit =
     withRunningStatus:
-      case status: Bidding =>
+      case status: (Bidding | ChoosingTrump) =>
         runOnUi:
           buildUI(status)
           GameBoardEventDispatcher(this).startListening()
+          
+          val core = status match
+            case b: Bidding       => b.core
+            case c: ChoosingTrump => c.core
+          
+          status match
+            case _: ChoosingTrump =>
+              displayWaitingForTrump(core.dealerId)
+            case _ =>
       case other =>
         println(s"Expected Bidding state but got: $other")
 
-  private def buildUI(status: Bidding): Unit =
+  private def buildUI(status: GameState): Unit =
+    val (core, activePlayerId) = status match
+      case b: Bidding       => (b.core, b.currentPlayer)
+      case c: ChoosingTrump => (c.core, c.core.dealerId)
+      case _ => throw new IllegalStateException(s"Cannot build UI for state: $status")
+
     this.tableManager = TableManager(this.tableContainer)
     this.tableManager.initializeTable(Table.empty, None)
 
-    val currentPlayerId = status.core.players.toList.head.id
-    val playerHand = status.core.hands.getHand(currentPlayerId).getOrElse(Hand.empty)
+    val currentPlayerId = core.players.toList.head.id
+    val playerHand = core.hands.getHand(currentPlayerId).getOrElse(Hand.empty)
 
     this.handManager = HandManager(
       this.handContainer,
@@ -75,11 +89,11 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     )
     this.handManager.updateHand(playerHand)
 
-    this.trumpView = new TrumpView(status.core.trump)
+    this.trumpView = new TrumpView(core.trump)
     this.trumpContainer.getChildren.add(this.trumpView.delegate)
 
-    val currentPlayer = status.core.players.toList.head
-    val isMyTurn = status.currentPlayer == currentPlayer.id
+    val currentPlayer = core.players.toList.head
+    val isMyTurn = activePlayerId == currentPlayer.id
     this.currentPlayerView = HumanPlayerView(
       currentPlayer,
       isMyTurn,
@@ -92,11 +106,11 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     )
     this.currentPlayerContainer.getChildren.add(this.currentPlayerView.delegate)
 
-    val allOtherPlayers = status.core.players.filter(_.id != currentPlayerId)
+    val allOtherPlayers = core.players.filter(_.id != currentPlayerId)
     this.opponentsManager = OpponentsManager(playersContainer)
     this.opponentsManager.renderAllOpponents(allOtherPlayers)
 
-    this.gameInfo = GameInfoView(status.core.round.value, status.getClass.getSimpleName)
+    this.gameInfo = GameInfoView(core.round.value, status.getClass.getSimpleName)
     this.gameInfoContainer.getChildren.add(this.gameInfo.delegate)
 
   override def displayWaitingForTrump(value: PlayerId): Unit =

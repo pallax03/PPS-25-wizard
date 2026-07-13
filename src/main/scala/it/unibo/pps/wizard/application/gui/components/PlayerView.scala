@@ -42,11 +42,13 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
     bidLabel.text = s"Bid: -"
 
   def setTurnActive(active: Boolean = true, phase: String): Unit =
-    style = if active then
-      phase match
-        case "Bidding" => biddingTurnStyle
-        case "Playing" => playingTurnStyle
-    else normalStyle
+    style =
+      if active then
+        phase match
+          case "ChoosingTrump" => biddingTurnStyle
+          case "Bidding"       => biddingTurnStyle
+          case "Playing"       => playingTurnStyle
+      else normalStyle
 
 class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
     extends BasePlayerView(player, isCurrentTurn):
