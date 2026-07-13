@@ -15,7 +15,7 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
   private def toPresentationStep(event: WizardEvent): PresentationStep =
     event match
       case ActionEvent.CardPlayed(playerId, card) =>
-        PresentationStep.immediate:
+        PresentationStep.after(200):
           view.displayCardPlayed(playerId, card)
 
       case ActionEvent.TrumpColorResolved(playerId, color) =>
@@ -23,7 +23,7 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
           view.displayTrumpSelected(playerId, color)
 
       case ActionEvent.BidPlaced(playerId, bid) =>
-        PresentationStep.immediate:
+        PresentationStep.after(200):
           view.displayBidPlaced(playerId, bid)
 
       case ProgressEvent.CardsDealt(playerId, hands, trump, round) =>
@@ -42,19 +42,21 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
         PresentationStep.immediate:
           view.displayPhaseChanged(phase)
 
-      case ProgressEvent.IsTurnOf(playerId, phase) =>
-        PresentationStep.immediate:
-          view.displayTurnChanged(playerId, phase)
+      case ProgressEvent.IsTurnOf(_, _) =>
+        PresentationStep.noop
 
       case InvitationEvent.WaitingForTrump(playerId) =>
-        PresentationStep.immediate:
+        PresentationStep.after(200):
+          view.displayTurnChanged(playerId, "ChoosingTrump")
           view.displayWaitingForTrump(playerId)
 
-      case InvitationEvent.WaitingForBid(_, _) =>
-        PresentationStep.noop
+      case InvitationEvent.WaitingForBid(playerId, _) =>
+        PresentationStep.after(200):
+          view.displayTurnChanged(playerId, "Bidding")
 
-      case InvitationEvent.WaitingForCard(_, _) =>
-        PresentationStep.noop
+      case InvitationEvent.WaitingForCard(playerId, _) =>
+        PresentationStep.after(200):
+          view.displayTurnChanged(playerId, "Playing")
 
       case LifecycleEvent.GameStarted(players, _) =>
         PresentationStep.immediate:
