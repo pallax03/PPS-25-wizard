@@ -1,5 +1,6 @@
 package it.unibo.pps.wizard.application.scalafx
 
+import io.vertx.core.Vertx
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext.WizardApplicationContextBuilder
 import it.unibo.pps.wizard.application.scalafx.pages.MainPage
 import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
@@ -11,9 +12,10 @@ object WizardApplication extends JFXApp3:
 
   given applicationContext: WizardApplicationContext = this.contextBuilder.build
 
-  def launch(inboundPort: WizardInboundPort, hintPort: WizardAIPort)(args: Array[String]): Unit =
+  def launch(inboundPort: WizardInboundPort, hintPort: WizardAIPort, vertx: Vertx)(args: Array[String]): Unit =
     this.contextBuilder.setInboundPort(inboundPort)
     this.contextBuilder.setHintPort(hintPort)
+    this.contextBuilder.setVertx(vertx)
     this.main(args)
 
   override def start(): Unit =

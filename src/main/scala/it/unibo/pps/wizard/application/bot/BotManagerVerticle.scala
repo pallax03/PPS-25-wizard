@@ -19,17 +19,26 @@ class BotManagerVerticle(
 ) extends AbstractVerticle:
 
   private var bots: Map[PlayerId, BotStrategy] = Map.empty
+  private var subscriptionIds: List[String] = Nil
   
   override def start(): Unit =
+    println("Starting BotManagerVerticle...")
     wizardInboundPort.subscribe[LifecycleEvent]:
       case LifecycleEvent.GameStarted(players, difficulty) => registerBots(players, difficulty)
       case _: LifecycleEvent.GameEnded                     => bots = Map.empty
+    .foreach(id => subscriptionIds = id :: subscriptionIds)
 
     subscribeToEvents[InvitationEvent](1000): (strategy, event) => 
       strategy.resolveInvitationEvents(event)
       
     subscribeToEvents[FailureEvent](500): (strategy, event) =>
         strategy.resolveFailedEvents(event)
+
+  override def stop(): Unit =
+    println("Stopping BotManagerVerticle...")
+    wizardInboundPort.unsubscribe(subscriptionIds*)
+    bots = Map.empty
+    subscriptionIds = Nil
 
   private def registerBots(players: Players, difficulty: BotsDifficulty): Unit =
     bots = players.toList
@@ -50,5 +59,5 @@ class BotManagerVerticle(
               wizardInboundPort.submitAction(action)
             case Failure(error) =>
               println(s"Bot ${event.playerId} failed on $event: ${error.getMessage}")
-            
+    .foreach(id => subscriptionIds = id :: subscriptionIds)
   

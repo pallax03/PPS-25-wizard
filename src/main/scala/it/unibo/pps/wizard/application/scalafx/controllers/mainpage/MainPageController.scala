@@ -35,11 +35,17 @@ class MainPageController(stage: Stage)(using context: WizardApplicationContext)
     val gameBoardPage = GameBoardPage(stage, currentPlayerId)
     
     println(s"Configuration:\n  Player Name: $playerName, Opponents: $opponentsNum")
-    context.inboundPort
-      .startGame(players, GameConfiguration(playerName, opponentsNum, botsDifficulty))
-      .onComplete:
-        case Success(_) =>
-          runOnUi:
-            gameBoardPage._1.show()
-        case Failure(exception) =>
-          throw exception
+    context.botLifecycleManager.setupNewBotManager().onComplete:
+      case Success(_) =>
+        println("Bot manager setup completed successfully.")
+        context.inboundPort
+          .startGame(players, GameConfiguration(playerName, opponentsNum, botsDifficulty))
+          .onComplete:
+            case Success(_) =>
+              runOnUi:
+                gameBoardPage._1.show()
+            case Failure(exception) =>
+              throw exception
+      case Failure(exception) =>
+        throw exception
+
