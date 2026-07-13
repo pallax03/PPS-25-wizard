@@ -3,7 +3,7 @@ package it.unibo.pps.wizard.application.gui.components
 import scalafx.scene.control.Label
 import scalafx.scene.text.{Font, FontWeight}
 
-class GameInfoView(var round: Int, var phase: String) extends Label:
+class GameInfoView(var round: Int = 0, var phase: String = "") extends Label:
   font = Font.font("Arial", FontWeight.Normal, 25)
   textFill = scalafx.scene.paint.Color.White
   updateText()
