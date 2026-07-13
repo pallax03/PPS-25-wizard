@@ -218,7 +218,7 @@ object GameEngine:
 
   private def nextRoundOrEnd(core: CoreState): GameEngine =
     if core.round.isLastRound(core.players) then
-      (GameState.Ended(core.players, core.scoreboard), List())
+      (GameState.Ended(core.players, core.scoreboard), List(LifecycleEvent.GameEnded(core.scoreboard)))
     else
       val nextRound = core.round.next
       val nextDealer = core.players.nextAfter(core.dealerId).getOrElse(core.dealerId)
