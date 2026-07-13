@@ -61,3 +61,7 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
       case LifecycleEvent.GameStarted(players, _) =>
         PresentationStep.immediate:
           view.displayGameStarted(players)
+
+      case LifecycleEvent.GameEnded(scoreboard) =>
+        PresentationStep.immediate:
+          view.displayGameEnded(scoreboard)

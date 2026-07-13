@@ -13,3 +13,4 @@ trait GameBoardView:
   def displayTurnChanged(playerId: PlayerId, phase: String): Unit
   def displayRoundScored(scoreboard: Scoreboard): Unit
   def displayGameStarted(players: Players): Unit
+  def displayGameEnded(scoreboard: Scoreboard): Unit

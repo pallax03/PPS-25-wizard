@@ -4,7 +4,7 @@ import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.components.*
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
 import it.unibo.pps.wizard.application.scalafx.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
-import it.unibo.pps.wizard.application.scalafx.pages.ScoreboardPage
+import it.unibo.pps.wizard.application.scalafx.pages.{MainPage, ScoreboardPage}
 import it.unibo.pps.wizard.engine.adapters.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
@@ -13,6 +13,8 @@ import it.unibo.pps.wizard.engine.model.core.GameState.*
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameState}
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import javafx.scene.layout.{HBox, StackPane, VBox}
+import scalafx.scene.control.Alert.AlertType
+import scalafx.scene.control.{Alert, ButtonType}
 import scalafx.stage.{Modality, Stage}
 import scalafx.util.Duration
 
@@ -137,6 +139,27 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
     refreshScoreboardIfOpen()
     this.currentPlayerView.resetBid()
     this.opponentsManager.resetOpponentsBid()
+
+  override def displayGameEnded(scoreboard: Scoreboard): Unit =
+    println(s"Event received: Game ended. Final Scoreboard: $scoreboard")
+    refreshScoreboardIfOpen()
+
+    runOnUi:
+      val homeButtonType = new ButtonType("Return to Home")
+
+      val alert = new Alert(AlertType.Information):
+        initOwner(stage)
+        title = "Game Over"
+        headerText = "The game has ended!"
+        contentText = "Click the button below to return to the main menu."
+        buttonTypes = Seq(homeButtonType)
+
+      alert.showAndWait() match
+        case Some(`homeButtonType`) =>
+          println("Redirecting to home screen...")
+          MainPage(stage)
+        case _ =>
+          println("Alert closed without action.")
 
   private def withRunningStatus(action: GameState => Unit): Unit =
     context.inboundPort.getState.onComplete:
