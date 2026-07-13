@@ -30,9 +30,9 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
         PresentationStep.immediate:
           view.displayCardsDealt(playerId, hands, trump, round)
 
-      case ProgressEvent.TrickWon(winnerId, trickedCards) =>
+      case ProgressEvent.TrickWon(winnerId, tricksWon, trickedCards) =>
         PresentationStep.before(2000):
-          view.displayTrickWon(winnerId, trickedCards)
+          view.displayTrickWon(winnerId, tricksWon, trickedCards)
 
       case ProgressEvent.RoundScored(scoreboard) =>
         PresentationStep.immediate:
