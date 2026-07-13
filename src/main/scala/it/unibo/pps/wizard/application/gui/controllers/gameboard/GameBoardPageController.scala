@@ -40,7 +40,6 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
   @nowarn private var gameInfo: GameInfoView = _
   @nowarn private var activeScoreboardStage: Option[Stage] = _
   private var activeScoreboardPage: Option[ScoreboardPage] = None
-  private var phase: String = "Bidding"
 
   @FXML
   def initialize(): Unit =
@@ -126,7 +125,6 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     this.opponentsManager.resetOpponentsBid()
 
   override def displayPhaseChanged(phase: String): Unit =
-    this.phase = phase
     this.gameInfo.changePhase(phase)
     if phase == "Bidding" then currentPlayerView.setBidTextFieldEnabled(true)
     else currentPlayerView.setBidTextFieldEnabled(false)
@@ -143,7 +141,6 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     val currentPlayerId = this.currentPlayerView.player.id
     val newHand = hands.getHand(currentPlayerId).getOrElse(Hand.empty)
     this.handManager.updateHand(newHand)
-    onTurnChanged(playerId)
 
   override def displayCardPlayed(playerId: PlayerId, card: Card): Unit =
     println(s"Event received: Card played by player $playerId: $card")
@@ -159,17 +156,14 @@ class GameBoardPageController(stage: Stage)(using context: WizardApplicationCont
     if playerId == currentPlayerView.player.id then this.currentPlayerView.updateBid(bid)
     else this.opponentsManager.updateOpponentBid(playerId, bid)
 
-  override def displayTurnChanged(playerId: PlayerId): Unit =
-    onTurnChanged(playerId)
+  override def displayTurnChanged(nextPlayerId: PlayerId, phase: String): Unit =
+    val isMyTurn = nextPlayerId == currentPlayerView.player.id
+    this.currentPlayerView.setTurnActive(isMyTurn, phase)
+    this.opponentsManager.updateActiveTurn(nextPlayerId, phase)
 
   override def displayRoundScored(scoreboard: Scoreboard): Unit =
     println(s"Event received: Round scored. Scoreboard: $scoreboard")
     refreshScoreboardIfOpen()
-
-  private def onTurnChanged(nextPlayerId: PlayerId): Unit =
-    val isMyTurn = nextPlayerId == currentPlayerView.player.id
-    this.currentPlayerView.setTurnActive(isMyTurn, this.phase)
-    this.opponentsManager.updateActiveTurn(nextPlayerId, this.phase)
 
   private def withRunningStatus(action: GameState => Unit): Unit =
     context.inboundPort.getState.onComplete:

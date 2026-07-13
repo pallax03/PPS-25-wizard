@@ -21,7 +21,7 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
         runOnUi(view.displayTrickWon(winnerId, trickedCards))
       case ProgressEvent.RoundScored(scoreboard) => runOnUi(view.displayRoundScored(scoreboard))
       case ProgressEvent.PhaseChanged(phase)     => runOnUi(view.displayPhaseChanged(phase))
-      case ProgressEvent.IsTurnOf(playerId)      => runOnUi(view.displayTurnChanged(playerId))
+      case ProgressEvent.IsTurnOf(playerId, phase)      => runOnUi(view.displayTurnChanged(playerId, phase))
 
     context.inboundPort.subscribe[InvitationEvent]:
       case InvitationEvent.WaitingForTrump(playerId) =>
