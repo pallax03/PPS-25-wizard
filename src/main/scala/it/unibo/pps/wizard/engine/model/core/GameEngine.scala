@@ -65,7 +65,7 @@ object GameEngine:
               List(
                 ProgressEvent.PhaseChanged(GameState.Playing.toString),
                 ActionEvent.BidPlaced(playerId, bid),
-                ProgressEvent.IsTurnOf(firstPlayer, currentState.getClass.getSimpleName),
+                ProgressEvent.IsTurnOf(firstPlayer, GameState.Playing.toString),
                 InvitationEvent.WaitingForCard(
                   firstPlayer,
                   hand.legalCards(Table.empty)

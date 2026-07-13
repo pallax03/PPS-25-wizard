@@ -98,8 +98,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
 
   override def displayPhaseChanged(phase: String): Unit =
     this.gameInfo.changePhase(phase)
-    if phase == "Bidding" then currentPlayerView.setBidTextFieldEnabled(true)
-    else currentPlayerView.setBidTextFieldEnabled(false)
+    this.currentPlayerView.setBidTextFieldEnabled(phase == "Bidding")
 
   override def displayCardsDealt(
       playerId: PlayerId,
