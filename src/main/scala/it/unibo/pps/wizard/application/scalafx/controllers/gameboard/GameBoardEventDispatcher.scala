@@ -4,13 +4,21 @@ import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.util.{PresentationQueue, PresentationStep}
 import it.unibo.pps.wizard.engine.events.{ActionEvent, InvitationEvent, LifecycleEvent, ProgressEvent, WizardEvent}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class GameBoardEventDispatcher(private val view: GameBoardView)(using
     context: WizardApplicationContext
 ):
   private val presentation: PresentationQueue = PresentationQueue()
+  private var subscriptionIds: List[String] = Nil
 
   def startListening(): Unit =
     context.inboundPort.subscribe[WizardEvent](event => presentation.enqueue(toPresentationStep(event)))
+      .foreach(id => subscriptionIds = id :: subscriptionIds)
+
+  def stopListening(): Unit =
+    context.inboundPort.unsubscribe(subscriptionIds*)
+    subscriptionIds = Nil
 
   private def toPresentationStep(event: WizardEvent): PresentationStep =
     event match

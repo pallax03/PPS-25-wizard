@@ -42,6 +42,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
   @nowarn private var gameInfo: GameInfoView = _
   @nowarn private var activeScoreboardStage: Option[Stage] = _
   private var activeScoreboardPage: Option[ScoreboardPage] = None
+  @nowarn private var gameBoardDispatcher: GameBoardEventDispatcher = _
 
   @FXML
   def initialize(): Unit =
@@ -49,7 +50,8 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
     List(tableContainer, handContainer, trumpContainer, currentPlayerContainer, playersContainer)
       .foreach(_.getChildren.clear())
     buildUI()
-    GameBoardEventDispatcher(this).startListening()
+    this.gameBoardDispatcher = GameBoardEventDispatcher(this)
+    this.gameBoardDispatcher.startListening()
 
   private def buildUI(): Unit =
     this.tableManager = TableManager(this.tableContainer)
@@ -157,6 +159,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
       alert.showAndWait() match
         case Some(`homeButtonType`) =>
           println("Redirecting to home screen...")
+          gameBoardDispatcher.stopListening()
           MainPage(stage)
         case _ =>
           println("Alert closed without action.")
