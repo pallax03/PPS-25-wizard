@@ -19,7 +19,7 @@ class TableManager(val container: HBox):
 
   def addCard(card: Card, playerId: PlayerId, isWinningCard: Boolean): Unit =
     val cardWrapperNode = PlayedCardWrapper(card, playerId.toString, isWinningCard)
-    cardWrapperNode.prefWidth <== container.width * 0.60
+    cardWrapperNode.prefWidth <== container.width * 0.30
     activeCardNodes = activeCardNodes + (card -> cardWrapperNode)
     container.children.add(cardWrapperNode)
 

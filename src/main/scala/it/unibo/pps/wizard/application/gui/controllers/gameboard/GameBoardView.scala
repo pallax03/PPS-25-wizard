@@ -4,7 +4,7 @@ import it.unibo.pps.wizard.engine.model.basic.*
 
 trait GameBoardView:
   def displayWaitingForTrump(playerId: PlayerId): Unit
-  def displayTrickWon(winnerId: PlayerId, trickedCards: List[Card]): Unit
+  def displayTrickWon(winnerId: PlayerId, tricksWon: Int, trickedCards: List[Card]): Unit
   def displayPhaseChanged(phase: String): Unit
   def displayCardsDealt(playerId: PlayerId, hands: Hands, trump: Trump, round: Round): Unit
   def displayCardPlayed(playerId: PlayerId, card: Card): Unit

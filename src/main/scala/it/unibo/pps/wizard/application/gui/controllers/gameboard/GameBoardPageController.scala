@@ -90,11 +90,13 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
     if value == currentPlayerView.player.id then currentPlayerView.setTrumpSelectionEnabled(true)
     else currentPlayerView.setTrumpSelectionEnabled(false)
 
-  override def displayTrickWon(winnerId: PlayerId, trickedCards: List[Card]): Unit =
+  override def displayTrickWon(winnerId: PlayerId, tricksWon: Int, trickedCards: List[Card]): Unit =
     println(s"Event received: Trick won by player $winnerId with cards: $trickedCards")
     tableManager.initializeTable(Table.empty, None)
-    this.currentPlayerView.resetBid()
-    this.opponentsManager.resetOpponentsBid()
+    if winnerId == currentPlayerId then
+      this.currentPlayerView.updateTricksWon(tricksWon.toString)
+    else
+      this.opponentsManager.updateOpponentsTricksWon(winnerId, tricksWon.toString)
 
   override def displayPhaseChanged(phase: String): Unit =
     this.gameInfo.changePhase(phase)
@@ -123,7 +125,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
 
   override def displayBidPlaced(playerId: PlayerId, bid: Bid): Unit =
     println(s"Event received: Bid placed by player $playerId: $bid")
-    if playerId == currentPlayerId then this.currentPlayerView.updateBid(bid)
+    if playerId == currentPlayerId then this.currentPlayerView.updateBid(bid.toString)
     else this.opponentsManager.updateOpponentBid(playerId, bid)
 
   override def displayTurnChanged(nextPlayerId: PlayerId, phase: String): Unit =
@@ -133,6 +135,8 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
 
   override def displayRoundScored(scoreboard: Scoreboard): Unit =
     println(s"Event received: Round scored. Scoreboard: $scoreboard")
+    this.currentPlayerView.resetBid()
+    this.opponentsManager.resetOpponentsBid()
     refreshScoreboardIfOpen()
 
   private def withRunningStatus(action: GameState => Unit): Unit =

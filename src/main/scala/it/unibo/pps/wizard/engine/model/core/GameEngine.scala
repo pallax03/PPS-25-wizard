@@ -167,14 +167,15 @@ object GameEngine:
         .playerOf(winningCard)
         .toRight(GameError.InconsistentState(TableNoWinner))
 
+      updatedTricks = state.tricksWon.addTrickTo(winnerId)
+
       engine <-
         if isRoundComplete(updatedCore.hands) then
-          val updatedTricks = state.tricksWon.addTrickTo(winnerId)
           val completedRound = completeRound(state, updatedCore, updatedTricks)
           Right(
             (
               completedRound.state,
-              ProgressEvent.TrickWon(winnerId, completedTable.playedCards) +: completedRound.events
+              ProgressEvent.TrickWon(winnerId, updatedTricks(winnerId), completedTable.playedCards) +: completedRound.events
             )
           )
         else
@@ -182,7 +183,6 @@ object GameEngine:
             .getHand(winnerId)
             .toRight(GameError.InconsistentState(HandNotFoundFor(winnerId)))
             .map: hand =>
-              val updatedTricks = state.tricksWon.addTrickTo(winnerId)
               (
                 state.copy(
                   core = updatedCore,
@@ -191,7 +191,7 @@ object GameEngine:
                   tricksWon = updatedTricks
                 ),
                 List(
-                  ProgressEvent.TrickWon(winnerId, completedTable.playedCards),
+                  ProgressEvent.TrickWon(winnerId, updatedTricks(winnerId), completedTable.playedCards),
                   ProgressEvent.IsTurnOf(winnerId, state.getClass.getSimpleName),
                   InvitationEvent.WaitingForCard(
                     winnerId,

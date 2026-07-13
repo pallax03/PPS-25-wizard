@@ -1,11 +1,10 @@
 package it.unibo.pps.wizard.application.gui.components
 
-import it.unibo.pps.wizard.engine.model.basic.{Bid, Player, Card}
+import it.unibo.pps.wizard.engine.model.basic.{Bid, Card, Player}
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.{Label, TextField, ComboBox}
-import scalafx.scene.layout.VBox
+import scalafx.scene.control.{ComboBox, Label, TextField}
+import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.Circle
 import scalafx.scene.text.{Font, FontWeight}
 import scalafx.collections.ObservableBuffer
 
@@ -23,23 +22,25 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
 
   style = if isCurrentTurn then biddingTurnStyle else normalStyle
 
-  protected val avatarIndicator = new Circle:
-    radius = 12
-    fill = if isCurrentTurn then Color.rgb(230, 126, 34) else Color.rgb(178, 190, 195)
-
   protected val nameLabel = new Label(player.name.toString):
     font = Font.font("Arial", FontWeight.Bold, 15)
     textFill = Color.White
+
+  protected val tricksWonLabel = new Label(s"Tricks Won: 0"):
+    font = Font.font("Arial", FontWeight.Normal, 13)
+    textFill = Color.rgb(178, 190, 195)
 
   protected var bidLabel = new Label(s"Bid: -"):
     font = Font.font("Arial", FontWeight.Normal, 13)
     textFill = Color.rgb(178, 190, 195)
 
-  def updateBid(bid: Bid): Unit =
-    bidLabel.text = s"Bid: ${bid.value}"
+  def updateBid(bid: String): Unit =
+    bidLabel.text = s"Bid: $bid"
 
-  def resetBid(): Unit =
+  def resetBid(): Unit = {
+    tricksWonLabel.text = s"Tricks Won: 0"
     bidLabel.text = s"Bid: -"
+  }
 
   def setTurnActive(active: Boolean = true, phase: String): Unit =
     style =
@@ -50,13 +51,21 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
           case "Playing"       => playingTurnStyle
       else normalStyle
 
+  def updateTricksWon(tricks: String): Unit =
+    tricksWonLabel.text = s"Tricks Won: $tricks"
+
 class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
     extends BasePlayerView(player, isCurrentTurn):
   private val roleLabel = new Label("Bot"):
     font = Font.font("Arial", FontWeight.Normal, 13)
     textFill = Color.rgb(140, 140, 140)
 
-  children = Seq(avatarIndicator, nameLabel, roleLabel, bidLabel)
+  private val name = new HBox():
+    alignment = Pos.Center
+    spacing = 5
+    children = Seq(nameLabel, roleLabel)
+
+  children = Seq(name, tricksWonLabel, bidLabel)
 
 class HumanPlayerView(
     player: Player,
@@ -94,10 +103,14 @@ class HumanPlayerView(
   def setBidTextFieldEnabled(enabled: Boolean): Unit =
     bidField.disable = !enabled
 
+  private val name = new HBox():
+    alignment = Pos.Center
+    spacing = 5
+    children = Seq(nameLabel, roleLabel)
+
   children = Seq(
-    avatarIndicator,
-    nameLabel,
-    roleLabel,
+    name,
+    tricksWonLabel,
     bidLabel,
     bidField,
     trumpComboBox
