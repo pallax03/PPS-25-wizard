@@ -1,6 +1,6 @@
-package it.unibo.pps.wizard.application.gui.managers
+package it.unibo.pps.wizard.application.scalafx.managers
 
-import it.unibo.pps.wizard.application.gui.components.CardView
+import it.unibo.pps.wizard.application.scalafx.components.CardView
 import it.unibo.pps.wizard.engine.model.basic.{Card, Trump}
 import scalafx.scene.Node
 import scalafx.scene.control.Label

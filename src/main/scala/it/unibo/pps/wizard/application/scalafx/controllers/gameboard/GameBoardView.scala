@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.application.gui.controllers.gameboard
+package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 
 import it.unibo.pps.wizard.engine.model.basic.*
 

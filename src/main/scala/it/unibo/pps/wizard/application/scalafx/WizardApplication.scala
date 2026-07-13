@@ -1,7 +1,7 @@
-package it.unibo.pps.wizard.application
+package it.unibo.pps.wizard.application.scalafx
 
-import it.unibo.pps.wizard.application.WizardApplicationContext.WizardApplicationContextBuilder
-import it.unibo.pps.wizard.application.gui.pages.MainPage
+import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext.WizardApplicationContextBuilder
+import it.unibo.pps.wizard.application.scalafx.pages.MainPage
 import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage

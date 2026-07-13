@@ -1,6 +1,6 @@
-package it.unibo.pps.wizard.application.gui.managers
+package it.unibo.pps.wizard.application.scalafx.managers
 
-import it.unibo.pps.wizard.application.gui.components.{BasePlayerView, BotPlayerView}
+import it.unibo.pps.wizard.application.scalafx.components.{BasePlayerView, BotPlayerView}
 import it.unibo.pps.wizard.engine.model.basic.{Bid, PlayerId, Players}
 import scalafx.scene.Node
 import scalafx.scene.layout.HBox

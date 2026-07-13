@@ -1,4 +1,4 @@
-package it.unibo.pps.wizard.application.gui.components
+package it.unibo.pps.wizard.application.scalafx.components
 
 import it.unibo.pps.wizard.engine.model.basic
 import it.unibo.pps.wizard.engine.model.basic.Card.Color

@@ -1,10 +1,10 @@
-package it.unibo.pps.wizard.application.gui.controllers.gameboard
+package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 
-import it.unibo.pps.wizard.application.WizardApplicationContext
-import it.unibo.pps.wizard.application.gui.components.*
-import it.unibo.pps.wizard.application.gui.controllers.Controller
-import it.unibo.pps.wizard.application.gui.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
-import it.unibo.pps.wizard.application.gui.pages.ScoreboardPage
+import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
+import it.unibo.pps.wizard.application.scalafx.components.*
+import it.unibo.pps.wizard.application.scalafx.controllers.Controller
+import it.unibo.pps.wizard.application.scalafx.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
+import it.unibo.pps.wizard.application.scalafx.pages.ScoreboardPage
 import it.unibo.pps.wizard.engine.adapters.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
@@ -44,12 +44,10 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
   @FXML
   def initialize(): Unit =
     println("Initializing GameBoardPageController...")
+    List(tableContainer, handContainer, trumpContainer, currentPlayerContainer, playersContainer)
+      .foreach(_.getChildren.clear())
+    buildUI()
     GameBoardEventDispatcher(this).startListening()
-
-    runOnUi:
-      List(tableContainer, handContainer, trumpContainer, currentPlayerContainer, playersContainer)
-        .foreach(_.getChildren.clear())
-      buildUI()
 
   private def buildUI(): Unit =
     this.tableManager = TableManager(this.tableContainer)
@@ -100,7 +98,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
 
   override def displayPhaseChanged(phase: String): Unit =
     this.gameInfo.changePhase(phase)
-    this.currentPlayerView.setBidTextFieldEnabled(phase == "Bidding")
+    if phase != "Bidding" then currentPlayerView.setBidTextFieldEnabled(false)
 
   override def displayCardsDealt(
       playerId: PlayerId,
@@ -131,13 +129,14 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
   override def displayTurnChanged(nextPlayerId: PlayerId, phase: String): Unit =
     val isMyTurn = nextPlayerId == currentPlayerId
     this.currentPlayerView.setTurnActive(isMyTurn, phase)
+    this.currentPlayerView.setBidTextFieldEnabled(isMyTurn && phase == "Bidding")
     this.opponentsManager.updateActiveTurn(nextPlayerId, phase)
 
   override def displayRoundScored(scoreboard: Scoreboard): Unit =
     println(s"Event received: Round scored. Scoreboard: $scoreboard")
+    refreshScoreboardIfOpen()
     this.currentPlayerView.resetBid()
     this.opponentsManager.resetOpponentsBid()
-    refreshScoreboardIfOpen()
 
   private def withRunningStatus(action: GameState => Unit): Unit =
     context.inboundPort.getState.onComplete:

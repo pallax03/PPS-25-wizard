@@ -1,6 +1,6 @@
-package it.unibo.pps.wizard.application.gui.managers
+package it.unibo.pps.wizard.application.scalafx.managers
 
-import it.unibo.pps.wizard.application.gui.components.PlayedCardWrapper
+import it.unibo.pps.wizard.application.scalafx.components.PlayedCardWrapper
 import it.unibo.pps.wizard.engine.model.basic.{Card, PlayerId, Table}
 import scalafx.scene.layout.HBox
 

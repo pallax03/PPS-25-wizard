@@ -1,8 +1,8 @@
-package it.unibo.pps.wizard.application.gui.controllers.mainpage
+package it.unibo.pps.wizard.application.scalafx.controllers.mainpage
 
-import it.unibo.pps.wizard.application.WizardApplicationContext
-import it.unibo.pps.wizard.application.gui.controllers.Controller
-import it.unibo.pps.wizard.application.gui.pages.GameBoardPage
+import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
+import it.unibo.pps.wizard.application.scalafx.controllers.Controller
+import it.unibo.pps.wizard.application.scalafx.pages.GameBoardPage
 import it.unibo.pps.wizard.engine.model.basic.{Player, PlayerId, PlayerName, Players}
 import it.unibo.pps.wizard.engine.model.configuration.{BotsDifficulty, GameConfiguration}
 import javafx.scene.control.{Button, ComboBox, TextField}

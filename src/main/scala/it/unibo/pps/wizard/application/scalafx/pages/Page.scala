@@ -1,6 +1,6 @@
-package it.unibo.pps.wizard.application.gui.pages
+package it.unibo.pps.wizard.application.scalafx.pages
 
-import it.unibo.pps.wizard.application.gui.FXComponent
+import it.unibo.pps.wizard.application.scalafx.FXComponent
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import scalafx.scene.Scene
