@@ -16,6 +16,13 @@ class TestPrologEngine extends AnyWordSpec with Matchers:
       failedSolutions.headOption.exists(_.isSuccess) shouldBe false
       failedSolutions.take(1).map(PrologEngine.extractVars).toList shouldBe List()
 
+    "Extract variables" should:
+      "return an empty map if the solution is a failure" in :
+        import alice.tuprolog.Prolog
+        val solver = Prolog()
+        val failedSolveInfo = solver.solve("fail.")
+        PrologEngine.extractVars(failedSolveInfo) shouldBe Map.empty
+
     "Resolve Backtracking" in:
       val theory = """
           color(red).
