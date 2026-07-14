@@ -2,13 +2,8 @@ package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.util.{PresentationQueue, PresentationStep}
-import it.unibo.pps.wizard.engine.events.{
-  ActionEvent,
-  InvitationEvent,
-  LifecycleEvent,
-  ProgressEvent,
-  WizardEvent
-}
+import it.unibo.pps.wizard.engine.events.{ActionEvent, FailureEvent, InvitationEvent, LifecycleEvent, ProgressEvent, WizardEvent}
+import it.unibo.pps.wizard.engine.model.core.{CardNotAllowedReasons, GameError, InconsistentStateReasons}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -29,9 +24,9 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
 
   private def toPresentationStep(event: WizardEvent): PresentationStep =
     event match
-      case ActionEvent.CardPlayed(playerId, card, _, _) =>
+      case ActionEvent.CardPlayed(playerId, playerName, card, _, _) =>
         PresentationStep.after(200):
-          view.displayCardPlayed(playerId, card)
+          view.displayCardPlayed(playerId, playerName, card)
 
       case ActionEvent.TrumpColorResolved(playerId, color) =>
         PresentationStep.immediate:
@@ -81,3 +76,14 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
       case LifecycleEvent.GameEnded(scoreboard, players) =>
         PresentationStep.immediate:
           view.displayGameEnded(scoreboard, players)
+
+      case FailureEvent.ActionFailed(playerId, error) => error match
+        case GameError.NotYourTurn => ???
+        case GameError.InvalidBid => ???
+        case GameError.CardNotAllowed(reason) => reason match
+          case CardNotAllowedReasons.CardNotInHand(cards) => ???
+          case CardNotAllowedReasons.MustFollowColor(requiredColor, cards) => ???
+        case GameError.InvalidAction => ???
+        case GameError.InconsistentState(reason) => reason match
+          case InconsistentStateReasons.TableNoWinner => ???
+          case InconsistentStateReasons.HandNotFoundFor(playerId) => ???
