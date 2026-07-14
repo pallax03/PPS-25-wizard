@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
-import it.unibo.pps.wizard.application.scalafx.util.{PresentationQueue, PresentationStep}
+import it.unibo.pps.wizard.application.scalafx.util.{PresentationQueue, PresentationScript, PresentationStep}
 import it.unibo.pps.wizard.engine.events.{
   ActionEvent,
   InvitationEvent,
@@ -20,81 +20,77 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
 
   def startListening(): Unit =
     context.inboundPort
-      .subscribe[WizardEvent](event => presentation.enqueueAll(toPresentationSteps(event)))
+      .subscribe[WizardEvent](event => presentation.enqueue(toPresentationScript(event)))
       .foreach(id => subscriptionIds = id :: subscriptionIds)
 
   def stopListening(): Unit =
     context.inboundPort.unsubscribe(subscriptionIds*)
     subscriptionIds = Nil
 
-  private def toPresentationSteps(event: WizardEvent): List[PresentationStep] =
+  private def toPresentationScript(event: WizardEvent): PresentationScript =
     event match
       case ActionEvent.CardPlayed(playerId, card, _, _) =>
-        one(PresentationStep.after(200):
-          view.displayCardPlayed(playerId, card)
+        PresentationScript(
+          run(view.displayCardPlayed(playerId, card)),
+          waitFor(200)
         )
 
       case ActionEvent.TrumpColorResolved(playerId, color) =>
-        one(PresentationStep.immediate:
-          view.displayTrumpSelected(playerId, color)
-        )
+        PresentationScript(run(view.displayTrumpSelected(playerId, color)))
 
       case ActionEvent.BidPlaced(playerId, bid) =>
-        one(PresentationStep.after(200):
-          view.displayBidPlaced(playerId, bid)
+        PresentationScript(
+          run(view.displayBidPlaced(playerId, bid)),
+          waitFor(200)
         )
 
       case ProgressEvent.CardsDealt(playerId, hands, trump, round) =>
-        one(PresentationStep.immediate:
-          view.displayCardsDealt(playerId, hands, trump, round)
-        )
+        PresentationScript(run(view.displayCardsDealt(playerId, hands, trump, round)))
 
       case ProgressEvent.TrickWon(winnerId, tricksWon, trickedCards) =>
-        List(
-          PresentationStep.immediate:
-            view.displayTrickWon(winnerId, tricksWon, trickedCards),
-          PresentationStep.before(3000):
-            view.clearTable()
+        PresentationScript(
+          run(view.displayTrickWon(winnerId, tricksWon, trickedCards)),
+          waitFor(3000),
+          run(view.clearTable())
         )
 
       case ProgressEvent.RoundScored(scoreboard, players) =>
-        one(PresentationStep.immediate:
-          view.displayRoundScored(scoreboard, players)
-        )
+        PresentationScript(run(view.displayRoundScored(scoreboard, players)))
 
       case ProgressEvent.PhaseChanged(phase) =>
-        one(PresentationStep.immediate:
-          view.displayPhaseChanged(phase)
-        )
+        PresentationScript(run(view.displayPhaseChanged(phase)))
 
       case ProgressEvent.IsTurnOf(_, _) =>
-        one(PresentationStep.noop)
+        PresentationScript()
 
       case InvitationEvent.WaitingForTrump(playerId) =>
-        one(PresentationStep.after(200):
-          view.displayTurnChanged(playerId, "ChoosingTrump")
-          view.displayWaitingForTrump(playerId)
+        PresentationScript(
+          run:
+            view.displayTurnChanged(playerId, "ChoosingTrump")
+            view.displayWaitingForTrump(playerId),
+          waitFor(200)
         )
 
       case InvitationEvent.WaitingForBid(playerId, _) =>
-        one(PresentationStep.after(200):
-          view.displayTurnChanged(playerId, "Bidding")
+        PresentationScript(
+          run(view.displayTurnChanged(playerId, "Bidding")),
+          waitFor(200)
         )
 
       case InvitationEvent.WaitingForCard(playerId, legalCards) =>
-        one(PresentationStep.after(200):
-          view.displayTurnChanged(playerId, "Playing")
-          view.displayLegalCards(playerId, legalCards)
+        PresentationScript(
+          run:
+            view.displayTurnChanged(playerId, "Playing")
+            view.displayLegalCards(playerId, legalCards),
+          waitFor(200)
         )
 
       case LifecycleEvent.GameStarted(players, _) =>
-        one(PresentationStep.immediate:
-          view.displayGameStarted(players)
-        )
+        PresentationScript(run(view.displayGameStarted(players)))
 
       case LifecycleEvent.GameEnded(scoreboard, players) =>
-        one(PresentationStep.immediate:
-          view.displayGameEnded(scoreboard, players)
-        )
+        PresentationScript(run(view.displayGameEnded(scoreboard, players)))
 
-  private def one(step: PresentationStep): List[PresentationStep] = List(step)
+  private def run(action: => Unit): PresentationStep = PresentationStep.run(action)
+
+  private def waitFor(delayMs: Double): PresentationStep = PresentationStep.waitFor(delayMs)

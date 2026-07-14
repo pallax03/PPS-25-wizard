@@ -6,32 +6,26 @@ import scalafx.util.Duration
 
 import scala.util.control.NonFatal
 
-final case class PresentationStep(
-    action: () => Unit,
-    delayBeforeMs: Double = 0,
-    delayAfterMs: Double = 0
-)
+final case class PresentationScript(steps: List[PresentationStep])
 
+object PresentationScript:
+  def apply(steps: PresentationStep*): PresentationScript = PresentationScript(steps.toList)
+
+sealed trait PresentationStep
 object PresentationStep:
-  def immediate(action: => Unit): PresentationStep = PresentationStep(() => action)
-  def before(delayMs: Double)(action: => Unit): PresentationStep =
-    PresentationStep(() => action, delayBeforeMs = delayMs)
-  def after(delayMs: Double)(action: => Unit): PresentationStep =
-    PresentationStep(() => action, delayAfterMs = delayMs)
-  val noop: PresentationStep = PresentationStep(() => ())
+  final case class Run(action: () => Unit) extends PresentationStep
+  final case class Wait(delayMs: Double) extends PresentationStep
+
+  def run(action: => Unit): PresentationStep = Run(() => action)
+  def waitFor(delayMs: Double): PresentationStep = Wait(delayMs)
 
 class PresentationQueue:
   private val queue = scala.collection.mutable.Queue.empty[PresentationStep]
   private var running = false
 
-  def enqueue(step: PresentationStep): Unit =
+  def enqueue(script: PresentationScript): Unit =
     onUiThread:
-      queue.enqueue(step)
-      drain()
-
-  def enqueueAll(steps: Iterable[PresentationStep]): Unit =
-    onUiThread:
-      queue.enqueueAll(steps)
+      queue.enqueueAll(script.steps)
       drain()
 
   private def drain(): Unit =
@@ -40,18 +34,24 @@ class PresentationQueue:
       run(queue.dequeue())
 
   private def run(step: PresentationStep): Unit =
-    val before = PauseTransition(toDuration(step.delayBeforeMs))
-    before.onFinished = _ =>
-      try step.action()
-      catch
-        case NonFatal(error) =>
-          println(s"Presentation step failed: ${error.getMessage}")
-      val after = PauseTransition(toDuration(step.delayAfterMs))
-      after.onFinished = _ =>
+    step match
+      case PresentationStep.Run(action) =>
+        runAction(action)
         running = false
         drain()
-      after.play()
-    before.play()
+
+      case PresentationStep.Wait(delayMs) =>
+        val pause = PauseTransition(toDuration(delayMs))
+        pause.onFinished = _ =>
+          running = false
+          drain()
+        pause.play()
+
+  private def runAction(action: () => Unit): Unit =
+    try action()
+    catch
+      case NonFatal(error) =>
+        println(s"Presentation step failed: ${error.getMessage}")
 
   private def toDuration(ms: Double): Duration =
     if ms <= 0 then Duration.Zero else Duration(ms)
