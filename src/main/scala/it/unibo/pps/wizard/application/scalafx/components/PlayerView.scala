@@ -29,17 +29,12 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
     font = Font.font("Arial", FontWeight.Normal, 13)
     textFill = Color.rgb(178, 190, 195)
 
-  protected var bidLabel: Label = new Label(s"Bid: -"):
+  protected val bidLabel: Label = new Label("Bid: "):
     font = Font.font("Arial", FontWeight.Normal, 13)
     textFill = Color.rgb(178, 190, 195)
 
-  def updateBid(bid: String): Unit =
-    bidLabel.text = s"Bid: $bid"
-
-  def resetBid(): Unit = {
+  def resetTricksWon(): Unit =
     tricksWonLabel.text = s"Tricks Won: 0"
-    bidLabel.text = s"Bid: -"
-  }
 
   def setTurnActive(active: Boolean = true, phase: String): Unit =
     style =
@@ -53,6 +48,7 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
   def updateTricksWon(tricks: Int): Unit =
     tricksWonLabel.text = s"Tricks Won: $tricks"
 
+
 class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
     extends BasePlayerView(player, isCurrentTurn):
   private val roleLabel = new Label("Bot"):
@@ -64,12 +60,28 @@ class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
     spacing = 5
     children = Seq(nameLabel, roleLabel)
 
-  children = Seq(name, tricksWonLabel, bidLabel)
+  protected var bidValue = new Label("-"):
+    font = Font.font("Arial", FontWeight.Normal, 13)
+    textFill = Color.rgb(178, 190, 195)
+
+  private val bidRow = new HBox():
+    alignment = Pos.Center
+    spacing = 5
+    children = Seq(bidLabel, bidValue)
+
+  def updateBid(bid: String): Unit =
+    bidValue.text = bid
+
+  def resetBid(): Unit =
+    bidValue.text = "-"
+
+  children = Seq(name, tricksWonLabel, bidRow)
+
 
 class HumanPlayerView(
-    player: Player,
-    isCurrentTurn: Boolean = false,
-    onBidSubmitted: Bid => Unit = _ => (),
+                       player: Player,
+                       isCurrentTurn: Boolean = false,
+                       onBidSubmitted: Bid => Unit = _ => (),
 ) extends BasePlayerView(player, isCurrentTurn):
 
   private val roleLabel = new Label("You"):
@@ -95,9 +107,13 @@ class HumanPlayerView(
     spacing = 5
     children = Seq(nameLabel, roleLabel)
 
+  private val bidRow = new HBox():
+    alignment = Pos.Center
+    spacing = 5
+    children = Seq(bidLabel, bidField)
+
   children = Seq(
     name,
     tricksWonLabel,
-    bidLabel,
-    bidField
+    bidRow
   )

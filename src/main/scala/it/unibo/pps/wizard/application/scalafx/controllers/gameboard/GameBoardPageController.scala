@@ -12,9 +12,10 @@ import it.unibo.pps.wizard.engine.model.core.GameAction
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import javafx.scene.control.Button
 import javafx.scene.layout.{HBox, StackPane, VBox}
+import scalafx.animation.{FadeTransition, PauseTransition, SequentialTransition}
 import scalafx.scene.Node
 import scalafx.scene.control.Alert.AlertType
-import scalafx.scene.control.{Alert, ButtonType}
+import scalafx.scene.control.{Alert, ButtonType, Label}
 import scalafx.stage.{Modality, Stage}
 import scalafx.util.Duration
 
@@ -113,7 +114,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
   override def clearTable(): Unit =
     tableManager.initialize()
-  
+
   override def displayPhaseChanged(phase: String): Unit =
     this.gameInfo.changePhase(phase)
     if phase != "Bidding" then currentPlayerView.setBidTextFieldEnabled(false)
@@ -144,8 +145,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
   override def displayBidPlaced(playerId: PlayerId, bid: Bid): Unit =
     println(s"Event received: Bid placed by player $playerId: $bid")
-    if playerId == currentPlayerId then this.currentPlayerView.updateBid(bid.toString)
-    else this.opponentsManager.updateOpponentBid(playerId, bid)
+    if playerId != currentPlayerId then this.opponentsManager.updateOpponentBid(playerId, bid)
 
   override def displayTurnChanged(nextPlayerId: PlayerId, phase: String): Unit =
     val isMyTurn = nextPlayerId == currentPlayerId
@@ -157,7 +157,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
   override def displayRoundScored(scoreboard: Scoreboard, players: Players): Unit =
     println(s"Event received: Round scored. Scoreboard: $scoreboard")
     refreshScoreboardIfOpen(scoreboard, players)
-    this.currentPlayerView.resetBid()
+    this.currentPlayerView.resetTricksWon()
     this.opponentsManager.resetOpponentsBid()
 
   override def displayLegalCards(playerId: PlayerId, legalCards: List[Card]): Unit =
@@ -168,6 +168,27 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     println(s"Event received: Game ended. Final Scoreboard: $scoreboard")
     refreshScoreboardIfOpen(scoreboard, players)
     displayGameEndedAlert()
+
+  override def displayErrorMessage(message: String): Unit =
+    println(s"Event received: Game Error: - $message")
+    val toastLabel = new Label:
+      text = message
+      style = "-fx-background-color: rgba(0, 0, 0, 0); " +
+        "-fx-text-fill: #FFCC00; " +
+        "-fx-font-size: 20px; " +
+        "-fx-font-weight: bold; " +
+        "-fx-padding: 10px 20px; "
+      opacity = 0.0
+    tableContainer.getChildren.add(toastLabel)
+    val fadeIn = new FadeTransition(Duration(200), toastLabel):
+      toValue = 1.0
+    val hold = new PauseTransition(Duration(2500))
+    val fadeOut = new FadeTransition(Duration(500), toastLabel):
+      toValue = 0.0
+    fadeOut.onFinished = _ => tableContainer.getChildren.remove(toastLabel)
+    val sequence = new SequentialTransition:
+      children = Seq(fadeIn, hold, fadeOut)
+    sequence.play()
 
   private def displayGameEndedAlert(): Unit =
     val alert = new Alert(AlertType.Information):
