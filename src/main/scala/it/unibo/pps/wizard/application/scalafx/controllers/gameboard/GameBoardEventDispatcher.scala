@@ -17,7 +17,7 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
 ):
   private val presentation: PresentationQueue = PresentationQueue()
   private var subscriptionIds: List[String] = Nil
-
+  
   def startListening(): Unit =
     context.inboundPort
       .subscribe[WizardEvent](event => presentation.enqueue(toPresentationStep(event)))

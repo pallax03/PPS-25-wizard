@@ -42,7 +42,15 @@
                 <BorderPane.margin>
                     <Insets right="20.0"/>
                 </BorderPane.margin>
-                <VBox fx:id="trumpContainer" alignment="CENTER" spacing="10.0"/>
+                <StackPane fx:id="trumpContainer">
+                    <VBox fx:id="trumpColorSelector"
+                           alignment="CENTER"
+                           spacing="15.0"
+                           visible="false"
+                           managed="false"
+                           style = "-fx-background-color: rgba(30, 30, 30, 0.85); -fx-background-radius: 15; -fx-padding: 15;">
+                    </VBox>
+                </StackPane>
                 <VBox fx:id="currentPlayerContainer" alignment="CENTER" spacing="10.0"/>
             </VBox>
         </left>

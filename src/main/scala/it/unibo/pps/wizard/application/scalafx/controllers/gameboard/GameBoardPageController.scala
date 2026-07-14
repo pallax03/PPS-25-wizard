@@ -28,7 +28,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
   @nowarn @FXML private var tableContainer: HBox = _
   @nowarn @FXML private var handContainer: HBox = _
-  @nowarn @FXML private var trumpContainer: VBox = _
+  @nowarn @FXML private var trumpContainer: StackPane = _
   @nowarn @FXML private var currentPlayerContainer: VBox = _
   @nowarn @FXML private var playersContainer: HBox = _
   @nowarn @FXML private var gameInfoContainer: VBox = _
@@ -56,7 +56,11 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
   private def buildUI(): Unit =
     this.tableManager = TableManager(this.tableContainer)
-    this.trumpManager = TrumpManager(this.trumpContainer)
+    this.trumpManager = TrumpManager(this.trumpContainer, onColorSelected = color =>
+      context.inboundPort.submitAction(
+        GameAction.ResolveTrumpColor(currentPlayerId, color)
+      )
+    )
 
     this.handManager = HandManager(
       this.handContainer,
@@ -89,18 +93,13 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
       currentPlayer,
       onBidSubmitted =
         bid => context.inboundPort.submitAction(GameAction.PlaceBid(currentPlayerId, bid)),
-      onTrumpSelected = color =>
-        context.inboundPort.submitAction(
-          GameAction.ResolveTrumpColor(currentPlayer.id, color)
-        )
     )
     this.currentPlayerContainer.getChildren.add(this.currentPlayerView.delegate)
     this.activeScoreboardPage.initializeTable(players)
 
-  override def displayWaitingForTrump(value: PlayerId): Unit =
-    println(s"Event received: Waiting for Trump selection from player $value")
-    if value == currentPlayerView.player.id then currentPlayerView.setTrumpSelectionEnabled(true)
-    else currentPlayerView.setTrumpSelectionEnabled(false)
+  override def displayWaitingForTrump(playerId: PlayerId): Unit =
+    println(s"Event received: Waiting for Trump selection from player $playerId")
+    if playerId == currentPlayerId then trumpManager.enableResolveTrumpColor(true)
 
   override def displayTrickWon(
       winnerId: PlayerId,
@@ -136,6 +135,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
   override def displayTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
     println(s"Event received: Trump selected by player $playerId: $color")
     trumpManager.glowTrump(color)
+    trumpManager.enableResolveTrumpColor(false)
 
   override def displayBidPlaced(playerId: PlayerId, bid: Bid): Unit =
     println(s"Event received: Bid placed by player $playerId: $bid")

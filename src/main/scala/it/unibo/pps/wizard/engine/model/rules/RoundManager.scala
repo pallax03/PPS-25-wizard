@@ -29,10 +29,7 @@ object RoundManager:
         hands = Hands(
           players.toList.map(_.id).zip(drawn.grouped(cardsPerPlayer).map(Hand(_)).toList).toMap
         )
-        currentDeck <- State.get[Deck]
-        trump <-
-          if currentDeck.length > 0 then Deck.pop(1).map(_.headOption)
-          else State.pure[Deck, Option[Card]](None)
+        trump <- Deck.pop(1).map(_.headOption)
       yield (hands, trump)
 
     def initialize(deck: Deck): State[CoreState, GameState] =

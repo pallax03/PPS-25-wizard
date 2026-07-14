@@ -1,12 +1,11 @@
 package it.unibo.pps.wizard.application.scalafx.components
 
-import it.unibo.pps.wizard.engine.model.basic.{Bid, Card, Player}
+import it.unibo.pps.wizard.engine.model.basic.{Bid, Player}
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.{ComboBox, Label, TextField}
+import scalafx.scene.control.{Label, TextField}
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{Font, FontWeight}
-import scalafx.collections.ObservableBuffer
 
 abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = false) extends VBox:
   alignment = Pos.Center
@@ -71,7 +70,6 @@ class HumanPlayerView(
     player: Player,
     isCurrentTurn: Boolean = false,
     onBidSubmitted: Bid => Unit = _ => (),
-    onTrumpSelected: Card.Color => Unit = _ => ()
 ) extends BasePlayerView(player, isCurrentTurn):
 
   private val roleLabel = new Label("You"):
@@ -89,17 +87,6 @@ class HumanPlayerView(
       val textValue = text.value
       if textValue.nonEmpty && textValue.forall(_.isDigit) then onBidSubmitted(Bid(textValue.toInt))
 
-  private val trumpComboBox = new ComboBox[Card.Color]:
-    items = ObservableBuffer(Card.Color.values.toSeq*)
-    promptText = "Trump"
-    maxWidth = 90
-    disable = true
-
-    onAction = _ => Option(selectionModel.value.getSelectedItem).foreach(onTrumpSelected)
-
-  def setTrumpSelectionEnabled(enabled: Boolean): Unit =
-    trumpComboBox.disable = !enabled
-
   def setBidTextFieldEnabled(enabled: Boolean): Unit =
     bidField.disable = !enabled
 
@@ -112,6 +99,5 @@ class HumanPlayerView(
     name,
     tricksWonLabel,
     bidLabel,
-    bidField,
-    trumpComboBox
+    bidField
   )
