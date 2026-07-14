@@ -32,15 +32,8 @@ validate_cards([wizard | T]) :- validate_cards(T).
 validate_cards([jester | T]) :- validate_cards(T).
 validate_cards([card(RANK, Color) | T]) :- card(RANK, Color), !, validate_cards(T).
 
-wizard.
-jester.
-
 % card_of_color(?StandardCard, ?Color).
 card_of_color(card(Rank, Color), Color) :- card(Rank, Color).
-
-% filter_cards_of_color(+Cards, ?NoColor, -FilteredCards)
-filter_cards_of_color(Cards, NoColor, FilteredCards) :-
-	findall(Card, (member(Card, Cards), \+ card_of_color(Card, NoColor)), FilteredCards).
 
 % card_value(+Card, -Rank)
 card_value(card(Rank, Color), Rank):- card(Rank, Color).
@@ -89,12 +82,6 @@ color_frequencies(Cards, Frequencies) :-
 
 % color_frequencies([card(1, red), card(4, red), card(1, yellow), card(13, blue)], Frequencies) -> Frequencies / [freq(red,2),freq(yellow,1),freq(blue,1)]
 
-% count_trumps(+Hand, +TrumpColor, -Count) -> return the number of trumps in Hand
-count_trumps(Hand, TrumpColor, Count) :- following_standard_cards(Hand, TrumpColor, TrumpCards), length(TrumpCards, Count).
-% count_wizards(+Hand, -Count) -> return the number of wizards in Hand
-count_wizards(Hand, Count) :- findall(wizard, member(wizard, Hand), Wizards), length(Wizards, Count).
-% count_jesters(+Hand, -Count) -> return the number of jesters in Hand
-count_jesters(Hand, Count) :- findall(jester, member(jester, Hand), Jesters), length(Jesters, Count).
 
 cards_ranks_of_color(Cards, Color, Ranks) :- findall(Rank, member(card(Rank, Color), Cards), Ranks).
 count_color(Cards, Color, Count) :- cards_ranks_of_color(Cards, Color, Ranks), length(Ranks, Count).
@@ -111,18 +98,10 @@ lowest_card(Cards, LowestCard) :-
 	member(LowestCard, Cards),
 	card_value(LowestCard, MinRank), !.
 
-% highest_card(+Cards, -HighestCard) -> highest based on card_value.
-highest_card(Cards, HighestCard) :-
-	findall(Rank, (member(Card, Cards), card_value(Card, Rank)), Ranks),
-	min_max(Ranks, MaxRank, _),
-	member(HighestCard, Cards),
-	card_value(HighestCard, MaxRank), !.
+
 
 % WIZARD STRATEGY -> Strategies for API
 
-% fallback_filtered_cards(+Cards, +NoColor, -FilteredCards) -> FilteredCards is filter_cards_of_color, but if empty return Cards.
-fallback_filtered_cards(Cards, NoColor, Cards) :- filter_cards_of_color(Cards, NoColor, []), !.
-fallback_filtered_cards(Cards, NoColor, FilteredCards) :- filter_cards_of_color(Cards, NoColor, FilteredCards).
 
 % dominant_color(+Cards, -Color) -> return the max color present in a List of card (2 red and 2 yellow -> given in next paths)
 dominant_color(Cards, Color) :-
@@ -182,6 +161,40 @@ losing_options(PlayableCards, WinningCard, TrumpColor, LosingCards) :-
 % losing_options([card(1,red),card(4,yellow),wizard,jester], card(10, yellow), red, LosingCards) -> LosingCards / [card(4,yellow),jester]
 
 
+% smart_discard(+PlayableCards, ?TrumpColor, -BestDiscardCard) -> strategy for save jester.
+% 	- use the lowest card: not a special or a trump.
+smart_discard(PlayableCards, TrumpColor, BestDiscardCard) :-
+	findall(Card, (
+		member(Card, PlayableCards), 
+		Card \= wizard, 
+		Card \= jester, 
+		\+ card_of_color(Card, TrumpColor)
+	), JunkCards),
+	JunkCards \= [],
+	lowest_card(JunkCards, BestDiscardCard), !.
+
+%		- fallback: use the lowest.
+smart_discard(PlayableCards, _, BestDiscardCard) :-
+	lowest_card(PlayableCards, BestDiscardCard).
+
+
+% dangerous_value(+Card, +TrumpColor, -Value) -> convert any Card to a general Value
+dangerous_value(jester, _, 0).
+% 	- Trump = Rank + 6: ex: 2 of Trump -> 8 of Standard: a 10 Standard is dangerous
+dangerous_value(card(Rank, TrumpColor), TrumpColor, Value) :- Value is Rank + 6, !.
+% 	- Standard: Rank
+dangerous_value(card(Rank, _), _, Rank).
+% 	- Wizard: MAX
+dangerous_value(wizard, _, 100).
+
+% most_dangerous_card(+Cards, +TrumpColor, -MostDangerous) -> Give the most dangerous card.
+most_dangerous_card(Cards, TrumpColor, MostDangerousCard) :-
+	findall(Value, (member(Card, Cards), dangerous_value(Card, TrumpColor, Value)), Values),
+	min_max(Values, MaxValue, _),
+	member(MostDangerousCard, Cards),
+	dangerous_value(MostDangerousCard, TrumpColor, MaxValue), !.
+
+
 
 % WIZARD API
 
@@ -215,7 +228,8 @@ adjust_bid(Hand, RejectedBid, FinalBid) :- FinalBid is RejectedBid + 1, !.
 % best_playable_card(+Hand, +WinningCard, +FollowingColor, +TrumpColor, +Bids, +Tricks, -BestCard) -> return the best card to play.
 
 % - WinningCard REQUIRED
-% 	- want to win with winning cards -> play the lowest to win
+% 	- want to win with winning cards:
+%			- play the lowest to win
 best_playable_card(Hand, WinningCard, FollowingColor, TrumpColor, Bids, Tricks, BestCard) :-
 	validate_cards([WinningCard]),
 	wants_to_win(Bids, Tricks),
@@ -225,53 +239,61 @@ best_playable_card(Hand, WinningCard, FollowingColor, TrumpColor, Bids, Tricks, 
 	lowest_card(WinningCards, BestCard), !.
 
 % - WinningCard REQUIRED
-% 	- want to win without winning cards -> play the lowest to preserve high cards
+% 	- want to win without winning cards: 
+%			- play a smart discard to preserve high cards
 best_playable_card(Hand, WinningCard, FollowingColor, TrumpColor, Bids, Tricks, BestCard) :-
 	wants_to_win(Bids, Tricks),
 	validate_cards([WinningCard]),
 	playable_cards(Hand, FollowingColor, PlayableCards),
 	winning_options(PlayableCards, WinningCard, TrumpColor, WinningCards),
 	WinningCards == [],
-	lowest_card(PlayableCards, BestCard), !.
+	smart_discard(PlayableCards, TrumpColor, BestCard), !.
 
 % - WinningCard REQUIRED
-% 	- want to lose but every playable card wins -> play the lowest legal card.
+% 	- want to lose but every playable card wins:
+%			- play the most dangerous card to minimize trick won
 best_playable_card(Hand, WinningCard, FollowingColor, TrumpColor, Bids, Tricks, BestCard) :-
 	wants_to_lose(Bids, Tricks),
 	validate_cards([WinningCard]),
 	playable_cards(Hand, FollowingColor, PlayableCards),
 	losing_options(PlayableCards, WinningCard, TrumpColor, LosingCards),
 	LosingCards == [],
-	lowest_card(PlayableCards, BestCard), !.
+	most_dangerous_card(PlayableCards, TrumpColor, BestCard), !.
 
 % - WinningCard REQUIRED
-% 	- want to lose -> play the highest to maximaze win on next tricks.
+% 	- want to lose:
+%			- play the most dangerous card among losing options to maximize win on next tricks
 best_playable_card(Hand, WinningCard, FollowingColor, TrumpColor, Bids, Tricks, BestCard) :-
 	wants_to_lose(Bids, Tricks),
 	validate_cards([WinningCard]),
 	playable_cards(Hand, FollowingColor, PlayableCards),
 	losing_options(PlayableCards, WinningCard, TrumpColor, LosingCards),
 	LosingCards \= [],
-	highest_card(LosingCards, BestCard), !.
+	most_dangerous_card(LosingCards, TrumpColor, BestCard), !.
 
-% - WinningCard NOT REQUIRED
+% - WinningCard NOT REQUIRED (Opening)
 % 	- want to lose:
-%			- filter winning cards: removing wizards and trumpColor.
-%			- play the lowest card -> highest chance for a higher card than that
+%			- play the smartest, least dangerous discard to slide under opponents
 best_playable_card(Hand, _, none, TrumpColor, Bids, Tricks, BestCard) :-
 	wants_to_lose(Bids, Tricks),
-	fallback_filtered_cards(Hand, TrumpColor, FilteredCards),
-	lowest_card(FilteredCards, BestCard), !.
+	smart_discard(Hand, TrumpColor, BestCard), !.
 
-% - WinningCard NOT REQUIRED
+% - WinningCard NOT REQUIRED (Opening)
 % 	- want to win:
-%			- filter winning cards: removing wizards and trumpColor.
-%			- play the lowest card -> highest chance for a higher card than that
+%			- play the lowest among your safe/risky tricks
 best_playable_card(Hand, _, none, TrumpColor, Bids, Tricks, BestCard) :-
 	wants_to_win(Bids, Tricks),
-	findall(Card, (member(Card, Hand), safe_trick(Card, Hand, TrumpColor); risky_trick(Card, Hand, TrumpColor)), PlayableCards),
+	findall(Card, (member(Card, Hand), (safe_trick(Card, Hand, TrumpColor); risky_trick(Card, Hand, TrumpColor))), PlayableCards),
+	PlayableCards \= [],
 	lowest_card(PlayableCards, BestCard), !.
 
+
+% - WinningCard NOT REQUIRED (Opening)
+% 	- want to win: (fallback for when you have no safe or risky tricks)
+%			- play the most dangerous to maximize trick won
+best_playable_card(Hand, _, none, TrumpColor, Bids, Tricks, BestCard) :-
+	wants_to_win(Bids, Tricks),
+	most_dangerous_card(Hand, TrumpColor, BestCard), !.
 
 % Cuts keep the final decision API deterministic once a strategy clause matches.
 % WANTS TO WIN:

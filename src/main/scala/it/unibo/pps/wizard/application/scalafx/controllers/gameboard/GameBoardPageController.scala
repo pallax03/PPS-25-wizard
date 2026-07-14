@@ -135,6 +135,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     tableManager.addCard(card, playerName, false, false)
     handManager.removeCard(card)
     handManager.clearEffects()
+    setVisibleNode(hintBestCardButton)(false)
 
   override def displayTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
     println(s"Event received: Trump selected by player $playerId: $color")

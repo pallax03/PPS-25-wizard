@@ -1,9 +1,8 @@
 package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
-import it.unibo.pps.wizard.application.scalafx.util.{PresentationQueue, PresentationStep}
-import it.unibo.pps.wizard.engine.events.{ActionEvent, FailureEvent, InvitationEvent, LifecycleEvent, ProgressEvent, WizardEvent}
-import it.unibo.pps.wizard.engine.model.core.{CardNotAllowedReasons, GameError, InconsistentStateReasons}
+import it.unibo.pps.wizard.application.scalafx.util.{PresentationQueue, PresentationScript, PresentationStep}
+import it.unibo.pps.wizard.engine.events.{ActionEvent, InvitationEvent, LifecycleEvent, ProgressEvent, WizardEvent}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -89,14 +88,3 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
   private def run(action: => Unit): PresentationStep = PresentationStep.run(action)
 
   private def waitFor(delayMs: Double): PresentationStep = PresentationStep.waitFor(delayMs)
-
-      case FailureEvent.ActionFailed(playerId, error) => error match
-        case GameError.NotYourTurn => ???
-        case GameError.InvalidBid => ???
-        case GameError.CardNotAllowed(reason) => reason match
-          case CardNotAllowedReasons.CardNotInHand(cards) => ???
-          case CardNotAllowedReasons.MustFollowColor(requiredColor, cards) => ???
-        case GameError.InvalidAction => ???
-        case GameError.InconsistentState(reason) => reason match
-          case InconsistentStateReasons.TableNoWinner => ???
-          case InconsistentStateReasons.HandNotFoundFor(playerId) => ???
