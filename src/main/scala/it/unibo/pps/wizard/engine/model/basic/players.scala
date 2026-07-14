@@ -33,3 +33,4 @@ object Players:
     def totalPlayers: Int = players.size
     def filter(predicate: Player => Boolean): Players = players.filter(predicate)
     def findById(id: PlayerId): Option[Player] = players.find(_.id == id)
+    def getPlayersNames(): List[PlayerName] = players.map(_.name)

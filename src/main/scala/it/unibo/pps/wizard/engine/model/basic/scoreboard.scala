@@ -20,7 +20,7 @@ object RoundRow:
       p.id -> playerHistory.get(round)
     }.toMap
 
-  def createRows(players: Players, sb: Scoreboard): List[RoundRow] =
+  def updateRows(players: Players, sb: Scoreboard): List[RoundRow] =
     val maxRounds = calculateMaxRounds(players.toList.size)
 
     (1 to maxRounds).map { rNum =>
@@ -28,6 +28,14 @@ object RoundRow:
       RoundRow(round, getStatsForAllPlayers(round, players, sb))
     }.toList
 
+  def initRows(players: Players): List[RoundRow] =
+    val maxRounds = calculateMaxRounds(players.toList.size)
+
+    (1 to maxRounds).map { rNum =>
+      val round = Round(rNum)
+      RoundRow(round, players.toList.map(p => p.id -> None).toMap)
+    }.toList
+    
 opaque type Score = Int
 object Score:
   def apply(points: Int): Score = points

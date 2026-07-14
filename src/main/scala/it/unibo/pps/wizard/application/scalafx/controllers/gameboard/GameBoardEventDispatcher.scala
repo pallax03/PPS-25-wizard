@@ -42,9 +42,9 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
         PresentationStep.before(2000):
           view.displayTrickWon(winnerId, tricksWon, trickedCards)
 
-      case ProgressEvent.RoundScored(scoreboard) =>
+      case ProgressEvent.RoundScored(scoreboard, players) =>
         PresentationStep.immediate:
-          view.displayRoundScored(scoreboard)
+          view.displayRoundScored(scoreboard, players)
 
       case ProgressEvent.PhaseChanged(phase) =>
         PresentationStep.immediate:
@@ -70,6 +70,6 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
         PresentationStep.immediate:
           view.displayGameStarted(players)
 
-      case LifecycleEvent.GameEnded(scoreboard) =>
+      case LifecycleEvent.GameEnded(scoreboard, players) =>
         PresentationStep.immediate:
-          view.displayGameEnded(scoreboard)
+          view.displayGameEnded(scoreboard, players)
