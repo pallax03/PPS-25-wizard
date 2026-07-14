@@ -17,67 +17,84 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
 ):
   private val presentation: PresentationQueue = PresentationQueue()
   private var subscriptionIds: List[String] = Nil
-  
+
   def startListening(): Unit =
     context.inboundPort
-      .subscribe[WizardEvent](event => presentation.enqueue(toPresentationStep(event)))
+      .subscribe[WizardEvent](event => presentation.enqueueAll(toPresentationSteps(event)))
       .foreach(id => subscriptionIds = id :: subscriptionIds)
 
   def stopListening(): Unit =
     context.inboundPort.unsubscribe(subscriptionIds*)
     subscriptionIds = Nil
 
-  private def toPresentationStep(event: WizardEvent): PresentationStep =
+  private def toPresentationSteps(event: WizardEvent): List[PresentationStep] =
     event match
       case ActionEvent.CardPlayed(playerId, card, _, _) =>
-        PresentationStep.after(200):
+        one(PresentationStep.after(200):
           view.displayCardPlayed(playerId, card)
+        )
 
       case ActionEvent.TrumpColorResolved(playerId, color) =>
-        PresentationStep.immediate:
+        one(PresentationStep.immediate:
           view.displayTrumpSelected(playerId, color)
+        )
 
       case ActionEvent.BidPlaced(playerId, bid) =>
-        PresentationStep.after(200):
+        one(PresentationStep.after(200):
           view.displayBidPlaced(playerId, bid)
+        )
 
       case ProgressEvent.CardsDealt(playerId, hands, trump, round) =>
-        PresentationStep.immediate:
+        one(PresentationStep.immediate:
           view.displayCardsDealt(playerId, hands, trump, round)
+        )
 
       case ProgressEvent.TrickWon(winnerId, tricksWon, trickedCards) =>
-        PresentationStep.before(2000):
-          view.displayTrickWon(winnerId, tricksWon, trickedCards)
+        List(
+          PresentationStep.immediate:
+            view.displayTrickWon(winnerId, tricksWon, trickedCards),
+          PresentationStep.before(3000):
+            view.clearTable()
+        )
 
       case ProgressEvent.RoundScored(scoreboard, players) =>
-        PresentationStep.immediate:
+        one(PresentationStep.immediate:
           view.displayRoundScored(scoreboard, players)
+        )
 
       case ProgressEvent.PhaseChanged(phase) =>
-        PresentationStep.immediate:
+        one(PresentationStep.immediate:
           view.displayPhaseChanged(phase)
+        )
 
       case ProgressEvent.IsTurnOf(_, _) =>
-        PresentationStep.noop
+        one(PresentationStep.noop)
 
       case InvitationEvent.WaitingForTrump(playerId) =>
-        PresentationStep.after(200):
+        one(PresentationStep.after(200):
           view.displayTurnChanged(playerId, "ChoosingTrump")
           view.displayWaitingForTrump(playerId)
+        )
 
       case InvitationEvent.WaitingForBid(playerId, _) =>
-        PresentationStep.after(200):
+        one(PresentationStep.after(200):
           view.displayTurnChanged(playerId, "Bidding")
+        )
 
       case InvitationEvent.WaitingForCard(playerId, legalCards) =>
-        PresentationStep.after(200):
+        one(PresentationStep.after(200):
           view.displayTurnChanged(playerId, "Playing")
           view.displayLegalCards(playerId, legalCards)
+        )
 
       case LifecycleEvent.GameStarted(players, _) =>
-        PresentationStep.immediate:
+        one(PresentationStep.immediate:
           view.displayGameStarted(players)
+        )
 
       case LifecycleEvent.GameEnded(scoreboard, players) =>
-        PresentationStep.immediate:
+        one(PresentationStep.immediate:
           view.displayGameEnded(scoreboard, players)
+        )
+
+  private def one(step: PresentationStep): List[PresentationStep] = List(step)

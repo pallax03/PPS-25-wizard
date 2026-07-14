@@ -3,23 +3,23 @@ package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.components.*
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
-import it.unibo.pps.wizard.application.scalafx.managers.{
-  HandManager,
-  OpponentsManager,
-  TableManager,
-  TrumpManager
-}
+import it.unibo.pps.wizard.application.scalafx.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
 import it.unibo.pps.wizard.application.scalafx.pages.{MainPage, ScoreboardPage}
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
 import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
 import it.unibo.pps.wizard.engine.model.core.GameAction
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
+import javafx.scene.control.Button
 import javafx.scene.layout.{HBox, StackPane, VBox}
+import scalafx.scene.Node
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.{Alert, ButtonType}
 import scalafx.stage.{Modality, Stage}
 import scalafx.util.Duration
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Success
 
 class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     context: WizardApplicationContext
@@ -34,6 +34,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
   @nowarn @FXML private var gameInfoContainer: VBox = _
   @nowarn @FXML private var scoreboardContainer: StackPane = _
   @nowarn @FXML private var rulesPanel: VBox = _
+  @nowarn @FXML private var hintBestCardButton: Button = _
 
   @nowarn private var tableManager: TableManager = _
   @nowarn private var handManager: HandManager = _
@@ -107,10 +108,12 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
       trickedCards: List[Card]
   ): Unit =
     println(s"Event received: Trick won by player $winnerId with cards: $trickedCards")
-    tableManager.initialize()
     if winnerId == currentPlayerId then this.currentPlayerView.updateTricksWon(tricksWon)
     else this.opponentsManager.updateOpponentsTricksWon(winnerId, tricksWon)
 
+  override def clearTable(): Unit =
+    tableManager.initialize()
+  
   override def displayPhaseChanged(phase: String): Unit =
     this.gameInfo.changePhase(phase)
     if phase != "Bidding" then currentPlayerView.setBidTextFieldEnabled(false)
@@ -131,6 +134,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     println(s"Event received: Card played by player $playerId: $card")
     tableManager.addCard(card, playerId, false, false)
     handManager.removeCard(card)
+    handManager.clearEffects()
 
   override def displayTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
     println(s"Event received: Trump selected by player $playerId: $color")
@@ -144,6 +148,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
   override def displayTurnChanged(nextPlayerId: PlayerId, phase: String): Unit =
     val isMyTurn = nextPlayerId == currentPlayerId
+    setVisibleNode(hintBestCardButton)(isMyTurn && phase == "Playing")
     this.currentPlayerView.setTurnActive(isMyTurn, phase)
     this.currentPlayerView.setBidTextFieldEnabled(isMyTurn && phase == "Bidding")
     this.opponentsManager.updateActiveTurn(nextPlayerId, phase)
@@ -221,7 +226,16 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
   @FXML
   def toggleRulesPanel(): Unit =
-    if rulesPanel != null then
-      val isVisible = rulesPanel.isVisible
-      rulesPanel.setVisible(!isVisible)
-      rulesPanel.setManaged(!isVisible)
+    setVisibleNode(rulesPanel)(rulesPanel.isVisible)
+
+  @FXML
+  def requestHintBestCard(): Unit =
+    context.hintPort.bestCard(currentPlayerId).onComplete:
+      case Success(card) => this.handManager.highlightWinningCard(card)
+      case _ => this.handManager.clearEffects()
+
+
+  private def setVisibleNode(node: Node)(enabled: Boolean): Unit =
+    if node != null then
+      node.managed = enabled
+      node.visible = enabled

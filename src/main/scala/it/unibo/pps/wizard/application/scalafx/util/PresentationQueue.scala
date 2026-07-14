@@ -29,6 +29,11 @@ class PresentationQueue:
       queue.enqueue(step)
       drain()
 
+  def enqueueAll(steps: Iterable[PresentationStep]): Unit =
+    onUiThread:
+      queue.enqueueAll(steps)
+      drain()
+
   private def drain(): Unit =
     if !running && queue.nonEmpty then
       running = true

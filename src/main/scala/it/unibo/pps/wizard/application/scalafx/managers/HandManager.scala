@@ -5,6 +5,7 @@ import it.unibo.pps.wizard.engine.model.basic.{Card, Hand}
 import scalafx.Includes.jfxMouseEvent2sfx
 import scalafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import scalafx.scene.layout.HBox
+import scalafx.scene.paint.Color
 import scalafx.util.Duration
 
 class HandManager(
@@ -76,3 +77,12 @@ class HandManager(
       if legalCards.contains(card) then node.opacity = 1.0
       else node.opacity = 0.4
     }
+
+  def highlightWinningCard(card: Card): Unit =
+    this.activeCardNodes(card).setGlow(Color.Gold)
+  
+  def clearEffects(): Unit =
+    this.activeCardNodes.values.foreach(node => {
+      node.opacity = 1.0
+      node.removeGlow()
+    })  
