@@ -2,7 +2,7 @@ package it.unibo.pps.wizard.application.scalafx.managers
 
 import it.unibo.pps.wizard.application.scalafx.components.PlayedCardWrapper
 //import it.unibo.pps.wizard.engine.model.basic.Card.*
-import it.unibo.pps.wizard.engine.model.basic.{Card, PlayerId}
+import it.unibo.pps.wizard.engine.model.basic.{Card, PlayerName}
 import scalafx.scene.layout.HBox
 
 class TableManager(val container: HBox):
@@ -24,8 +24,8 @@ class TableManager(val container: HBox):
 //        case _ => false
 //      case _ => false
 //
-  def addCard(card: Card, playerId: PlayerId, isWinning: Boolean, isFollowing: Boolean): Unit =
-    val cardWrapperNode = PlayedCardWrapper(card, playerId.toString, isWinning, isFollowing)
+  def addCard(card: Card, playerName: PlayerName, isWinning: Boolean, isFollowing: Boolean): Unit =
+    val cardWrapperNode = PlayedCardWrapper(card, playerName.toString, isWinning, isFollowing)
     cardWrapperNode.prefWidth <== container.width * 0.30
     activeCardNodes = activeCardNodes + (card -> cardWrapperNode)
     container.children.add(cardWrapperNode)

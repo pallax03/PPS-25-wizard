@@ -130,9 +130,9 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     val newHand = hands.getHand(currentPlayerId).getOrElse(Hand.empty)
     this.handManager.updateHand(newHand)
 
-  override def displayCardPlayed(playerId: PlayerId, card: Card): Unit =
-    println(s"Event received: Card played by player $playerId: $card")
-    tableManager.addCard(card, playerId, false, false)
+  override def displayCardPlayed(playerId: PlayerId, playerName: PlayerName, card: Card): Unit =
+    println(s"Event received: Card played by player $playerId ($playerName): $card")
+    tableManager.addCard(card, playerName, false, false)
     handManager.removeCard(card)
     handManager.clearEffects()
 
@@ -166,25 +166,24 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
   override def displayGameEnded(scoreboard: Scoreboard, players: Players): Unit =
     println(s"Event received: Game ended. Final Scoreboard: $scoreboard")
     refreshScoreboardIfOpen(scoreboard, players)
+    displayGameEndedAlert()
 
-    runOnUi:
-      val homeButtonType = new ButtonType("Return to Home")
+  private def displayGameEndedAlert(): Unit =
+    val alert = new Alert(AlertType.Information):
+      initOwner(stage)
+      title = "Game Over"
+      headerText = "The game has ended!"
+      contentText = "Click the button below to return to the main menu."
+      buttonTypes = Seq(new ButtonType("Return to Home"))
 
-      val alert = new Alert(AlertType.Information):
-        initOwner(stage)
-        title = "Game Over"
-        headerText = "The game has ended!"
-        contentText = "Click the button below to return to the main menu."
-        buttonTypes = Seq(homeButtonType)
-
-      alert.showAndWait() match
-        case Some(`homeButtonType`) =>
-          println("Redirecting to home screen...")
-          gameBoardDispatcher.stopListening()
-          activeScoreboardStage.close()
-          MainPage(stage)
-        case _ =>
-          println("Alert closed without action.")
+    alert.showAndWait() match
+      case Some(_) =>
+        println("Redirecting to home screen...")
+        gameBoardDispatcher.stopListening()
+        activeScoreboardStage.close()
+        MainPage(stage)
+      case _ =>
+        println("Alert closed without action.")
 
   @FXML
   def openScoreboardWindow(): Unit =
