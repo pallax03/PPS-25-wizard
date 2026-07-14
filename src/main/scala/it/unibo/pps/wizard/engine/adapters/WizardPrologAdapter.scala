@@ -52,7 +52,7 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
     onRunningPhase("adjust bid"):
       case GameState.Bidding(core, currentBids, _) =>
         withHand(core.hands.getHand(playerId)): hand =>
-          val rejectedBid = Bid(core.round.value - currentBids.total.value)
+          val rejectedBid = Bid(core.round.value - currentBids.total)
           engine
             .adjustBid(hand, rejectedBid)
             .filter(_.validateBid(core.round, currentBids, core.players.totalPlayers).isRight)
@@ -67,10 +67,10 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
             .bestPlayableCard(
               hand = hand,
               winningCard = table.evaluateTrick(core.trump),
-              followingColor = table.followingCard.collect { case Card.Standard(c, _) => c },
+              followingColor = table.followingColor,
               trump = core.trump,
               playerBid = bids(playerId),
-              playerTrick = Bid(tricks(playerId)) // TODO: Bid and Trick need to be refactored
+              playerTrick = tricks(playerId)
             )
             .filter(legalCards.contains)
             .getOrElse(legalCards.head)
@@ -79,4 +79,4 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
     (0 to round.value)
       .map(Bid(_))
       .find(_.validateBid(round, bids, totalPlayers).isRight)
-      .getOrElse(Bid.zero)
+      .getOrElse(Bid(0))

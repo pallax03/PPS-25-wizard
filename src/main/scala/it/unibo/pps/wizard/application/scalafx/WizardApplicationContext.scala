@@ -12,7 +12,12 @@ trait WizardApplicationContext:
   def botLifecycleManager: BotLifecycleManager
 
 object WizardApplicationContext:
-  def apply(primaryStage: Stage, inboundPort: WizardInboundPort, hintPort: WizardAIPort, vertx: Vertx): WizardApplicationContext =
+  def apply(
+      primaryStage: Stage,
+      inboundPort: WizardInboundPort,
+      hintPort: WizardAIPort,
+      vertx: Vertx
+  ): WizardApplicationContext =
     BasicWizardApplicationContext(primaryStage, inboundPort, hintPort, vertx)
 
   def builder: WizardApplicationContextBuilder = WizardApplicationContextBuilder()
@@ -52,11 +57,14 @@ object WizardApplicationContext:
     def build: WizardApplicationContext =
       WizardApplicationContext(
         this.stage.getOrElse:
-          throw new IllegalStateException("Primary stage is not set"),
+          throw new IllegalStateException("Primary stage is not set")
+        ,
         this.inboundPort.getOrElse:
-          throw new IllegalStateException("Inbound port is not set"),
+          throw new IllegalStateException("Inbound port is not set")
+        ,
         this.hintPort.getOrElse:
-          throw new IllegalStateException("Hint port is not set"),
+          throw new IllegalStateException("Hint port is not set")
+        ,
         this.vertx.getOrElse:
           throw new IllegalStateException("Vertx instance is not set")
       )

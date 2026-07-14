@@ -19,8 +19,8 @@ object TableRules:
         cardPlayed match
           case _: SpecialCard => true
           case Card.Standard(playedColor, _) =>
-            table.followingCard match
-              case Some(Card.Standard(followingColor, _)) =>
+            table.followingColor match
+              case Some(followingColor) =>
                 playedColor == followingColor || !hand.hasColor(followingColor)
               case _ => true
 
@@ -31,8 +31,8 @@ object TableRules:
         cardPlayed match
           case _: SpecialCard => Right(())
           case Card.Standard(playedColor, _) =>
-            table.followingCard match
-              case Some(Card.Standard(followingColor, _)) if playedColor != followingColor =>
+            table.followingColor match
+              case Some(followingColor) if playedColor != followingColor =>
                 if hand.hasColor(followingColor) then
                   Left(
                     GameError.CardNotAllowed(
@@ -46,7 +46,7 @@ object TableRules:
     def evaluateTrick(trump: Trump): Option[Card] =
       val cards = table.playedCards
       val trumpColor = trump.effectiveColor
-      val followingColor = table.followingCard.map(_.color)
+      val followingColor = table.followingColor
 
       def highestOf(targetColor: Option[Card.Color]): Option[Card] =
         cards

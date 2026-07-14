@@ -55,7 +55,7 @@ class TestRoundManager extends AnyWordSpec with Matchers:
         trump shouldBe empty
         deckAfter.length shouldBe 0
         maxRound.isLastRound(players) shouldBe true
-        
+
       "popped trump should not be in deck or in any player's hand" in:
         val initialDeck = Deck.create
         val round = Round.start.next.next.next.next.next.next

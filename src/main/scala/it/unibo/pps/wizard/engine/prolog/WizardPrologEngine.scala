@@ -1,8 +1,10 @@
 package it.unibo.pps.wizard.engine.prolog
 
-import it.unibo.pps.wizard.engine.model.basic.{Bid, Card, Hand, Trump}
+import it.unibo.pps.wizard.engine.model.basic.{Bid, Card, Hand, Trick, Trump}
 import it.unibo.pps.wizard.engine.model.basic.Card.Color
+
 import it.unibo.pps.wizard.engine.prolog.WizardTermMapper.*
+
 import it.unibo.pps.wizard.util.PrologEngine
 import alice.tuprolog.{Term, Theory}
 
@@ -26,8 +28,8 @@ class WizardPrologEngine:
     )
 
   def adjustBid(hand: Hand, rejectedBid: Bid): Option[Bid] =
-    query(s"adjust_bid(${cardsTerm(hand.toList)}, ${rejectedBid.value}, FinalBid)", "FinalBid").map(
-      term => Bid(term.toString.toInt)
+    query(s"adjust_bid(${cardsTerm(hand.toList)}, $rejectedBid, FinalBid)", "FinalBid").map(term =>
+      Bid(term.toString.toInt)
     )
 
   def bestPlayableCard(
@@ -36,15 +38,15 @@ class WizardPrologEngine:
       followingColor: Option[Color],
       trump: Trump,
       playerBid: Bid,
-      playerTrick: Bid
+      playerTrick: Trick
   ): Option[Card] = query(
     s"""best_playable_card(
              |${cardsTerm(hand.toList)},
              |${cardTerm(winningCard)},
              |${colorTerm(followingColor)},
              |${trumpColorTerm(trump)},
-             |${playerBid.value},
-             |${playerTrick.value},
+             |$playerBid,
+             |$playerTrick,
              |BestCard
              |)""".stripMargin,
     "BestCard"

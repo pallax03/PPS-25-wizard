@@ -33,8 +33,8 @@ class OpponentsManager(val container: HBox):
     opponents.values.foreach:
       case bot: BotPlayerView => bot.resetBid()
       case _                  =>
-      
-  def updateOpponentsTricksWon(winnerId: PlayerId, tricks: String): Unit =
+
+  def updateOpponentsTricksWon(winnerId: PlayerId, tricks: Int): Unit =
     opponents.get(winnerId) match
       case Some(opponentView: BotPlayerView) =>
         opponentView.updateTricksWon(tricks)

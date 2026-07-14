@@ -97,11 +97,20 @@ object GameEngine:
             currentState.core.hands.remove(playerId, card)
           )
           updatedTable = currentState.table + (playerId, card)
-
+          winningCard = updatedTable.evaluateTrick(currentState.core.trump)
+          followingColor = updatedTable.followingColor
           finalEngine <-
             if updatedTable.isTrickComplete(updatedCore.players.totalPlayers) then
               completeTrick(currentState, updatedCore, updatedTable).map: engine =>
-                (engine.state, ActionEvent.CardPlayed(playerId, card) +: engine.events)
+                (
+                  engine.state,
+                  ActionEvent.CardPlayed(
+                    playerId,
+                    card,
+                    winningCard,
+                    followingColor
+                  ) +: engine.events
+                )
             else
               val nextPlayer = currentState.core.players
                 .nextAfter(playerId)
@@ -117,7 +126,7 @@ object GameEngine:
                       currentPlayerTurn = nextPlayer
                     ),
                     List(
-                      ActionEvent.CardPlayed(playerId, card),
+                      ActionEvent.CardPlayed(playerId, card, winningCard, followingColor),
                       ProgressEvent.IsTurnOf(nextPlayer, currentState.getClass.getSimpleName),
                       InvitationEvent.WaitingForCard(
                         nextPlayer,
@@ -137,7 +146,10 @@ object GameEngine:
 
     val specificEvents = gameState match
       case _: GameState.ChoosingTrump =>
-        List(ProgressEvent.IsTurnOf(core.dealerId, gameState.getClass.getSimpleName), InvitationEvent.WaitingForTrump(core.dealerId))
+        List(
+          ProgressEvent.IsTurnOf(core.dealerId, gameState.getClass.getSimpleName),
+          InvitationEvent.WaitingForTrump(core.dealerId)
+        )
       case bidding: GameState.Bidding =>
         List(
           ProgressEvent.IsTurnOf(bidding.currentPlayer, gameState.getClass.getSimpleName),
@@ -175,7 +187,11 @@ object GameEngine:
           Right(
             (
               completedRound.state,
-              ProgressEvent.TrickWon(winnerId, updatedTricks(winnerId), completedTable.playedCards) +: completedRound.events
+              ProgressEvent.TrickWon(
+                winnerId,
+                updatedTricks(winnerId),
+                completedTable.playedCards
+              ) +: completedRound.events
             )
           )
         else
@@ -191,7 +207,8 @@ object GameEngine:
                   tricksWon = updatedTricks
                 ),
                 List(
-                  ProgressEvent.TrickWon(winnerId, updatedTricks(winnerId), completedTable.playedCards),
+                  ProgressEvent
+                    .TrickWon(winnerId, updatedTricks(winnerId), completedTable.playedCards),
                   ProgressEvent.IsTurnOf(winnerId, state.getClass.getSimpleName),
                   InvitationEvent.WaitingForCard(
                     winnerId,
@@ -218,7 +235,10 @@ object GameEngine:
 
   private def nextRoundOrEnd(core: CoreState): GameEngine =
     if core.round.isLastRound(core.players) then
-      (GameState.Ended(core.players, core.scoreboard), List(LifecycleEvent.GameEnded(core.scoreboard, core.players)))
+      (
+        GameState.Ended(core.players, core.scoreboard),
+        List(LifecycleEvent.GameEnded(core.scoreboard, core.players))
+      )
     else
       val nextRound = core.round.next
       val nextDealer = core.players.nextAfter(core.dealerId).getOrElse(core.dealerId)
@@ -229,7 +249,10 @@ object GameEngine:
 
       val specificEvents = gameState match
         case _: GameState.ChoosingTrump =>
-          List(ProgressEvent.IsTurnOf(nextDealer, gameState.getClass.getSimpleName), InvitationEvent.WaitingForTrump(nextDealer))
+          List(
+            ProgressEvent.IsTurnOf(nextDealer, gameState.getClass.getSimpleName),
+            InvitationEvent.WaitingForTrump(nextDealer)
+          )
         case bidding: GameState.Bidding =>
           List(
             ProgressEvent.IsTurnOf(bidding.currentPlayer, gameState.getClass.getSimpleName),

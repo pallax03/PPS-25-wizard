@@ -6,7 +6,11 @@ import scalafx.util.Duration
 
 import scala.util.control.NonFatal
 
-final case class PresentationStep(action: () => Unit, delayBeforeMs: Double = 0, delayAfterMs: Double = 0)
+final case class PresentationStep(
+    action: () => Unit,
+    delayBeforeMs: Double = 0,
+    delayAfterMs: Double = 0
+)
 
 object PresentationStep:
   def immediate(action: => Unit): PresentationStep = PresentationStep(() => action)

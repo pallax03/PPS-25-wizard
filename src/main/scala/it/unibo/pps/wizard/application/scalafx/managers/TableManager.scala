@@ -1,7 +1,8 @@
 package it.unibo.pps.wizard.application.scalafx.managers
 
 import it.unibo.pps.wizard.application.scalafx.components.PlayedCardWrapper
-import it.unibo.pps.wizard.engine.model.basic.{Card, PlayerId, Table}
+//import it.unibo.pps.wizard.engine.model.basic.Card.*
+import it.unibo.pps.wizard.engine.model.basic.{Card, PlayerId}
 import scalafx.scene.layout.HBox
 
 class TableManager(val container: HBox):
@@ -12,18 +13,24 @@ class TableManager(val container: HBox):
 
   private var activeCardNodes: Map[Card, PlayedCardWrapper] = Map.empty
 
-  def initializeTable(table: Table, winningCard: Option[Card]): Unit =
+  def initialize(): Unit =
     container.children.clear()
     activeCardNodes = Map.empty
-    table.playedCards.foreach(c => addCard(c, table.playerOf(c).get, winningCard.contains(c)))
 
-  def addCard(card: Card, playerId: PlayerId, isWinningCard: Boolean): Unit =
-    val cardWrapperNode = PlayedCardWrapper(card, playerId.toString, isWinningCard)
+//  extension(c: Card)
+//    private def isFollowingColor(color: Option[Color]): Boolean = c match
+//      case Standard(c, _) => color match
+//        case Some(value) => value == c
+//        case _ => false
+//      case _ => false
+//
+  def addCard(card: Card, playerId: PlayerId, isWinning: Boolean, isFollowing: Boolean): Unit =
+    val cardWrapperNode = PlayedCardWrapper(card, playerId.toString, isWinning, isFollowing)
     cardWrapperNode.prefWidth <== container.width * 0.30
     activeCardNodes = activeCardNodes + (card -> cardWrapperNode)
     container.children.add(cardWrapperNode)
 
-  // todo: winning and following card
+  // todo: update old cards when isWinningCard, IsFollowingCard
   def updateCard(card: Card, isWinningCard: Boolean, isFollowingCard: Boolean): Unit =
     ???
 

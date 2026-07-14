@@ -11,8 +11,8 @@ class DumbBotStrategy(random: Random = Random()) extends BotStrategy:
   private var bid: (Round, Bid) = Round.start -> Bid(0)
 
   private def asyncWrapper(gameAction: GameAction): Future[GameAction] =
-    Future.successful(gameAction)  
-  
+    Future.successful(gameAction)
+
   override def resolveInvitationEvents(invitation: InvitationEvent): Future[GameAction] =
     asyncWrapper:
       invitation match
@@ -37,7 +37,7 @@ class DumbBotStrategy(random: Random = Random()) extends BotStrategy:
           reason match
             case GameError.InvalidBid =>
               val (round, lastBid) = bid
-              bid = round -> Bid((lastBid.value + 1) % (round.value + 1))
+              bid = round -> Bid((lastBid + 1) % (round.value + 1))
               GameAction.PlaceBid(playerId, bid._2)
 
             case GameError.CardNotAllowed(notAllowedReason) =>

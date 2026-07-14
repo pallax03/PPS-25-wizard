@@ -12,7 +12,9 @@ object WizardApplication extends JFXApp3:
 
   given applicationContext: WizardApplicationContext = this.contextBuilder.build
 
-  def launch(inboundPort: WizardInboundPort, hintPort: WizardAIPort, vertx: Vertx)(args: Array[String]): Unit =
+  def launch(inboundPort: WizardInboundPort, hintPort: WizardAIPort, vertx: Vertx)(
+      args: Array[String]
+  ): Unit =
     this.contextBuilder.setInboundPort(inboundPort)
     this.contextBuilder.setHintPort(hintPort)
     this.contextBuilder.setVertx(vertx)

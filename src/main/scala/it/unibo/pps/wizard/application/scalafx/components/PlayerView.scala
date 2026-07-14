@@ -15,22 +15,22 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
 
   protected val normalStyle =
     "-fx-background-color: rgba(45, 52, 54, 0.7); -fx-background-radius: 10; -fx-border-color: #636e72; -fx-border-width: 1; -fx-border-radius: 10;"
-  protected val biddingTurnStyle =
+  private val biddingTurnStyle =
     "-fx-background-color: rgba(230, 126, 34, 0.2);-fx-background-radius: 10; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 10;"
-  protected val playingTurnStyle =
+  private val playingTurnStyle =
     "-fx-background-color: rgba(46, 204, 113, 0.2); -fx-background-radius: 10; -fx-border-color: #2ecc71; -fx-border-width: 2; -fx-border-radius: 10;"
 
   style = if isCurrentTurn then biddingTurnStyle else normalStyle
 
-  protected val nameLabel = new Label(player.name.toString):
+  protected val nameLabel: Label = new Label(player.name.toString):
     font = Font.font("Arial", FontWeight.Bold, 15)
     textFill = Color.White
 
-  protected val tricksWonLabel = new Label(s"Tricks Won: 0"):
+  protected val tricksWonLabel: Label = new Label(s"Tricks Won: 0"):
     font = Font.font("Arial", FontWeight.Normal, 13)
     textFill = Color.rgb(178, 190, 195)
 
-  protected var bidLabel = new Label(s"Bid: -"):
+  protected var bidLabel: Label = new Label(s"Bid: -"):
     font = Font.font("Arial", FontWeight.Normal, 13)
     textFill = Color.rgb(178, 190, 195)
 
@@ -51,7 +51,7 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
           case "Playing"       => playingTurnStyle
       else normalStyle
 
-  def updateTricksWon(tricks: String): Unit =
+  def updateTricksWon(tricks: Int): Unit =
     tricksWonLabel.text = s"Tricks Won: $tricks"
 
 class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
@@ -78,7 +78,7 @@ class HumanPlayerView(
     font = Font.font("Arial", FontWeight.Normal, 13)
     textFill = Color.rgb(230, 126, 34)
 
-  val bidField = new TextField:
+  private val bidField = new TextField:
     promptText = "Bid"
     maxWidth = 60
     prefWidth = 60
@@ -89,7 +89,7 @@ class HumanPlayerView(
       val textValue = text.value
       if textValue.nonEmpty && textValue.forall(_.isDigit) then onBidSubmitted(Bid(textValue.toInt))
 
-  val trumpComboBox = new ComboBox[Card.Color]:
+  private val trumpComboBox = new ComboBox[Card.Color]:
     items = ObservableBuffer(Card.Color.values.toSeq*)
     promptText = "Trump"
     maxWidth = 90

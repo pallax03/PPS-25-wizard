@@ -2,7 +2,13 @@ package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.util.{PresentationQueue, PresentationStep}
-import it.unibo.pps.wizard.engine.events.{ActionEvent, InvitationEvent, LifecycleEvent, ProgressEvent, WizardEvent}
+import it.unibo.pps.wizard.engine.events.{
+  ActionEvent,
+  InvitationEvent,
+  LifecycleEvent,
+  ProgressEvent,
+  WizardEvent
+}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -13,7 +19,8 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
   private var subscriptionIds: List[String] = Nil
 
   def startListening(): Unit =
-    context.inboundPort.subscribe[WizardEvent](event => presentation.enqueue(toPresentationStep(event)))
+    context.inboundPort
+      .subscribe[WizardEvent](event => presentation.enqueue(toPresentationStep(event)))
       .foreach(id => subscriptionIds = id :: subscriptionIds)
 
   def stopListening(): Unit =
@@ -22,7 +29,7 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
 
   private def toPresentationStep(event: WizardEvent): PresentationStep =
     event match
-      case ActionEvent.CardPlayed(playerId, card) =>
+      case ActionEvent.CardPlayed(playerId, card, _, _) =>
         PresentationStep.after(200):
           view.displayCardPlayed(playerId, card)
 

@@ -11,6 +11,6 @@ case class ScoreboardPage(override protected val stage: Stage)(using
 
   def initializeTable(players: Players): Unit =
     controller.init(players)
-  
+
   def updateData(rows: List[RoundRow], numPlayers: Int): Unit =
     controller.updateTableData(rows, numPlayers)

@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.Bid.*
 import it.unibo.pps.wizard.engine.model.core.GameError
 
 object BiddingRules:
@@ -24,9 +25,9 @@ object BiddingRules:
       else Right(())
 
     private def isWithinBounds(round: Round): Boolean =
-      bid >= Bid.zero && bid.isValid(round)
+      bid >= Bid(0) && bid.isValid(round)
 
     private def isLastPlayerInvalid(round: Round, currentBids: Bids, totalPlayers: Int): Boolean =
       val isLastPlayer = currentBids.isComplete(totalPlayers - 1)
-      isLastPlayer && (currentBids.total + bid) == round
+      isLastPlayer && (currentBids.total + bid) == round.value
 export BiddingRules.*

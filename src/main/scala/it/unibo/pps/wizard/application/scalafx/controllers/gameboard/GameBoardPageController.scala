@@ -102,11 +102,15 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     if value == currentPlayerView.player.id then currentPlayerView.setTrumpSelectionEnabled(true)
     else currentPlayerView.setTrumpSelectionEnabled(false)
 
-  override def displayTrickWon(winnerId: PlayerId, tricksWon: Int, trickedCards: List[Card]): Unit =
+  override def displayTrickWon(
+      winnerId: PlayerId,
+      tricksWon: Trick,
+      trickedCards: List[Card]
+  ): Unit =
     println(s"Event received: Trick won by player $winnerId with cards: $trickedCards")
-    tableManager.initializeTable(Table.empty, None)
-    if winnerId == currentPlayerId then this.currentPlayerView.updateTricksWon(tricksWon.toString)
-    else this.opponentsManager.updateOpponentsTricksWon(winnerId, tricksWon.toString)
+    tableManager.initialize()
+    if winnerId == currentPlayerId then this.currentPlayerView.updateTricksWon(tricksWon)
+    else this.opponentsManager.updateOpponentsTricksWon(winnerId, tricksWon)
 
   override def displayPhaseChanged(phase: String): Unit =
     this.gameInfo.changePhase(phase)
@@ -126,7 +130,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
   override def displayCardPlayed(playerId: PlayerId, card: Card): Unit =
     println(s"Event received: Card played by player $playerId: $card")
-    tableManager.addCard(card, playerId, false)
+    tableManager.addCard(card, playerId, false, false)
     handManager.removeCard(card)
 
   override def displayTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
@@ -152,8 +156,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
   override def displayLegalCards(playerId: PlayerId, legalCards: List[Card]): Unit =
     println(s"Event received: Legal cards for player $playerId: $legalCards")
-    if playerId == currentPlayerId then
-      this.handManager.highlightLegalCards(legalCards)
+    if playerId == currentPlayerId then this.handManager.highlightLegalCards(legalCards)
 
   override def displayGameEnded(scoreboard: Scoreboard, players: Players): Unit =
     println(s"Event received: Game ended. Final Scoreboard: $scoreboard")
