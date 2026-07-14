@@ -240,7 +240,15 @@ best_playable_card(Hand, WinningCard, FollowingColor, TrumpColor, Bids, Tricks, 
 
 % - WinningCard REQUIRED
 % 	- want to win without winning cards: 
-%			- play a smart discard to preserve high cards
+%			- play a jester 0% win ofor next tricks
+best_playable_card(Hand, WinningCard, FollowingColor, TrumpColor, Bids, Tricks, jester) :-
+	wants_to_win(Bids, Tricks),
+	validate_cards([WinningCard]),
+	playable_cards(Hand, FollowingColor, PlayableCards),
+	winning_options(PlayableCards, WinningCard, TrumpColor, WinningCards),
+	WinningCards == [],
+	member(jester, PlayableCards), !.
+%	fallback:	- play a smart discard to preserve high cards
 best_playable_card(Hand, WinningCard, FollowingColor, TrumpColor, Bids, Tricks, BestCard) :-
 	wants_to_win(Bids, Tricks),
 	validate_cards([WinningCard]),
