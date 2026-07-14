@@ -71,5 +71,10 @@ class HandManager(
         container.children.remove(node)
         activeCardNodes = activeCardNodes - card
 
-  def hideLegitCards(legitCards: List[Card]): Unit =
-    ???
+  def highlightLegalCards(legalCards: List[Card]): Unit =
+    activeCardNodes.foreach { case (card, node) =>
+      if legalCards.contains(card) then
+        node.opacity = 1.0
+      else
+        node.opacity = 0.4
+    }

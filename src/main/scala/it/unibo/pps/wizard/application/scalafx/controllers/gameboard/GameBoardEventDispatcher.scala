@@ -62,9 +62,10 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
         PresentationStep.after(200):
           view.displayTurnChanged(playerId, "Bidding")
 
-      case InvitationEvent.WaitingForCard(playerId, _) =>
+      case InvitationEvent.WaitingForCard(playerId, legalCards) =>
         PresentationStep.after(200):
           view.displayTurnChanged(playerId, "Playing")
+          view.displayLegalCards(playerId, legalCards)
 
       case LifecycleEvent.GameStarted(players, _) =>
         PresentationStep.immediate:

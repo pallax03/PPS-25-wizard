@@ -142,6 +142,11 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
     this.currentPlayerView.resetBid()
     this.opponentsManager.resetOpponentsBid()
 
+  override def displayLegalCards(playerId: PlayerId, legalCards: List[Card]): Unit =
+    println(s"Event received: Legal cards for player $playerId: $legalCards")
+    if playerId == currentPlayerId then
+      this.handManager.highlightLegalCards(legalCards)
+
   override def displayGameEnded(scoreboard: Scoreboard): Unit =
     println(s"Event received: Game ended. Final Scoreboard: $scoreboard")
     refreshScoreboardIfOpen()

@@ -14,3 +14,4 @@ trait GameBoardView:
   def displayRoundScored(scoreboard: Scoreboard): Unit
   def displayGameStarted(players: Players): Unit
   def displayGameEnded(scoreboard: Scoreboard): Unit
+  def displayLegalCards(playerId: PlayerId, legalCards: List[Card]): Unit
