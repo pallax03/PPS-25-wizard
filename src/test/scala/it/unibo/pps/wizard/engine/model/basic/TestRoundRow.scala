@@ -46,8 +46,7 @@ class TestRoundRow extends AnyWordSpec with Matchers:
 
     "creating rows for the entire game" should:
       "generate the correct number of rows based on the player count" in:
-        val sb = Scoreboard.empty
-        val rows = RoundRow.createRows(players, sb)
+        val rows = RoundRow.initRows(players)
 
         rows.size shouldBe 20
         rows.head.round shouldBe Round(1)
@@ -58,7 +57,7 @@ class TestRoundRow extends AnyWordSpec with Matchers:
           .addScore(p1.id, r1, Score(10), Bid(1))
           .addScore(p2.id, r2, Score(20), Bid(2))
 
-        val rows = RoundRow.createRows(players, sb)
+        val rows = RoundRow.updateRows(players, sb)
 
         val row1 = rows.find(_.round == r1).get
         val row2 = rows.find(_.round == r2).get

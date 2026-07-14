@@ -3,14 +3,17 @@ package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.components.*
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
-import it.unibo.pps.wizard.application.scalafx.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
+import it.unibo.pps.wizard.application.scalafx.managers.{
+  HandManager,
+  OpponentsManager,
+  TableManager,
+  TrumpManager
+}
 import it.unibo.pps.wizard.application.scalafx.pages.{MainPage, ScoreboardPage}
-import it.unibo.pps.wizard.engine.adapters.WizardGameState.Running
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
 import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
-import it.unibo.pps.wizard.engine.model.core.GameState.*
-import it.unibo.pps.wizard.engine.model.core.{GameAction, GameState}
+import it.unibo.pps.wizard.engine.model.core.GameAction
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import javafx.scene.layout.{HBox, StackPane, VBox}
 import scalafx.scene.control.Alert.AlertType
@@ -18,11 +21,9 @@ import scalafx.scene.control.{Alert, ButtonType}
 import scalafx.stage.{Modality, Stage}
 import scalafx.util.Duration
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
-
-class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using context: WizardApplicationContext)
-    extends Controller(stage)
+class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
+    context: WizardApplicationContext
+) extends Controller(stage)
     with GameBoardView:
 
   @nowarn @FXML private var tableContainer: HBox = _
@@ -40,8 +41,8 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
   @nowarn private var trumpManager: TrumpManager = _
   @nowarn private var currentPlayerView: HumanPlayerView = _
   @nowarn private var gameInfo: GameInfoView = _
-  @nowarn private var activeScoreboardStage: Option[Stage] = _
-  private var activeScoreboardPage: Option[ScoreboardPage] = None
+  @nowarn private var activeScoreboardStage: Stage = _
+  @nowarn private var activeScoreboardPage: ScoreboardPage = _
   @nowarn private var gameBoardDispatcher: GameBoardEventDispatcher = _
 
   @FXML
@@ -72,6 +73,14 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
     this.gameInfo = GameInfoView()
     this.gameInfoContainer.getChildren.add(this.gameInfo.delegate)
 
+    activeScoreboardStage = new Stage():
+      initModality(Modality.None)
+      title = "Scoreboard"
+      resizable = false
+      onCloseRequest = _ => activeScoreboardStage.hide()
+
+    activeScoreboardPage = ScoreboardPage(activeScoreboardStage)
+
   override def displayGameStarted(players: Players): Unit =
     println(s"Event received: Game started with players: $players")
     this.opponentsManager.renderAllOpponents(players.filter(_.id != currentPlayerId))
@@ -86,6 +95,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
         )
     )
     this.currentPlayerContainer.getChildren.add(this.currentPlayerView.delegate)
+    this.activeScoreboardPage.initializeTable(players)
 
   override def displayWaitingForTrump(value: PlayerId): Unit =
     println(s"Event received: Waiting for Trump selection from player $value")
@@ -95,10 +105,8 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
   override def displayTrickWon(winnerId: PlayerId, tricksWon: Int, trickedCards: List[Card]): Unit =
     println(s"Event received: Trick won by player $winnerId with cards: $trickedCards")
     tableManager.initializeTable(Table.empty, None)
-    if winnerId == currentPlayerId then
-      this.currentPlayerView.updateTricksWon(tricksWon.toString)
-    else
-      this.opponentsManager.updateOpponentsTricksWon(winnerId, tricksWon.toString)
+    if winnerId == currentPlayerId then this.currentPlayerView.updateTricksWon(tricksWon.toString)
+    else this.opponentsManager.updateOpponentsTricksWon(winnerId, tricksWon.toString)
 
   override def displayPhaseChanged(phase: String): Unit =
     this.gameInfo.changePhase(phase)
@@ -136,9 +144,9 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
     this.currentPlayerView.setBidTextFieldEnabled(isMyTurn && phase == "Bidding")
     this.opponentsManager.updateActiveTurn(nextPlayerId, phase)
 
-  override def displayRoundScored(scoreboard: Scoreboard): Unit =
+  override def displayRoundScored(scoreboard: Scoreboard, players: Players): Unit =
     println(s"Event received: Round scored. Scoreboard: $scoreboard")
-    refreshScoreboardIfOpen()
+    refreshScoreboardIfOpen(scoreboard, players)
     this.currentPlayerView.resetBid()
     this.opponentsManager.resetOpponentsBid()
 
@@ -147,9 +155,9 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
     if playerId == currentPlayerId then
       this.handManager.highlightLegalCards(legalCards)
 
-  override def displayGameEnded(scoreboard: Scoreboard): Unit =
+  override def displayGameEnded(scoreboard: Scoreboard, players: Players): Unit =
     println(s"Event received: Game ended. Final Scoreboard: $scoreboard")
-    refreshScoreboardIfOpen()
+    refreshScoreboardIfOpen(scoreboard, players)
 
     runOnUi:
       val homeButtonType = new ButtonType("Return to Home")
@@ -165,63 +173,22 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using con
         case Some(`homeButtonType`) =>
           println("Redirecting to home screen...")
           gameBoardDispatcher.stopListening()
+          activeScoreboardStage.close()
           MainPage(stage)
         case _ =>
           println("Alert closed without action.")
 
-  private def withRunningStatus(action: GameState => Unit): Unit =
-    context.inboundPort.getState.onComplete:
-      case Success(Running(status)) => action(status)
-      case Success(otherState) =>
-        println(s"Game is not in a valid state for the match: $otherState")
-      case Failure(exception) =>
-        println(s"Error occurred while retrieving the initial state: ${exception.getMessage}")
-
   @FXML
   def openScoreboardWindow(): Unit =
     activeScoreboardStage match
-      case Some(stg) if stg.isShowing =>
+      case stg if stg.isShowing =>
         stg.toFront()
-
       case _ =>
-        withScoreboardData: (allPlayers, rows) =>
-          val scoreboardStage = new Stage():
-            initModality(Modality.None)
-            title = "Scoreboard"
-            resizable = false
-            onCloseRequest = _ =>
-              activeScoreboardStage = None
-              activeScoreboardPage = None
+        activeScoreboardStage.show()
 
-          val scoreboardPage = ScoreboardPage(scoreboardStage)
-
-          scoreboardPage.initializeTable(allPlayers)
-          scoreboardPage.updateData(rows, allPlayers.toList.size)
-
-          scoreboardStage.show()
-
-          activeScoreboardStage = Some(scoreboardStage)
-          activeScoreboardPage = Some(scoreboardPage)
-
-  private def refreshScoreboardIfOpen(): Unit =
-    activeScoreboardPage.foreach: page =>
-      withScoreboardData: (allPlayers, rows) =>
-        page.updateData(rows, allPlayers.toList.size)
-
-  private def withScoreboardData(action: (Players, List[RoundRow]) => Unit): Unit =
-    withRunningStatus:
-      case status: (Bidding | Playing) =>
-        val core = status match
-          case b: Bidding => b.core
-          case p: Playing => p.core
-
-        runOnUi:
-          val allPlayers = core.players
-          val rows = RoundRow.createRows(allPlayers, core.scoreboard)
-          action(allPlayers, rows)
-
-      case other =>
-        println(s"Scoreboard action skipped: Game is not in a valid state ($other).")
+  private def refreshScoreboardIfOpen(scoreboard: Scoreboard, players: Players): Unit =
+    val rows = RoundRow.updateRows(players, scoreboard)
+    activeScoreboardPage.updateData(rows, players.toList.size)
 
   @FXML
   def handleScoreboardHover(): Unit =

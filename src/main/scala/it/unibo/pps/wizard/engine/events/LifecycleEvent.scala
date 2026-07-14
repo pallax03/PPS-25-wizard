@@ -7,4 +7,4 @@ sealed trait LifecycleEvent extends WizardEvent
 
 object LifecycleEvent:
   case class GameStarted(players: Players, botsDifficulty: BotsDifficulty) extends LifecycleEvent
-  case class GameEnded(finalScores: Scoreboard) extends LifecycleEvent
+  case class GameEnded(finalScores: Scoreboard, players: Players) extends LifecycleEvent

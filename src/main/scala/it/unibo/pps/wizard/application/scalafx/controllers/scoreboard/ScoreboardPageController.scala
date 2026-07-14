@@ -3,12 +3,14 @@ package it.unibo.pps.wizard.application.scalafx.controllers.scoreboard
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
 import it.unibo.pps.wizard.engine.model.basic.{Players, RoundRow}
-import javafx.scene.control.{TableColumn => FXTableColumn, TableView => FXTableView}
+import javafx.collections.{ListChangeListener, ObservableList}
+import javafx.scene.control.{TableColumn as FXTableColumn, TableView as FXTableView}
 import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.stage.Stage
+
 import scala.annotation.nowarn
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 class ScoreboardPageController(stage: Stage)(using context: WizardApplicationContext)
     extends Controller(stage):
@@ -54,8 +56,8 @@ class ScoreboardPageController(stage: Stage)(using context: WizardApplicationCon
       lockColumnOrder(scoreboardTable.getColumns)
       isStructureInitialized = true
     }
-
-    updateTableData(List.empty, players.toList.size)
+    val rows = RoundRow.initRows(players)
+    updateTableData(rows, players.toList.size)
 
   def updateTableData(rows: List[RoundRow], numPlayers: Int): Unit =
     scoreboardTable.setItems(ObservableBuffer(rows*).delegate)
@@ -74,13 +76,13 @@ class ScoreboardPageController(stage: Stage)(using context: WizardApplicationCon
     scoreboardTable.refresh()
 
   private def lockColumnOrder(
-      columnsList: javafx.collections.ObservableList[FXTableColumn[RoundRow, ?]]
+      columnsList: ObservableList[FXTableColumn[RoundRow, ?]]
   ): Unit =
     val permanentOrder: List[FXTableColumn[RoundRow, ?]] = columnsList.asScala.toList
-    columnsList.addListener(new javafx.collections.ListChangeListener[FXTableColumn[RoundRow, ?]] {
+    columnsList.addListener(new ListChangeListener[FXTableColumn[RoundRow, ?]] {
       private var updating = false
       override def onChanged(
-          c: javafx.collections.ListChangeListener.Change[? <: FXTableColumn[RoundRow, ?]]
+          c: ListChangeListener.Change[? <: FXTableColumn[RoundRow, ?]]
       ): Unit =
         if (!updating) {
           updating = true

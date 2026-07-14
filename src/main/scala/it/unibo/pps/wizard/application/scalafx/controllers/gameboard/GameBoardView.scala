@@ -11,7 +11,7 @@ trait GameBoardView:
   def displayTrumpSelected(playerId: PlayerId, color: Card.Color): Unit
   def displayBidPlaced(playerId: PlayerId, bid: Bid): Unit
   def displayTurnChanged(playerId: PlayerId, phase: String): Unit
-  def displayRoundScored(scoreboard: Scoreboard): Unit
+  def displayRoundScored(scoreboard: Scoreboard, players: Players): Unit
   def displayGameStarted(players: Players): Unit
-  def displayGameEnded(scoreboard: Scoreboard): Unit
+  def displayGameEnded(scoreboard: Scoreboard, players: Players): Unit
   def displayLegalCards(playerId: PlayerId, legalCards: List[Card]): Unit
