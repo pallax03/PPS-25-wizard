@@ -9,7 +9,13 @@ trait GameBoardView:
   def clearTable(): Unit
   def displayPhaseChanged(phase: String): Unit
   def displayCardsDealt(playerId: PlayerId, hands: Hands, trump: Trump, round: Round): Unit
-  def displayCardPlayed(playerId: PlayerId, playerName: PlayerName, card: Card): Unit
+  def displayCardPlayed(
+      playerId: PlayerId,
+      playerName: PlayerName,
+      card: Card,
+      winningCard: Option[Card],
+      followingColor: Option[Card.Color]
+  ): Unit
   def displayTrumpSelected(playerId: PlayerId, color: Card.Color): Unit
   def displayBidPlaced(playerId: PlayerId, bid: Bid): Unit
   def displayTurnChanged(playerId: PlayerId, phase: UiPhase): Unit

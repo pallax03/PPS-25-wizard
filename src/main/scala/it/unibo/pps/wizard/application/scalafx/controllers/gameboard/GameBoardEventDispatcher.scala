@@ -25,10 +25,10 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
 
   private def toPresentationScript(event: WizardEvent): PresentationScript =
     event match
-      case ActionEvent.CardPlayed(playerId, playerName, card, _, _) =>
+      case ActionEvent.CardPlayed(playerId, playerName, card, winningCard, followingColor) =>
         PresentationScript(
-          run(view.displayCardPlayed(playerId, playerName, card)),
-          waitFor(200)
+          run(view.displayCardPlayed(playerId, playerName, card, winningCard, followingColor)),
+          waitFor(350)
         )
 
       case ActionEvent.TrumpColorResolved(playerId, color) =>

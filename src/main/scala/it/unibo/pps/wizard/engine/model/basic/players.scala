@@ -17,7 +17,7 @@ final case class Player(id: PlayerId, name: PlayerName, isBot: Boolean)
 
 object Player:
   def human(id: PlayerId, name: PlayerName): Player = Player(id, name, isBot = false)
-  def computer(id: PlayerId): Player = Player(id, PlayerName(s"Computer $id"), isBot = true)
+  def bot(id: PlayerId): Player = Player(id, PlayerName(s"Bot $id"), isBot = true)
 
 opaque type Players = List[Player]
 
@@ -26,11 +26,11 @@ object Players:
   def create(players: Players, numberOfComputers: Int): Players =
     players ++ generateComputers(numberOfComputers)
   private def generateComputers(numberOfComputers: Int): Players =
-    (1 to numberOfComputers).map(id => Player.computer(PlayerId(id))).toList
+    (1 to numberOfComputers).map(id => Player.bot(PlayerId(id))).toList
 
   extension (players: Players)
     def toList: List[Player] = players
     def totalPlayers: Int = players.size
     def filter(predicate: Player => Boolean): Players = players.filter(predicate)
     def findById(id: PlayerId): Option[Player] = players.find(_.id == id)
-    def getPlayersNames(): List[PlayerName] = players.map(_.name)
+    def getPlayersNames: List[PlayerName] = players.map(_.name)

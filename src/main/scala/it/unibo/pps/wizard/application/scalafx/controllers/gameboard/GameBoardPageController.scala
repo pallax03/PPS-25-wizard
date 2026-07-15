@@ -134,9 +134,16 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     this.handManager.updateHand(newHand)
     this.currentPlayerView.setMaxBid(round.value)
 
-  override def displayCardPlayed(playerId: PlayerId, playerName: PlayerName, card: Card): Unit =
+  override def displayCardPlayed(
+      playerId: PlayerId,
+      playerName: PlayerName,
+      card: Card,
+      winningCard: Option[Card],
+      followingColor: Option[Card.Color]
+  ): Unit =
     println(s"Event received: Card played by player $playerId ($playerName): $card")
-    tableManager.addCard(card, playerName, false, false)
+    val tablePlayerName = if playerId == currentPlayerId then PlayerName("You") else playerName
+    tableManager.addCard(card, tablePlayerName, winningCard, followingColor)
     handManager.removeCard(card)
     handManager.clearEffects()
     setVisibleNode(hintBestCardButton)(false)
@@ -160,7 +167,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
   override def displayRoundScored(scoreboard: Scoreboard, players: Players): Unit =
     println(s"Event received: Round scored. Scoreboard: $scoreboard")
     refreshScoreboardIfOpen(scoreboard, players)
-//    this.currentPlayerView.resetTricksWon()
+    this.currentPlayerView.resetBid()
     this.opponentsManager.resetOpponentsBid()
 
   override def displayLegalCards(playerId: PlayerId, legalCards: List[Card]): Unit =
