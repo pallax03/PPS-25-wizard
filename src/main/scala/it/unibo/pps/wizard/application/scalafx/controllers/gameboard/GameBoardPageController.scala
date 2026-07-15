@@ -3,7 +3,12 @@ package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.components.*
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
-import it.unibo.pps.wizard.application.scalafx.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
+import it.unibo.pps.wizard.application.scalafx.managers.{
+  HandManager,
+  OpponentsManager,
+  TableManager,
+  TrumpManager
+}
 import it.unibo.pps.wizard.application.scalafx.pages.{MainPage, ScoreboardPage}
 import it.unibo.pps.wizard.application.scalafx.util.{UiPhase, WizardTheme}
 import it.unibo.pps.wizard.engine.model.basic.*
@@ -13,7 +18,6 @@ import it.unibo.pps.wizard.engine.model.core.GameAction
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import javafx.scene.control.Button
 import javafx.scene.layout.{HBox, StackPane, VBox}
-import scalafx.animation.{FadeTransition, PauseTransition, SequentialTransition}
 import scalafx.scene.Node
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.{Alert, ButtonType, Label}
@@ -37,6 +41,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
   @nowarn @FXML private var scoreboardContainer: StackPane = _
   @nowarn @FXML private var rulesPanel: VBox = _
   @nowarn @FXML private var hintBestCardButton: Button = _
+  @nowarn @FXML private var messageNotificationContainer: HBox = _
 
   @nowarn private var tableManager: TableManager = _
   @nowarn private var handManager: HandManager = _
@@ -47,10 +52,18 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
   @nowarn private var activeScoreboardStage: Stage = _
   @nowarn private var activeScoreboardPage: ScoreboardPage = _
   @nowarn private var gameBoardDispatcher: GameBoardEventDispatcher = _
+  @nowarn private var currentMessageLabel: MessageLabel = _
 
   @FXML
   def initialize(): Unit =
-    List(tableContainer, handContainer, trumpContainer, currentPlayerContainer, playersContainer)
+    List(
+      tableContainer,
+      handContainer,
+      trumpContainer,
+      currentPlayerContainer,
+      playersContainer,
+      messageNotificationContainer
+    )
       .foreach(_.getChildren.clear())
     buildUI()
     this.gameBoardDispatcher = GameBoardEventDispatcher(this)
@@ -58,10 +71,12 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
   private def buildUI(): Unit =
     this.tableManager = TableManager(this.tableContainer)
-    this.trumpManager = TrumpManager(this.trumpContainer, onColorSelected = color =>
-      context.inboundPort.submitAction(
-        GameAction.ResolveTrumpColor(currentPlayerId, color)
-      )
+    this.trumpManager = TrumpManager(
+      this.trumpContainer,
+      onColorSelected = color =>
+        context.inboundPort.submitAction(
+          GameAction.ResolveTrumpColor(currentPlayerId, color)
+        )
     )
 
     this.handManager = HandManager(
@@ -88,7 +103,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     activeScoreboardPage = ScoreboardPage(activeScoreboardStage)
 
   override def getCurrentPlayerId: PlayerId = currentPlayerId
-  
+
   override def displayGameStarted(players: Players): Unit =
     this.opponentsManager.renderAllOpponents(players.filter(_.id != currentPlayerId))
     val currentPlayer = players.findById(currentPlayerId).get
@@ -108,6 +123,11 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
       tricksWon: Trick,
       trickedCards: List[Card]
   ): Unit =
+    val (messageText, messageColor) =
+      if winnerId == currentPlayerId then ("Hai vinto la mano!", WizardTheme.Colors.winning)
+      else (s"Mano vinta da Bot $winnerId", WizardTheme.Colors.winning)
+
+    displayTemporaryMessage(messageText, messageColor)
     if winnerId == currentPlayerId then this.currentPlayerView.updateTricksWon(tricksWon)
     else this.opponentsManager.updateOpponentsTricksWon(winnerId, tricksWon)
 
@@ -171,24 +191,27 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     displayGameEndedAlert()
 
   override def displayErrorMessage(message: String): Unit =
-    val toastLabel = new Label:
-      text = message
-      style = "-fx-background-color: rgba(0, 0, 0, 0); " +
-        s"-fx-text-fill: ${WizardTheme.Colors.warning}; " +
-        "-fx-font-size: 20px; " +
-        "-fx-font-weight: bold; " +
-        "-fx-padding: 10px 20px; "
-      opacity = 0.0
-    tableContainer.getChildren.add(toastLabel)
-    val fadeIn = new FadeTransition(Duration(200), toastLabel):
-      toValue = 1.0
-    val hold = new PauseTransition(Duration(2500))
-    val fadeOut = new FadeTransition(Duration(500), toastLabel):
-      toValue = 0.0
-    fadeOut.onFinished = _ => tableContainer.getChildren.remove(toastLabel)
-    val sequence = new SequentialTransition:
-      children = Seq(fadeIn, hold, fadeOut)
-    sequence.play()
+    displayTemporaryMessage(message, WizardTheme.Colors.warning)
+
+  private def displayTemporaryMessage(message: String, color: String): Unit =
+    if messageNotificationContainer != null then
+      if currentMessageLabel != null then
+        currentMessageLabel.cancel()
+        messageNotificationContainer.getChildren.remove(currentMessageLabel)
+
+      val messageLabel = MessageLabel()
+      currentMessageLabel = messageLabel
+
+      messageNotificationContainer.getChildren.add(messageLabel)
+
+      messageLabel.show(
+        message,
+        color,
+        onFinishedAction = {
+          messageNotificationContainer.getChildren.remove(messageLabel)
+          if currentMessageLabel == messageLabel then currentMessageLabel = null
+        }
+      )
 
   private def displayGameEndedAlert(): Unit =
     val alert = new Alert(AlertType.Information):
@@ -254,10 +277,11 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
   @FXML
   def requestHintBestCard(): Unit =
-    context.hintPort.bestCard(currentPlayerId).onComplete:
-      case Success(card) => this.handManager.highlightWinningCard(card)
-      case _ => this.handManager.clearEffects()
-
+    context.hintPort
+      .bestCard(currentPlayerId)
+      .onComplete:
+        case Success(card) => this.handManager.highlightWinningCard(card)
+        case _             => this.handManager.clearEffects()
 
   private def setVisibleNode(node: Node)(enabled: Boolean): Unit =
     if node != null then
