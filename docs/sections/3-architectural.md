@@ -77,3 +77,7 @@ In seguito all'applicazione delle varie funzionalità vengono creati determinati
 - *RoundCompletedEvent*: evento generato alla fine di un round, dopo che tutte le carte in mano ai giocatori sono state esaurite. Contiene il riepilogo dei punteggi parziali del round (calcolati in base al successo o fallimento delle scommesse iniziali) e l'aggiornamento della tabella dei punteggi totali.
 
 - *TurnChangedEvent*: evento generato per avvisare l'applicazione che il controllo del gioco è passato a un altro giocatore (sia durante la fase di scommessa che durante la fase di giocata), permettendo alla GUI di evidenziare visivamente il giocatore attivo e attivare i relativi timer o controlli di input.
+
+[Back to index](/index.md) |
+[Previous Chapter](/docs/sections/2-requirements.md) |
+[Next Chapter](/docs/sections/4-detailed.md)

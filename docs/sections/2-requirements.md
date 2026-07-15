@@ -51,3 +51,7 @@ Durante l'analisi del problema sono stati identificati i seguenti requisiti del 
 ## Opzionali
 - Permette al giocatore il suggerimento della carta ottima da giocare. 
 - Sviluppo della logica del bot, per garantire scelte strategiche di prese e previsioni.
+
+[Back to index](/index.md) |
+[Previous Chapter](/docs/sections/3-architectural.md) |
+[Next Chapter](/docs/sections/1-deployment.md)

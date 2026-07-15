@@ -12,6 +12,11 @@
 | P7         | Quality Assurance e DSL                                    |        12         |     -     |
 
 ## Sprint Backlog:
+
 - [Sprint 1](./sprints/first_sprint.md)
 - [Sprint 2](./sprints/second_sprint.md)
 - [Sprint 3](./sprints/third_sprint.md)
+- [Sprint 4](./sprints/fourth_sprint.md)
+
+[Back to index](/index.md) |
+[Previous Chapter](/docs/sections/6-implementation.md)
