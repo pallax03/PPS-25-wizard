@@ -57,7 +57,7 @@
                     </padding>
                 </HBox>
 
-                <HBox fx:id="errorNotificationContainer" alignment="CENTER" minHeight="40.0" prefHeight="40.0"
+                <HBox fx:id="messageNotificationContainer" alignment="CENTER" minHeight="40.0" prefHeight="40.0"
                       maxWidth="Infinity">
                     <padding>
                         <Insets bottom="5.0" top="5.0"/>

@@ -3,7 +3,12 @@ package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.components.*
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
-import it.unibo.pps.wizard.application.scalafx.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
+import it.unibo.pps.wizard.application.scalafx.managers.{
+  HandManager,
+  OpponentsManager,
+  TableManager,
+  TrumpManager
+}
 import it.unibo.pps.wizard.application.scalafx.pages.{MainPage, ScoreboardPage}
 import it.unibo.pps.wizard.application.scalafx.util.{UiPhase, WizardTheme}
 import it.unibo.pps.wizard.engine.model.basic.*
@@ -36,7 +41,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
   @nowarn @FXML private var scoreboardContainer: StackPane = _
   @nowarn @FXML private var rulesPanel: VBox = _
   @nowarn @FXML private var hintBestCardButton: Button = _
-  @nowarn @FXML private var errorNotificationContainer: HBox = _
+  @nowarn @FXML private var messageNotificationContainer: HBox = _
 
   @nowarn private var tableManager: TableManager = _
   @nowarn private var handManager: HandManager = _
@@ -47,7 +52,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
   @nowarn private var activeScoreboardStage: Stage = _
   @nowarn private var activeScoreboardPage: ScoreboardPage = _
   @nowarn private var gameBoardDispatcher: GameBoardEventDispatcher = _
-  @nowarn private var currentErrorLabel: MessageLabel = _
+  @nowarn private var currentMessageLabel: MessageLabel = _
 
   @FXML
   def initialize(): Unit =
@@ -57,7 +62,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
       trumpContainer,
       currentPlayerContainer,
       playersContainer,
-      errorNotificationContainer
+      messageNotificationContainer
     )
       .foreach(_.getChildren.clear())
     buildUI()
@@ -118,6 +123,11 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
       tricksWon: Trick,
       trickedCards: List[Card]
   ): Unit =
+    val (messageText, messageColor) =
+      if winnerId == currentPlayerId then ("Hai vinto la mano!", WizardTheme.Colors.winning)
+      else (s"Mano vinta da Bot $winnerId", WizardTheme.Colors.winning)
+
+    displayTemporaryMessage(messageText, messageColor)
     if winnerId == currentPlayerId then this.currentPlayerView.updateTricksWon(tricksWon)
     else this.opponentsManager.updateOpponentsTricksWon(winnerId, tricksWon)
 
@@ -181,22 +191,25 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     displayGameEndedAlert()
 
   override def displayErrorMessage(message: String): Unit =
-    if errorNotificationContainer != null then
-      if currentErrorLabel != null then
-        currentErrorLabel.cancel()
-        errorNotificationContainer.getChildren.remove(currentErrorLabel)
+    displayTemporaryMessage(message, WizardTheme.Colors.warning)
 
-      val errorLabel = MessageLabel()
-      currentErrorLabel = errorLabel
+  private def displayTemporaryMessage(message: String, color: String): Unit =
+    if messageNotificationContainer != null then
+      if currentMessageLabel != null then
+        currentMessageLabel.cancel()
+        messageNotificationContainer.getChildren.remove(currentMessageLabel)
 
-      errorNotificationContainer.getChildren.add(errorLabel)
+      val messageLabel = MessageLabel()
+      currentMessageLabel = messageLabel
 
-      errorLabel.show(
+      messageNotificationContainer.getChildren.add(messageLabel)
+
+      messageLabel.show(
         message,
-        WizardTheme.Colors.warning,
+        color,
         onFinishedAction = {
-          errorNotificationContainer.getChildren.remove(errorLabel)
-          if currentErrorLabel == errorLabel then currentErrorLabel = null
+          messageNotificationContainer.getChildren.remove(messageLabel)
+          if currentMessageLabel == messageLabel then currentMessageLabel = null
         }
       )
 
