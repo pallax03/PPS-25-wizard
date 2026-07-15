@@ -16,11 +16,11 @@ import it.unibo.pps.wizard.engine.model.basic.Card.*
 import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
 import it.unibo.pps.wizard.engine.model.core.GameAction
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
-import javafx.scene.control.Button
+import javafx.event.ActionEvent as JfxActionEvent
+import javafx.scene.control.{Alert as JfxAlert, Button, ButtonType as JfxButtonType}
 import javafx.scene.layout.{HBox, StackPane, VBox}
 import scalafx.scene.Node
-import scalafx.scene.control.Alert.AlertType
-import scalafx.scene.control.{Alert, ButtonType, Label}
+import scalafx.scene.control.Label
 import scalafx.stage.{Modality, Stage}
 import scalafx.util.Duration
 
@@ -214,19 +214,32 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
       )
 
   private def displayGameEndedAlert(): Unit =
-    val alert = new Alert(AlertType.Information):
-      initOwner(stage)
-      title = "Game Over"
-      headerText = "The game has ended!"
-      contentText = "Click the button below to return to the main menu."
-      buttonTypes = Seq(new ButtonType("Return to Home"))
+    val showScoreboardButton = JfxButtonType("Show Scoreboard")
+    val returnToMenuButton = JfxButtonType("Return to Main Menu")
 
-    alert.showAndWait() match
-      case Some(_) =>
-        gameBoardDispatcher.stopListening()
-        activeScoreboardStage.close()
-        MainPage(stage)
-      case _ =>
+    val alert = JfxAlert(JfxAlert.AlertType.INFORMATION)
+    alert.initOwner(stage.delegate)
+    alert.setTitle("Game Over")
+    alert.setHeaderText("The game has ended!")
+    alert.setContentText("You can inspect the final scoreboard or return to the main menu.")
+    alert.getButtonTypes.setAll(showScoreboardButton, returnToMenuButton)
+
+    alert.getDialogPane.lookupButton(showScoreboardButton).addEventFilter(
+      JfxActionEvent.ACTION,
+      event =>
+        openScoreboardWindow()
+        event.consume()
+    )
+
+    alert.setOnHidden(_ =>
+      if alert.getResult == returnToMenuButton then returnToMainMenu()
+    )
+    alert.show()
+
+  private def returnToMainMenu(): Unit =
+    gameBoardDispatcher.stopListening()
+    activeScoreboardStage.close()
+    MainPage(stage)
 
   override def displayShowInvalidBid(): Unit =
     currentPlayerView.showErrorEffect(true)

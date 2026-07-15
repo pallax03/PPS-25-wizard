@@ -84,7 +84,9 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
         PresentationScript(run(view.displayGameStarted(players)))
 
       case LifecycleEvent.GameEnded(scoreboard, players) =>
-        PresentationScript(run(view.displayGameEnded(scoreboard, players)))
+        PresentationScript(
+          run(view.displayGameEnded(scoreboard, players))
+        )
 
       case FailureEvent.ActionFailed(playerId, error) => error match
         case GameError.NotYourTurn =>
