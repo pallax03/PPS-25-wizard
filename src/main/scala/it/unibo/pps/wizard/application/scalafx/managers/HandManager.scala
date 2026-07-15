@@ -14,6 +14,22 @@ class HandManager(
     onCardDropped: (Card, Double, Double) => Unit
 ):
   private var activeCardNodes: Map[Card, CardView] = Map.empty
+  private val cardPrefWidth = 130.0
+
+  container.width.onChange { (_, _, _) => adjustSpacing() }
+
+  private def adjustSpacing(): Unit =
+    val n = activeCardNodes.size
+    if n > 1 then
+      val totalCardsWidth = n * cardPrefWidth
+      val availableWidth = container.width.value
+
+      if availableWidth > 0 && totalCardsWidth > availableWidth then
+        container.spacing = (availableWidth - totalCardsWidth) / (n - 1)
+      else
+        container.spacing = 5.0
+    else
+      container.spacing = 0.0
 
   def updateHand(hand: Hand): Unit =
     container.children.clear()
@@ -24,12 +40,11 @@ class HandManager(
     val cardNode = createDraggableCard(card)
     activeCardNodes = activeCardNodes + (card -> cardNode)
     container.children.add(cardNode)
+    adjustSpacing()
 
   private def createDraggableCard(card: Card): CardView =
     val cardView = new CardView(card)
-
-    cardView.prefWidth = 130.0
-    cardView.prefHeight = 110.0
+    cardView.prefWidth = cardPrefWidth
 
     var dragContextX = 0.0
     var dragContextY = 0.0
@@ -37,8 +52,6 @@ class HandManager(
     cardView.onMousePressed = event =>
       dragContextX = event.sceneX - cardView.translateX.value
       dragContextY = event.sceneY - cardView.translateY.value
-
-//      cardView.delegate.setViewOrder(-10.0)
 
       cardView.scaleX = 1.6
       cardView.scaleY = 1.6

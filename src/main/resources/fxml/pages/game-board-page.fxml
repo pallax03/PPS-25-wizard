@@ -19,8 +19,7 @@
                 <BorderPane.margin>
                     <Insets bottom="15.0" />
                 </BorderPane.margin>
-                <Region HBox.hgrow="ALWAYS" />
-                <HBox fx:id="playersContainer" alignment="CENTER_RIGHT" prefHeight="80.0" spacing="30.0" />
+                <HBox fx:id="playersContainer" alignment="CENTER" prefHeight="80.0" spacing="30.0" />
             </HBox>
         </top>
 
