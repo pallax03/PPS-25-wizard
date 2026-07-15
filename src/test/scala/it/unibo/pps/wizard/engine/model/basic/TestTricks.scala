@@ -11,7 +11,7 @@ class TestTricks extends AnyWordSpec with Matchers:
   val name1: PlayerName = PlayerName("Alice")
   val p2: PlayerId = PlayerId(2)
   val name2: PlayerName = PlayerName("Bob")
-  val players: List[Player] = List(Player.human(p1, name1), Player.human(p2, name2))
+  val players: Players = Players(Player.human(p1, name1), Player.human(p2, name2))
 
   "Tricks" when:
     "initialized" should:
@@ -38,9 +38,3 @@ class TestTricks extends AnyWordSpec with Matchers:
           .addTrickTo(p2)
         t(p1) shouldBe 2
         t(p2) shouldBe 1
-
-    "created from a map" should:
-      "properly reflect the provided values" in:
-        val t = Tricks(Map(p1 -> 5))
-        t(p1) shouldBe 5
-        t(p2) shouldBe 0

@@ -19,10 +19,11 @@ class TestHands extends AnyWordSpec with Matchers:
         emptyHand.toList shouldBe empty
 
     "interacting with cards" should:
-      val c1 = 5.blue
+      val c1 = Five of Blue
       val c2 = jester
       val notInHand = wizard
       val hand = Hand(c1 - c2)
+
       "add new card" in:
         hand.contains(notInHand) shouldBe false
         val updated = hand + notInHand
@@ -47,7 +48,7 @@ class TestHands extends AnyWordSpec with Matchers:
     var hands = Hands.empty
     val p2Wizard: Card = wizard
     "manage multiple player hands elegantly" in:
-      hands = hands + (p1 -> Hand(1.red - 2.blue))
+      hands = hands + (p1 -> Hand((One of Red) - (Two of Blue)))
       hands = hands + (p2 -> Hand(p2Wizard - jester))
 
       hands.getHand(p1).get.size shouldBe 2

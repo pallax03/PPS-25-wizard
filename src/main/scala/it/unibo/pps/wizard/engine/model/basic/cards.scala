@@ -36,6 +36,7 @@ object Card:
     case Eleven extends Rank(11)
     case Twelve extends Rank(12)
     case Thirteen extends Rank(13)
+  export Rank.*
 
   final case class Standard(color: Color, rank: Rank) extends Card
   final case class Wizard(id: Int) extends SpecialCard
@@ -46,12 +47,7 @@ object Card:
   private val specialIdGenJester = new AtomicInteger(0)
   def jester: Jester = Jester(specialIdGenJester.incrementAndGet() % Deck.TOTAL_JESTER)
 
-  extension (value: Int)
-    infix def of(color: Color): Card = Standard(color, Rank.values.find(_.value == value).get)
-    def red: Card = value of Red
-    def blue: Card = value of Blue
-    def green: Card = value of Green
-    def yellow: Card = value of Yellow
+  extension (rank: Rank) infix def of(color: Color): Card = Standard(color, rank)
 
   extension (c: Card) infix def -(other: Card): List[Card] = List(c, other)
 
@@ -82,7 +78,9 @@ object Deck:
   def create(cards: List[Card]): Deck = cards.toList.distinct
   def create: Deck = DeckFactory.create()
 
-  extension (d: Deck) def length: Int = d.length
+  extension (d: Deck)
+    def length: Int = d.length
+    def cards: List[Card] = d
 
   /**
    * @param n
@@ -95,7 +93,6 @@ object Deck:
    */
   def pop(n: Int): State[Deck, List[Card]] =
     State: (currentDeck: Deck) =>
-      require(currentDeck.length >= n)
       currentDeck.splitAt(n).swap
 
   private object DeckFactory:
@@ -105,7 +102,7 @@ object Deck:
       val standards = for
         color <- Color.values.toList
         rank <- Rank.values.toList
-      yield rank.value of color
+      yield rank of color
 
       val wizards = List.fill(TOTAL_WIZARD)(wizard)
       val jesters = List.fill(TOTAL_JESTER)(jester)
@@ -145,3 +142,4 @@ object Hands:
     def remove(player: PlayerId, card: Card): Hands =
       hands.updated(player, Hand.without(hands(player), card))
     def areEmpty: Boolean = hands.values.forall(_.isEmpty)
+    def toList: List[(PlayerId, Hand)] = hands.toList

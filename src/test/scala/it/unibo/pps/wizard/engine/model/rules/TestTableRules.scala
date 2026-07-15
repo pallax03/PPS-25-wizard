@@ -20,34 +20,34 @@ class TestTableRules extends AnyWordSpec with Matchers:
     val myWizard = wizard
     "a player tries to play a card they don't hold" should:
       "return a CardNotInHand reason" in:
-        val hand = 5.blue.asHand
-        val result = 10.red.validateAgainst(Table.empty, hand)
+        val hand = (Five of Blue).asHand
+        val result = (Ten of Red).validateAgainst(Table.empty, hand)
         result shouldBe Left(GameError.CardNotAllowed(CardNotInHand(hand.legalCards(Table.empty))))
 
     "evaluating standard rules" should:
-      val c1: Card = 5.blue
-      val c2: Card = 10.red
+      val c1: Card = (Five of Blue)
+      val c2: Card = Ten of Red
       val hand = (c1 - c2 - myWizard).asHand
       "allow playing anything if there is no cards" in:
         c1.validateAgainst(Table.empty, hand) shouldBe Right(())
 
       "player HAS to follow the following color" in:
-        val table = Table.empty + (p1 plays 4.blue)
+        val table = Table.empty + (p1 plays (Four of Blue))
         val result = c2.validateAgainst(table, hand)
         result shouldBe Left(
           GameError.CardNotAllowed(MustFollowColor(Blue, hand.legalCards(table)))
         )
 
       "player LACKS the following color" in:
-        val table = Table.empty + (p1 plays 4.yellow)
+        val table = Table.empty + (p1 plays (Four of Yellow))
         c2.validateAgainst(table, hand) shouldBe Right(())
 
       "always allow special cards even if player has the following color" in:
-        val table = Table.empty + (p1 plays 4.blue)
+        val table = Table.empty + (p1 plays (Four of Blue))
         myWizard.validateAgainst(table, hand) shouldBe Right(())
 
       "always allow any standard card if table have a wizard" in:
-        val table = Table.empty + (p1 plays 4.blue) + (p1 plays myWizard)
+        val table = Table.empty + (p1 plays (Four of Blue)) + (p1 plays (myWizard))
         c2.validateAgainst(table, hand) shouldBe Right(())
 
   "TableRules Winner Evaluation" should:
@@ -56,20 +56,22 @@ class TestTableRules extends AnyWordSpec with Matchers:
     val p3 = PlayerId(3)
     "award the trick to the first Wizard played" in:
       val winningTrick = p2 plays wizard
-      val table = Table.empty + (p1 plays 10.red) + winningTrick + (p3 plays wizard)
+      val table = Table.empty + (p1 plays (Ten of Red)) + winningTrick + (p3 plays wizard)
       val winner = table.evaluateTrick(Trump.Absent).flatMap(c => table.playerOf(c).map((_, c)))
       winner shouldBe Some(winningTrick)
 
     "award the trick to the highest trump (no Wizard)" in:
-      val winningTrick = p3 plays 5.red
-      val table = Table.empty + (p1 plays 10.blue) + (p2 plays 2.red) + winningTrick
-      val winner = table.evaluateTrick(Trump(1.red)).flatMap(c => table.playerOf(c).map((_, c)))
+      val winningTrick = p3 plays (Five of Red)
+      val table = Table.empty + (p1 plays (Ten of Blue)) + (p2 plays (Two of Red)) + winningTrick
+      val winner =
+        table.evaluateTrick(Trump(One of Red)).flatMap(c => table.playerOf(c).map((_, c)))
       winner shouldBe Some(winningTrick)
 
     "award the trick to the highest following card (no Trump and no Wizard)" in:
-      val winningTrick = p2 plays 10.blue
-      val table = Table.empty + (p1 plays 5.blue) + (p2 plays 10.blue) + (p3 plays 2.yellow)
-      val trump = Trump(1.green) // trump color differ from played cards
+      val winningTrick = p2 plays (Ten of Blue)
+      val table =
+        Table.empty + (p1 plays (Five of Blue)) + (p2 plays (Ten of Blue)) + (p3 plays (Two of Yellow))
+      val trump = Trump(One of Green)
       val winner = table.evaluateTrick(trump).flatMap(c => table.playerOf(c).map((_, c)))
       winner shouldBe Some(winningTrick)
 

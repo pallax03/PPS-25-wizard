@@ -10,12 +10,8 @@ import scala.language.postfixOps
 class TestCard extends AnyWordSpec with Matchers:
   import Card.*
   "A card" should:
-    "from 1 to 13" in:
-      an[NoSuchElementException] shouldBe thrownBy(0 of Red)
-      an[NoSuchElementException] shouldBe thrownBy(14 of Red)
-
     "Create a Standard" in:
-      13 of Red shouldBe a[Standard]
+      Thirteen of Red shouldBe a[Standard]
 
     "Create a Wizard" in:
       wizard shouldBe a[Wizard]
@@ -28,11 +24,12 @@ class TestCard extends AnyWordSpec with Matchers:
 
   "Some Cards" should:
     "create a chain of Cards" in:
-      val myCards: List[Card] = 5.red - 4.yellow - wizard - 10.green - jester - 13.blue
+      val myCards: List[Card] =
+        (Five of Red) - (Four of Yellow) - wizard - (Ten of Green) - jester - (Thirteen of Blue)
       myCards should have size 6
-      myCards.head shouldBe (5 of Red)
-      myCards(1) shouldBe (4 of Yellow)
+      myCards.head shouldBe (Five of Red)
+      myCards(1) shouldBe (Four of Yellow)
       myCards(2) shouldBe a[Wizard]
-      myCards(3) shouldBe (10 of Green)
+      myCards(3) shouldBe (Ten of Green)
       myCards(4) shouldBe a[Jester]
-      myCards(5) shouldBe (13 of Blue)
+      myCards(5) shouldBe (Thirteen of Blue)

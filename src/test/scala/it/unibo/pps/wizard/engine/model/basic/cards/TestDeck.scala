@@ -13,20 +13,19 @@ class TestDeck extends AnyWordSpec with Matchers:
 
   "A custom Deck" should:
     import Card.*
-    val c1: Card = 1.red
-    val c2: Card = 1.blue
-    val c3: Card = 13.green
-    val d = Deck.create(c1 - c2 - c3 - 1.blue)
+    val c1: Card = One of Red
+    val c2: Card = One of Blue
+    val c3: Card = Thirteen of Green
+    val c4: Card = One of Blue
+    val d = Deck.create(c1 - c2 - c3 - c4)
     val nCards: Int = 3
+
     "have a size of 3 cards, checking for duplicates" in:
       d.length shouldBe nCards
 
     "pop 3 cards in the same order" in:
-      val drawnAction = Deck.pop(nCards)
+      val drawnAction = Deck.pop(nCards + 1)
       val (remainingDeck, drawnCards) = drawnAction.run(d).value
       drawnCards.length shouldBe nCards
-      remainingDeck.length shouldBe (nCards - nCards)
+      remainingDeck.length shouldBe 0
       drawnCards shouldEqual (c1 - c2 - c3)
-
-    "pop 4 cards (out of cards), should Throw an Exception" in:
-      a[IllegalArgumentException] shouldBe thrownBy(Deck.pop(d.length + 1).run(d).value)

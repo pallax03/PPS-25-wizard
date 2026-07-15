@@ -49,8 +49,13 @@ class WizardGameAdapter(private val vertx: Vertx, private val outboundPort: Wiza
               println(s"Error processing action: $error")
               this.outboundPort.publishEvent(ActionFailed(action.playerId, error))
             case Right(newState) =>
-              this.currentState = WizardGameState.Running(newState.state)
-              this.outboundPort.publishAllEvents(newState.events)
+              newState.state match
+                case _: GameState.Ended =>
+                  this.currentState = WizardGameState.NotConfigured
+                  this.outboundPort.publishAllEvents(newState.events)
+                case _ =>
+                  this.currentState = WizardGameState.Running(newState.state)
+                  this.outboundPort.publishAllEvents(newState.events)
         case _ =>
 
   override def subscribe[T <: Event: ClassTag](handler: T => Unit): Future[String] =

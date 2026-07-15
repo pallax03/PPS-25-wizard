@@ -16,13 +16,13 @@ object Table:
     def playedCards: List[Card] = t.map(_._2)
     def playerOf(card: Card): Option[PlayerId] = t.find(_._2 == card).map(_._1)
 
-    def followingCard: Option[Card.Standard] =
+    def followingColor: Option[Card.Color] =
       if t.playedCards.exists(c => c.isInstanceOf[Card.Wizard]) then Option.empty
       else
         t.playedCards
           .dropWhile(_.isInstanceOf[Card.Jester])
           .headOption
-          .collect { case s: Card.Standard => s }
+          .collect { case s: Card.Standard => s.color }
 
     infix def +(play: (PlayerId, Card)): Table = t :+ play
 

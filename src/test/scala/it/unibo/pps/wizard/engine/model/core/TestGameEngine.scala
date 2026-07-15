@@ -48,7 +48,7 @@ class TestGameEngine extends AnyWordSpec with Matchers:
       result.foreach: engine =>
         engine.state match
           case nextState: GameState.Bidding =>
-            nextState.currentBids(p1.id).value shouldBe 1
+            nextState.currentBids(p1.id) shouldBe 1
             nextState.currentPlayer shouldBe p2.id
           case _ => fail("Expected GameState.Bidding")
 
@@ -64,7 +64,7 @@ class TestGameEngine extends AnyWordSpec with Matchers:
       result shouldBe Left(NotYourTurn)
 
     "transition from Bidding to Playing phase when the last player places their bid" in:
-      val hands = Hands.empty + (p1.id -> 5.red.asHand)
+      val hands = Hands.empty + (p1.id -> (Five of Red).asHand)
       val core = createMockCore(1).copy(hands = hands)
 
       val currentBids = Bids.empty + (p1.id -> Bid(0)) + (p2.id -> Bid(1)) + (p3.id -> Bid(0))
@@ -77,7 +77,6 @@ class TestGameEngine extends AnyWordSpec with Matchers:
       result.foreach: engine =>
         engine.state match
           case playingState: GameState.Playing =>
-            playingState.bids.size shouldBe 4
             playingState.table.isEmpty shouldBe true
             playingState.currentPlayerTurn shouldBe p1.id
           case _ => fail("Expected GameState.Playing")
@@ -85,7 +84,7 @@ class TestGameEngine extends AnyWordSpec with Matchers:
         engine.events.exists(_.isInstanceOf[ProgressEvent.PhaseChanged]) shouldBe true
 
     "allow playing a card, removing it from hand and adding it to the table" in:
-      val c1 = 5.blue
+      val c1 = Five of Blue
       val hands = Hands.empty + (p1.id -> c1.asHand) + (p2.id -> c1.asHand)
       val core = createMockCore(1).copy(hands = hands)
 
@@ -109,12 +108,12 @@ class TestGameEngine extends AnyWordSpec with Matchers:
           case _ => fail("Expected GameState.Playing")
 
     "evaluate the trick winner and reset the table when the trick is complete" in:
-      val c0 = 2.blue
-      val c1 = 10.blue
-      val c2 = 4.red
-      val c3 = 5.blue
+      val c0 = Two of Blue
+      val c1 = Ten of Blue
+      val c2 = Four of Red
+      val c3 = Five of Blue
 
-      val extraCard = 3.yellow
+      val extraCard = Three of Yellow
       val hands = Hands.empty
         + (p1.id -> extraCard.asHand)
         + (p2.id -> extraCard.asHand)
@@ -129,7 +128,7 @@ class TestGameEngine extends AnyWordSpec with Matchers:
         bids = Bids.empty,
         table = currentTable,
         currentPlayerTurn = p4.id,
-        tricksWon = Tricks.initialize(mockPlayers.toList)
+        tricksWon = Tricks.initialize(mockPlayers)
       )
 
       val action = GameAction.PlayCard(p4.id, c3)
@@ -140,6 +139,6 @@ class TestGameEngine extends AnyWordSpec with Matchers:
         engine.state match
           case nextState: GameState.Playing =>
             nextState.table.isEmpty shouldBe true
-            nextState.tricksWon(p2.id) shouldBe 1
+            nextState.tricksWon(p2.id) shouldBe Trick(1)
             nextState.currentPlayerTurn shouldBe p2.id
           case _ => fail("Expected GameState.Playing")

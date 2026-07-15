@@ -34,7 +34,7 @@ object GameEngine:
             List(
               ActionEvent.TrumpColorResolved(playerId, color),
               ProgressEvent.PhaseChanged(nextState.getClass.getSimpleName),
-              ProgressEvent.IsTurnOf(nextState.currentPlayer),
+              ProgressEvent.IsTurnOf(nextState.currentPlayer, nextState.getClass.getSimpleName),
               InvitationEvent.WaitingForBid(nextState.currentPlayer, nextState.core.round)
             )
           )
@@ -65,7 +65,7 @@ object GameEngine:
               List(
                 ProgressEvent.PhaseChanged(GameState.Playing.toString),
                 ActionEvent.BidPlaced(playerId, bid),
-                ProgressEvent.IsTurnOf(firstPlayer),
+                ProgressEvent.IsTurnOf(firstPlayer, GameState.Playing.toString),
                 InvitationEvent.WaitingForCard(
                   firstPlayer,
                   hand.legalCards(Table.empty)
@@ -82,7 +82,7 @@ object GameEngine:
               ),
               List(
                 ActionEvent.BidPlaced(playerId, bid),
-                ProgressEvent.IsTurnOf(nextPlayer),
+                ProgressEvent.IsTurnOf(nextPlayer, currentState.getClass.getSimpleName),
                 InvitationEvent.WaitingForBid(nextPlayer, currentState.core.round)
               )
             )
@@ -97,11 +97,25 @@ object GameEngine:
             currentState.core.hands.remove(playerId, card)
           )
           updatedTable = currentState.table + (playerId, card)
-
+          winningCard = updatedTable.evaluateTrick(currentState.core.trump)
+          followingColor = updatedTable.followingColor
+          playerName = currentState.core.players
+            .findById(playerId)
+            .map(_.name)
+            .getOrElse(PlayerName("Unknown"))
           finalEngine <-
             if updatedTable.isTrickComplete(updatedCore.players.totalPlayers) then
               completeTrick(currentState, updatedCore, updatedTable).map: engine =>
-                (engine.state, ActionEvent.CardPlayed(playerId, card) +: engine.events)
+                (
+                  engine.state,
+                  ActionEvent.CardPlayed(
+                    playerId,
+                    playerName,
+                    card,
+                    winningCard,
+                    followingColor
+                  ) +: engine.events
+                )
             else
               val nextPlayer = currentState.core.players
                 .nextAfter(playerId)
@@ -117,8 +131,9 @@ object GameEngine:
                       currentPlayerTurn = nextPlayer
                     ),
                     List(
-                      ActionEvent.CardPlayed(playerId, card),
-                      ProgressEvent.IsTurnOf(nextPlayer),
+                      ActionEvent
+                        .CardPlayed(playerId, playerName, card, winningCard, followingColor),
+                      ProgressEvent.IsTurnOf(nextPlayer, currentState.getClass.getSimpleName),
                       InvitationEvent.WaitingForCard(
                         nextPlayer,
                         hand.legalCards(updatedTable)
@@ -137,10 +152,13 @@ object GameEngine:
 
     val specificEvents = gameState match
       case _: GameState.ChoosingTrump =>
-        List(ProgressEvent.IsTurnOf(core.dealerId), InvitationEvent.WaitingForTrump(core.dealerId))
+        List(
+          ProgressEvent.IsTurnOf(core.dealerId, gameState.getClass.getSimpleName),
+          InvitationEvent.WaitingForTrump(core.dealerId)
+        )
       case bidding: GameState.Bidding =>
         List(
-          ProgressEvent.IsTurnOf(bidding.currentPlayer),
+          ProgressEvent.IsTurnOf(bidding.currentPlayer, gameState.getClass.getSimpleName),
           InvitationEvent.WaitingForBid(bidding.currentPlayer, round)
         )
       case _ => Nil
@@ -167,14 +185,19 @@ object GameEngine:
         .playerOf(winningCard)
         .toRight(GameError.InconsistentState(TableNoWinner))
 
+      updatedTricks = state.tricksWon.addTrickTo(winnerId)
+
       engine <-
         if isRoundComplete(updatedCore.hands) then
-          val updatedTricks = state.tricksWon.addTrickTo(winnerId)
           val completedRound = completeRound(state, updatedCore, updatedTricks)
           Right(
             (
               completedRound.state,
-              ProgressEvent.TrickWon(winnerId, completedTable.playedCards) +: completedRound.events
+              ProgressEvent.TrickWon(
+                winnerId,
+                updatedTricks(winnerId),
+                completedTable.playedCards
+              ) +: completedRound.events
             )
           )
         else
@@ -182,7 +205,6 @@ object GameEngine:
             .getHand(winnerId)
             .toRight(GameError.InconsistentState(HandNotFoundFor(winnerId)))
             .map: hand =>
-              val updatedTricks = state.tricksWon.addTrickTo(winnerId)
               (
                 state.copy(
                   core = updatedCore,
@@ -191,8 +213,9 @@ object GameEngine:
                   tricksWon = updatedTricks
                 ),
                 List(
-                  ProgressEvent.TrickWon(winnerId, completedTable.playedCards),
-                  ProgressEvent.IsTurnOf(winnerId),
+                  ProgressEvent
+                    .TrickWon(winnerId, updatedTricks(winnerId), completedTable.playedCards),
+                  ProgressEvent.IsTurnOf(winnerId, state.getClass.getSimpleName),
                   InvitationEvent.WaitingForCard(
                     winnerId,
                     hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
@@ -214,11 +237,14 @@ object GameEngine:
       updatedCore.scoreboard
     )
     val next = nextRoundOrEnd(updatedCore.copy(scoreboard = updatedScoreboard))
-    (next.state, ProgressEvent.RoundScored(updatedScoreboard) +: next.events)
+    (next.state, ProgressEvent.RoundScored(updatedScoreboard, updatedCore.players) +: next.events)
 
   private def nextRoundOrEnd(core: CoreState): GameEngine =
     if core.round.isLastRound(core.players) then
-      (GameState.Ended(core.players, core.scoreboard), List())
+      (
+        GameState.Ended(core.players, core.scoreboard),
+        List(LifecycleEvent.GameEnded(core.scoreboard, core.players))
+      )
     else
       val nextRound = core.round.next
       val nextDealer = core.players.nextAfter(core.dealerId).getOrElse(core.dealerId)
@@ -229,10 +255,13 @@ object GameEngine:
 
       val specificEvents = gameState match
         case _: GameState.ChoosingTrump =>
-          List(ProgressEvent.IsTurnOf(nextDealer), InvitationEvent.WaitingForTrump(nextDealer))
+          List(
+            ProgressEvent.IsTurnOf(nextDealer, gameState.getClass.getSimpleName),
+            InvitationEvent.WaitingForTrump(nextDealer)
+          )
         case bidding: GameState.Bidding =>
           List(
-            ProgressEvent.IsTurnOf(bidding.currentPlayer),
+            ProgressEvent.IsTurnOf(bidding.currentPlayer, gameState.getClass.getSimpleName),
             InvitationEvent.WaitingForBid(bidding.currentPlayer, nextRound)
           )
         case _ => Nil

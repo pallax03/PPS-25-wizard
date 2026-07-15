@@ -4,7 +4,7 @@ case class RoundRow(round: Round, playerStats: Map[PlayerId, Option[(Score, Bid)
   def getScore(pId: PlayerId): String =
     playerStats.get(pId).flatten.map(data => data._1.value.toString).getOrElse("")
   def getBid(pId: PlayerId): String =
-    playerStats.get(pId).flatten.map(data => data._2.value.toString).getOrElse("")
+    playerStats.get(pId).flatten.map(data => data._2.toString).getOrElse("")
 
 object RoundRow:
   private def calculateMaxRounds(numPlayers: Int): Int = 60 / numPlayers
@@ -20,12 +20,20 @@ object RoundRow:
       p.id -> playerHistory.get(round)
     }.toMap
 
-  def createRows(players: Players, sb: Scoreboard): List[RoundRow] =
+  def updateRows(players: Players, sb: Scoreboard): List[RoundRow] =
     val maxRounds = calculateMaxRounds(players.toList.size)
 
     (1 to maxRounds).map { rNum =>
       val round = Round(rNum)
       RoundRow(round, getStatsForAllPlayers(round, players, sb))
+    }.toList
+
+  def initRows(players: Players): List[RoundRow] =
+    val maxRounds = calculateMaxRounds(players.toList.size)
+
+    (1 to maxRounds).map { rNum =>
+      val round = Round(rNum)
+      RoundRow(round, players.toList.map(p => p.id -> None).toMap)
     }.toList
 
 opaque type Score = Int

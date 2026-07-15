@@ -29,11 +29,11 @@ object ScoringRules:
       sb.addScore(player.id, round, cumulativePoints, bid)
 
   extension (bid: Bid)
-    def calculatePointsFor(tricksWon: Int): Score =
+    def calculatePointsFor(tricksWon: Trick): Score =
       val points =
-        if bid.value == tricksWon
+        if bid == tricksWon
         then BASE_WIN_POINTS + (tricksWon * POINTS_PER_TRICK)
-        else -Math.abs(bid.value - tricksWon) * POINTS_PER_TRICK
+        else -Math.abs(bid - tricksWon) * POINTS_PER_TRICK
       Score(points)
 
 export ScoringRules.*

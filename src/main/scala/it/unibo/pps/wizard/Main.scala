@@ -1,8 +1,7 @@
 package it.unibo.pps.wizard
 
 import io.vertx.core.Vertx
-import it.unibo.pps.wizard.application.WizardApplication
-import it.unibo.pps.wizard.application.bot.BotManagerVerticle
+import it.unibo.pps.wizard.application.scalafx.WizardApplication
 import it.unibo.pps.wizard.engine.adapters.{
   VertxEventBusAdapter,
   WizardGameAdapter,
@@ -22,13 +21,8 @@ object Main:
       val wizardEnginePort: WizardInboundPort = WizardGameAdapter(vertx, wizardOutboundPort)
       val wizardAIPort: WizardAIPort = WizardPrologAdapter(wizardEnginePort)
 
-      vertx
-        .deployVerticle(BotManagerVerticle(wizardEnginePort, wizardAIPort))
-        .onSuccess(_ => println("Bot manager deployed."))
-        .onFailure(err => println("Failed to deploy bot manager: " + err.getMessage))
-
       println("Launching wizard application...")
-      WizardApplication.launch(wizardEnginePort)(Array.empty)
+      WizardApplication.launch(wizardEnginePort, wizardAIPort, vertx)(Array.empty)
 
     catch
       case error: Throwable =>

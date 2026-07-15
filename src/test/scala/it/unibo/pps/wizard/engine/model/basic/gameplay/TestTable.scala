@@ -18,10 +18,10 @@ class TestTable extends AnyWordSpec with Matchers:
       val table = Table.empty
       "be empty and have no leader" in:
         table.isEmpty shouldBe true
-        table.followingCard shouldBe None
+        table.followingColor shouldBe None
 
     "receiving plays" should:
-      val cardP1: Card = 10.red
+      val cardP1: Card = Ten of Red
       val cardP2: Card = wizard
       val table = Table.empty
         + (p1 plays cardP1)
@@ -34,21 +34,22 @@ class TestTable extends AnyWordSpec with Matchers:
       "identify the player of a specific card" in:
         table.playerOf(cardP1) shouldBe Some(p1)
         table.playerOf(cardP2) shouldBe Some(p2)
-        table.playerOf(5.blue) shouldBe None
+        table.playerOf(Five of Blue) shouldBe None
 
     "evaluating the leader card (suit to follow)" should:
       "set the first standard card as leader" in:
-        val t = Table.empty + (p1 plays 4.blue) + (p2 plays 10.red)
-        t.followingCard shouldBe Some(4 of Blue)
+        val t = Table.empty + (p1 plays (Four of Blue)) + (p2 plays (Ten of Red))
+        t.followingColor shouldBe Some(Blue)
 
       "ignore leading Jesters and take the next standard card" in:
-        val t = Table.empty + (p1 plays jester) + (p2 plays 8.green) + (p3 plays 2.green)
-        t.followingCard shouldBe Some(8 of Green)
+        val t =
+          Table.empty + (p1 plays jester) + (p2 plays (Eight of Green)) + (p3 plays (Two of Green))
+        t.followingColor shouldBe Some(Green)
 
       "have NO leader there is a Wizard" in:
-        val t = Table.empty + (p1 plays jester) + (p3 plays 10.yellow) + (p2 plays wizard)
-        t.followingCard shouldBe None
+        val t = Table.empty + (p1 plays jester) + (p3 plays (Ten of Yellow)) + (p2 plays wizard)
+        t.followingColor shouldBe None
 
       "have NO leader if only Jesters are played" in:
         val t = Table.empty + (p1 plays jester) + (p2 plays jester)
-        t.followingCard shouldBe None
+        t.followingColor shouldBe None

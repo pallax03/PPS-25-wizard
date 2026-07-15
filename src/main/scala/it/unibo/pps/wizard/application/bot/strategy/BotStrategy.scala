@@ -1,6 +1,5 @@
 package it.unibo.pps.wizard.application.bot.strategy
 
-import io.vertx.core.Vertx
 import it.unibo.pps.wizard.engine.events.{FailureEvent, InvitationEvent}
 import it.unibo.pps.wizard.engine.model.configuration.BotsDifficulty
 import it.unibo.pps.wizard.engine.model.core.GameAction
@@ -13,6 +12,6 @@ trait BotStrategy:
   def resolveFailedEvents(failure: FailureEvent): Future[GameAction]
 
 object BotStrategy:
-  def apply(difficulty: BotsDifficulty): (WizardAIPort, Vertx) => BotStrategy = difficulty match
-    case BotsDifficulty.Dumb   => (_, vertx) => new DumbBotStrategy(vertx)
-    case BotsDifficulty.Prolog => (aiPort, _) => new PrologBotStrategy(aiPort)
+  def apply(difficulty: BotsDifficulty, wizardAIPort: WizardAIPort): BotStrategy = difficulty match
+    case BotsDifficulty.Dumb   => new DumbBotStrategy()
+    case BotsDifficulty.Prolog => new PrologBotStrategy(wizardAIPort)

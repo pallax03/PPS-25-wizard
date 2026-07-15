@@ -24,7 +24,7 @@ class TestScoreboard extends AnyWordSpec with Matchers:
       "return default stats (0 points, 0 bid) for any unplayed round" in:
         val (score, bid) = sb.getStatsForRound(r1, p1)
         score.value shouldBe 0
-        bid.value shouldBe 0
+        bid shouldBe 0
 
     "updated with addScore" should:
       "correctly store score and bid for a player in a specific round" in:
@@ -32,7 +32,7 @@ class TestScoreboard extends AnyWordSpec with Matchers:
         val (score, bid) = sb.getStatsForRound(r1, p1)
 
         score.value shouldBe 20
-        bid.value shouldBe 1
+        bid shouldBe 1
 
       "store distinct stats across multiple rounds for the same player" in:
         val sb = Scoreboard.empty
@@ -41,11 +41,11 @@ class TestScoreboard extends AnyWordSpec with Matchers:
 
         val (scoreR1, bidR1) = sb.getStatsForRound(r1, p1)
         scoreR1.value shouldBe 20
-        bidR1.value shouldBe 1
+        bidR1 shouldBe 1
 
         val (scoreR2, bidR2) = sb.getStatsForRound(r2, p1)
         scoreR2.value shouldBe 10
-        bidR2.value shouldBe 2
+        bidR2 shouldBe 2
 
       "maintain distinct scores and bids for different players" in:
         val sb = Scoreboard.empty
