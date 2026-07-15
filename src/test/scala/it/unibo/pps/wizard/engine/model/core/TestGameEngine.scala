@@ -64,7 +64,7 @@ class TestGameEngine extends AnyWordSpec with Matchers:
       result shouldBe Left(NotYourTurn)
 
     "transition from Bidding to Playing phase when the last player places their bid" in:
-      val hands = Hands.empty + (p1.id -> 5.red.asHand)
+      val hands = Hands.empty + (p1.id -> (Five of Red).asHand)
       val core = createMockCore(1).copy(hands = hands)
 
       val currentBids = Bids.empty + (p1.id -> Bid(0)) + (p2.id -> Bid(1)) + (p3.id -> Bid(0))
@@ -84,7 +84,7 @@ class TestGameEngine extends AnyWordSpec with Matchers:
         engine.events.exists(_.isInstanceOf[ProgressEvent.PhaseChanged]) shouldBe true
 
     "allow playing a card, removing it from hand and adding it to the table" in:
-      val c1 = 5.blue
+      val c1 = Five of Blue
       val hands = Hands.empty + (p1.id -> c1.asHand) + (p2.id -> c1.asHand)
       val core = createMockCore(1).copy(hands = hands)
 
@@ -108,12 +108,12 @@ class TestGameEngine extends AnyWordSpec with Matchers:
           case _ => fail("Expected GameState.Playing")
 
     "evaluate the trick winner and reset the table when the trick is complete" in:
-      val c0 = 2.blue
-      val c1 = 10.blue
-      val c2 = 4.red
-      val c3 = 5.blue
+      val c0 = Two of Blue
+      val c1 = Ten of Blue
+      val c2 = Four of Red
+      val c3 = Five of Blue
 
-      val extraCard = 3.yellow
+      val extraCard = Three of Yellow
       val hands = Hands.empty
         + (p1.id -> extraCard.asHand)
         + (p2.id -> extraCard.asHand)

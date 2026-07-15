@@ -23,7 +23,7 @@ class TestWizardTermMapper extends AnyWordSpec with Matchers:
         val trump = Trump.Absent
         trumpColorTerm(trump) shouldBe NO_VALUE
       "Standard Trump have same color of the card" in:
-        val trump = Option(5.red).asTrump
+        val trump = Option(Five of Red).asTrump
         trumpColorTerm(trump) shouldBe "red"
 
     "mapping card to term" should:
@@ -33,9 +33,9 @@ class TestWizardTermMapper extends AnyWordSpec with Matchers:
         cardTerm(jester) shouldBe "jester"
         cardTerm(wizard) shouldBe "wizard"
       "a standard card" in:
-        cardTerm(5.red) shouldBe "card(5,red)"
+        cardTerm(Five of Red) shouldBe "card(5,red)"
 
     "mapping cards to term" should:
-      val cards = 5.red - wizard - jester
+      val cards = (Five of Red) - wizard - jester
       "a list of valid cards" in:
         cardsTerm(cards) shouldBe "[card(5,red),wizard,jester]"

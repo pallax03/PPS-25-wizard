@@ -77,10 +77,10 @@ class TestRoundManager extends AnyWordSpec with Matchers:
 
     "initializing a new round" should:
       import Card.*
-      val deckCards = 1.red - 2.yellow - jester
+      val deckCards = (One of Red) - (Two of Yellow) - jester
       "correctly transition to Bidding state" in:
         val round = Round.start
-        val Card_TrumpResolved = 13.green
+        val Card_TrumpResolved = Thirteen of Green
         val TrumpResolved = Option(Card_TrumpResolved).asTrump
         val customDeck_TrumpResolved = Deck.create(deckCards - Card_TrumpResolved)
 

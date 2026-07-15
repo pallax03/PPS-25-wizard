@@ -12,13 +12,13 @@ class TestWizardPrologEngine extends AnyWordSpec with Matchers:
 
   "WizardPrologEngine" should:
     val engine = WizardPrologEngine()
-    val hand = (1.red - jester - wizard - 12.yellow).asHand
+    val hand = ((One of Red) - jester - wizard - (Twelve of Yellow)).asHand
     "choosing trump color" in:
       val trumpColor = engine.chooseTrumpColor(hand).head
       Color.values should contain(trumpColor)
 
     "place bid" in:
-      val bid = engine.placeBid(hand, Option(1.yellow).asTrump).head
+      val bid = engine.placeBid(hand, Option(One of Yellow).asTrump).head
       bid should be >= 0
       bid should be <= hand.size
 
@@ -32,9 +32,9 @@ class TestWizardPrologEngine extends AnyWordSpec with Matchers:
       val bestCard = engine
         .bestPlayableCard(
           hand = hand,
-          winningCard = Option(10.yellow),
+          winningCard = Option(Ten of Yellow),
           followingColor = Option(Yellow),
-          trump = Option(5.blue).asTrump,
+          trump = Option(Five of Blue).asTrump,
           playerBid = Bid(5),
           playerTrick = Trick(3)
         )
