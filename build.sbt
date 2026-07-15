@@ -23,7 +23,12 @@ ThisBuild / libraryDependencies ++= Seq(
 )
 
 lazy val root = (project in file("."))
+  .enablePlugins(WartRemover)
   .settings(
 //    assembly / mainClass := Some("it.unibo.pps.wizard.main")
-    coverageExcludedPackages := ".*\\$package.*"
+    coverageExcludedPackages := ".*\\$package.*",
+
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision,
+    wartremoverErrors ++= Warts.unsafe,
   )
