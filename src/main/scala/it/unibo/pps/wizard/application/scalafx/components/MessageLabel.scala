@@ -18,8 +18,7 @@ class MessageLabel extends Label:
   @nowarn private var activeTransition: SequentialTransition = _
 
   def show(message: String, textColor: String, onFinishedAction: => Unit): Unit =
-    if activeTransition != null then
-      activeTransition.stop()
+    if activeTransition != null then activeTransition.stop()
 
     text = message
     style = baseStyle + s" -fx-text-fill: $textColor;"

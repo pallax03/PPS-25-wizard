@@ -99,7 +99,10 @@ object GameEngine:
           updatedTable = currentState.table + (playerId, card)
           winningCard = updatedTable.evaluateTrick(currentState.core.trump)
           followingColor = updatedTable.followingColor
-          playerName = currentState.core.players.findById(playerId).map(_.name).getOrElse(PlayerName("Unknown"))
+          playerName = currentState.core.players
+            .findById(playerId)
+            .map(_.name)
+            .getOrElse(PlayerName("Unknown"))
           finalEngine <-
             if updatedTable.isTrickComplete(updatedCore.players.totalPlayers) then
               completeTrick(currentState, updatedCore, updatedTable).map: engine =>
@@ -128,7 +131,8 @@ object GameEngine:
                       currentPlayerTurn = nextPlayer
                     ),
                     List(
-                      ActionEvent.CardPlayed(playerId, playerName, card, winningCard, followingColor),
+                      ActionEvent
+                        .CardPlayed(playerId, playerName, card, winningCard, followingColor),
                       ProgressEvent.IsTurnOf(nextPlayer, currentState.getClass.getSimpleName),
                       InvitationEvent.WaitingForCard(
                         nextPlayer,
@@ -141,8 +145,7 @@ object GameEngine:
       case (_, _) => Left(InvalidAction)
 
   def initializeGame(players: Players): GameEngine =
-    val round = (1 to 9).foldRight(Round.start)((_, r) => r.next)
-
+    val round = Round.start
 
     val (core, gameState) =
       round.initialize(Deck.create).run(CoreState.initialize(players, round)).value

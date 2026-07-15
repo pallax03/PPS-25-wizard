@@ -45,7 +45,8 @@ class MainPageController(stage: Stage)(using context: WizardApplicationContext)
             .onComplete:
               case Success(_) =>
                 runOnUi:
-                  gameBoardPage._1.title = s"${gameBoardPage._1.title.value}: Bots: ${botsDifficultyCombo.value.value}"
+                  gameBoardPage._1.title =
+                    s"${gameBoardPage._1.title.value}: Bots: ${botsDifficultyCombo.value.value}"
                   gameBoardPage._1.show()
               case Failure(exception) =>
                 throw exception

@@ -23,14 +23,17 @@ class PlayedCardWrapper(
   cardView.prefHeight <== cardView.prefWidth * 1.4
 
   val nameLabel: Label = new Label(playerName):
-    style = s"-fx-text-fill: ${WizardTheme.Colors.textSoft}; -fx-font-weight: bold; -fx-font-size: 30px;"
+    style =
+      s"-fx-text-fill: ${WizardTheme.Colors.textSoft}; -fx-font-weight: bold; -fx-font-size: 30px;"
 
   children = Seq(cardView, nameLabel)
 
   updateStatus(isWinning, isFollowing)
 
   def updateStatus(isWinning: Boolean, isFollowing: Boolean): Unit =
-    style = if isWinning then WizardTheme.Table.winningCardWrapperStyle else WizardTheme.Table.cardWrapperStyle
+    style =
+      if isWinning then WizardTheme.Table.winningCardWrapperStyle
+      else WizardTheme.Table.cardWrapperStyle
     cardColor.filter(_ => isFollowing) match
       case Some(color) => cardView.setGlow(CardView.fxColor(color))
       case None        => cardView.removeGlow()

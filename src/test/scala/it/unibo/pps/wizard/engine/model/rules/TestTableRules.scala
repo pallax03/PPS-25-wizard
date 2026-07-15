@@ -63,12 +63,14 @@ class TestTableRules extends AnyWordSpec with Matchers:
     "award the trick to the highest trump (no Wizard)" in:
       val winningTrick = p3 plays (Five of Red)
       val table = Table.empty + (p1 plays (Ten of Blue)) + (p2 plays (Two of Red)) + winningTrick
-      val winner = table.evaluateTrick(Trump(One of Red)).flatMap(c => table.playerOf(c).map((_, c)))
+      val winner =
+        table.evaluateTrick(Trump(One of Red)).flatMap(c => table.playerOf(c).map((_, c)))
       winner shouldBe Some(winningTrick)
 
     "award the trick to the highest following card (no Trump and no Wizard)" in:
       val winningTrick = p2 plays (Ten of Blue)
-      val table = Table.empty + (p1 plays (Five of Blue)) + (p2 plays (Ten of Blue)) + (p3 plays (Two of Yellow))
+      val table =
+        Table.empty + (p1 plays (Five of Blue)) + (p2 plays (Ten of Blue)) + (p3 plays (Two of Yellow))
       val trump = Trump(One of Green)
       val winner = table.evaluateTrick(trump).flatMap(c => table.playerOf(c).map((_, c)))
       winner shouldBe Some(winningTrick)

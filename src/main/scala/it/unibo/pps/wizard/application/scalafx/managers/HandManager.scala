@@ -26,10 +26,8 @@ class HandManager(
 
       if availableWidth > 0 && totalCardsWidth > availableWidth then
         container.spacing = (availableWidth - totalCardsWidth) / (n - 1)
-      else
-        container.spacing = 5.0
-    else
-      container.spacing = 0.0
+      else container.spacing = 5.0
+    else container.spacing = 0.0
 
   def updateHand(hand: Hand): Unit =
     container.children.clear()
@@ -100,9 +98,9 @@ class HandManager(
 
   def highlightWinningCard(card: Card): Unit =
     this.activeCardNodes(card).setGlow(Color.Gold)
-  
+
   def clearEffects(): Unit =
     this.activeCardNodes.values.foreach(node => {
       node.opacity = 1.0
       node.removeGlow()
-    })  
+    })

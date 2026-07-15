@@ -53,4 +53,4 @@ class TableManager(val container: HBox):
   private def isFollowingCard(card: Card, followingColor: Option[Card.Color]): Boolean =
     (card, followingColor) match
       case (Card.Standard(color, _), Some(requiredColor)) => color == requiredColor
-      case _                                             => false
+      case _                                              => false

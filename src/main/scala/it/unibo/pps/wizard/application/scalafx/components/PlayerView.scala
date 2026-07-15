@@ -75,9 +75,8 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
       style = if hasBottomBorder then WizardTheme.Player.rowBorderStyle else ""
       children = Seq(leftCell, rightCell)
 
-
 class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
-  extends BasePlayerView(player, isCurrentTurn):
+    extends BasePlayerView(player, isCurrentTurn):
 
   roleLabel.text = "Bot"
   roleLabel.textFill = WizardTheme.Colors.roleBot
@@ -97,12 +96,11 @@ class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
 
   buildUI()
 
-
 class HumanPlayerView(
-                       player: Player,
-                       isCurrentTurn: Boolean = false,
-                       onBidSubmitted: Bid => Unit = _ => (),
-                     ) extends BasePlayerView(player, isCurrentTurn):
+    player: Player,
+    isCurrentTurn: Boolean = false,
+    onBidSubmitted: Bid => Unit = _ => ()
+) extends BasePlayerView(player, isCurrentTurn):
 
   roleLabel.text = "You"
   roleLabel.textFill = WizardTheme.Colors.roleHuman
@@ -127,8 +125,7 @@ class HumanPlayerView(
 
   def setBidTextFieldEnabled(enabled: Boolean): Unit =
     bidField.disable = !enabled
-    if enabled then
-      row3.style = WizardTheme.Player.activeBidRowStyle
+    if enabled then row3.style = WizardTheme.Player.activeBidRowStyle
     else
       row3.style = WizardTheme.Player.rowBottomRadius
       bidField.style = ""

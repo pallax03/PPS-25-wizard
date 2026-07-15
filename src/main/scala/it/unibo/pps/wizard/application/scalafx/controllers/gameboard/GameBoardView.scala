@@ -27,4 +27,3 @@ trait GameBoardView:
   def displayErrorMessage(message: String): Unit
   def displayShowInvalidBid(): Unit
   def displayClearInvalidBid(): Unit
-  

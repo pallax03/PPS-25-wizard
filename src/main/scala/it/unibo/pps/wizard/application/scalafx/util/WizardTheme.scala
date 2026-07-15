@@ -31,7 +31,8 @@ object WizardTheme:
       s"-fx-background-color: rgba(217, 93, 57, 0.35); $rowCornerRadii"
     val errorBidRowStyle: String =
       s"-fx-background-color: rgba(255, 0, 0, 0.4); $rowCornerRadii"
-    val errorBidFieldStyle: String = "-fx-border-color: red; -fx-border-width: 2; -fx-border-radius: 3;"
+    val errorBidFieldStyle: String =
+      "-fx-border-color: red; -fx-border-width: 2; -fx-border-radius: 3;"
 
     def activeStyle(phase: UiPhase): String =
       val (background, borderColor) =

@@ -224,16 +224,16 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     alert.setContentText("You can inspect the final scoreboard or return to the main menu.")
     alert.getButtonTypes.setAll(showScoreboardButton, returnToMenuButton)
 
-    alert.getDialogPane.lookupButton(showScoreboardButton).addEventFilter(
-      JfxActionEvent.ACTION,
-      event =>
-        openScoreboardWindow()
-        event.consume()
-    )
+    alert.getDialogPane
+      .lookupButton(showScoreboardButton)
+      .addEventFilter(
+        JfxActionEvent.ACTION,
+        event =>
+          openScoreboardWindow()
+          event.consume()
+      )
 
-    alert.setOnHidden(_ =>
-      if alert.getResult == returnToMenuButton then returnToMainMenu()
-    )
+    alert.setOnHidden(_ => if alert.getResult == returnToMenuButton then returnToMainMenu())
     alert.show()
 
   private def returnToMainMenu(): Unit =

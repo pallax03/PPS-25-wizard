@@ -47,8 +47,7 @@ object Card:
   private val specialIdGenJester = new AtomicInteger(0)
   def jester: Jester = Jester(specialIdGenJester.incrementAndGet() % Deck.TOTAL_JESTER)
 
-  extension (rank: Rank)
-    infix def of(color: Color): Card = Standard(color, rank)
+  extension (rank: Rank) infix def of(color: Color): Card = Standard(color, rank)
 
   extension (c: Card) infix def -(other: Card): List[Card] = List(c, other)
 

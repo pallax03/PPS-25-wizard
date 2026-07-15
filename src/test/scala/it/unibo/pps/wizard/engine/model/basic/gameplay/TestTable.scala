@@ -42,7 +42,8 @@ class TestTable extends AnyWordSpec with Matchers:
         t.followingColor shouldBe Some(Blue)
 
       "ignore leading Jesters and take the next standard card" in:
-        val t = Table.empty + (p1 plays jester) + (p2 plays (Eight of Green)) + (p3 plays (Two of Green))
+        val t =
+          Table.empty + (p1 plays jester) + (p2 plays (Eight of Green)) + (p3 plays (Two of Green))
         t.followingColor shouldBe Some(Green)
 
       "have NO leader there is a Wizard" in:
