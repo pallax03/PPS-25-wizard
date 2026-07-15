@@ -1,15 +1,14 @@
 package it.unibo.pps.wizard.application.scalafx.managers
 
 import it.unibo.pps.wizard.application.scalafx.components.PlayedCardWrapper
+import it.unibo.pps.wizard.application.scalafx.util.WizardTheme
 //import it.unibo.pps.wizard.engine.model.basic.Card.*
 import it.unibo.pps.wizard.engine.model.basic.{Card, PlayerName}
 import scalafx.scene.layout.HBox
 
 class TableManager(val container: HBox):
-  private val normalStyle =
-    "-fx-background-color: rgba(43, 92, 63, 0.85); -fx-background-radius: 15;"
-  private val hoverStyle =
-    "-fx-background-color: rgba(60, 120, 80, 0.95); -fx-background-radius: 15;"
+  private val normalStyle = WizardTheme.Table.normalStyle
+  private val hoverStyle = WizardTheme.Table.hoverStyle
 
   private var activeCardNodes: Map[Card, PlayedCardWrapper] = Map.empty
 

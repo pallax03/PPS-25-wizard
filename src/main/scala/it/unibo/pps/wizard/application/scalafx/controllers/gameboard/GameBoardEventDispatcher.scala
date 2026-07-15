@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
-import it.unibo.pps.wizard.application.scalafx.util.{PresentationQueue, PresentationScript, PresentationStep}
+import it.unibo.pps.wizard.application.scalafx.util.{PresentationQueue, PresentationScript, PresentationStep, UiPhase}
 import it.unibo.pps.wizard.engine.events.{ActionEvent, FailureEvent, InvitationEvent, LifecycleEvent, ProgressEvent, WizardEvent}
 //import it.unibo.pps.wizard.engine.model.core.{CardNotAllowedReasons, GameError, InconsistentStateReasons}
 import it.unibo.pps.wizard.engine.model.core.GameError
@@ -62,21 +62,21 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
       case InvitationEvent.WaitingForTrump(playerId) =>
         PresentationScript(
           run:
-            view.displayTurnChanged(playerId, "ChoosingTrump")
+            view.displayTurnChanged(playerId, UiPhase.ChoosingTrump)
             view.displayWaitingForTrump(playerId),
           waitFor(200)
         )
 
       case InvitationEvent.WaitingForBid(playerId, _) =>
         PresentationScript(
-          run(view.displayTurnChanged(playerId, "Bidding")),
+          run(view.displayTurnChanged(playerId, UiPhase.Bidding)),
           waitFor(200)
         )
 
       case InvitationEvent.WaitingForCard(playerId, legalCards) =>
         PresentationScript(
           run:
-            view.displayTurnChanged(playerId, "Playing")
+            view.displayTurnChanged(playerId, UiPhase.Playing)
             view.displayLegalCards(playerId, legalCards),
           waitFor(200)
         )

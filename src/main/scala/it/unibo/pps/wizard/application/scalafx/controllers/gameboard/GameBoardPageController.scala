@@ -5,6 +5,7 @@ import it.unibo.pps.wizard.application.scalafx.components.*
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
 import it.unibo.pps.wizard.application.scalafx.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
 import it.unibo.pps.wizard.application.scalafx.pages.{MainPage, ScoreboardPage}
+import it.unibo.pps.wizard.application.scalafx.util.{UiPhase, WizardTheme}
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
 import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
@@ -116,8 +117,9 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     tableManager.initialize()
 
   override def displayPhaseChanged(phase: String): Unit =
-    this.gameInfo.changePhase(phase)
-    if phase != "Bidding" then currentPlayerView.setBidTextFieldEnabled(false)
+    val uiPhase = UiPhase.fromName(phase)
+    this.gameInfo.changePhase(uiPhase)
+    if !uiPhase.isBidding then currentPlayerView.setBidTextFieldEnabled(false)
 
   override def displayCardsDealt(
       playerId: PlayerId,
@@ -148,11 +150,11 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     println(s"Event received: Bid placed by player $playerId: $bid")
     if playerId != currentPlayerId then this.opponentsManager.updateOpponentBid(playerId, bid)
 
-  override def displayTurnChanged(nextPlayerId: PlayerId, phase: String): Unit =
+  override def displayTurnChanged(nextPlayerId: PlayerId, phase: UiPhase): Unit =
     val isMyTurn = nextPlayerId == currentPlayerId
-    setVisibleNode(hintBestCardButton)(isMyTurn && phase == "Playing")
+    setVisibleNode(hintBestCardButton)(isMyTurn && phase.isPlaying)
     this.currentPlayerView.setTurnActive(isMyTurn, phase)
-    this.currentPlayerView.setBidTextFieldEnabled(isMyTurn && phase == "Bidding")
+    this.currentPlayerView.setBidTextFieldEnabled(isMyTurn && phase.isBidding)
     this.opponentsManager.updateActiveTurn(nextPlayerId, phase)
 
   override def displayRoundScored(scoreboard: Scoreboard, players: Players): Unit =
@@ -175,7 +177,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     val toastLabel = new Label:
       text = message
       style = "-fx-background-color: rgba(0, 0, 0, 0); " +
-        "-fx-text-fill: #FFCC00; " +
+        s"-fx-text-fill: ${WizardTheme.Colors.warning}; " +
         "-fx-font-size: 20px; " +
         "-fx-font-weight: bold; " +
         "-fx-padding: 10px 20px; "

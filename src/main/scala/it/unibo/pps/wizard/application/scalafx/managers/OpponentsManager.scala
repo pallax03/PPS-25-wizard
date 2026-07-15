@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.application.scalafx.managers
 
 import it.unibo.pps.wizard.application.scalafx.components.{BasePlayerView, BotPlayerView}
+import it.unibo.pps.wizard.application.scalafx.util.UiPhase
 import it.unibo.pps.wizard.engine.model.basic.{Bid, PlayerId, Players}
 import scalafx.scene.Node
 import scalafx.scene.layout.HBox
@@ -23,7 +24,7 @@ class OpponentsManager(val container: HBox):
         opponentView.updateBid(bid.toString)
       case _ => println(s"Opponent with ID $playerId not found.")
 
-  def updateActiveTurn(currentTurnPlayerId: PlayerId, phase: String): Unit =
+  def updateActiveTurn(currentTurnPlayerId: PlayerId, phase: UiPhase): Unit =
     opponents.foreach: (id, view) =>
       view match
         case bot: BasePlayerView => bot.setTurnActive(id == currentTurnPlayerId, phase)

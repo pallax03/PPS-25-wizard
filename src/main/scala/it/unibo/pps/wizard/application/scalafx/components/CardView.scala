@@ -1,5 +1,6 @@
 package it.unibo.pps.wizard.application.scalafx.components
 
+import it.unibo.pps.wizard.application.scalafx.util.WizardTheme
 import it.unibo.pps.wizard.engine.model.basic.Card
 
 import scalafx.geometry.Pos
@@ -81,10 +82,5 @@ class CardView(val card: Card) extends StackPane:
     case Card.Wizard(_)         => "W"
     case Card.Jester(_)         => "J"
 
-// todo: refactoring of this helper
 object CardView:
-  def fxColor(color: Card.Color): Color = color match
-    case Card.Color.Blue   => Color.DodgerBlue
-    case Card.Color.Green  => Color.ForestGreen
-    case Card.Color.Red    => Color.FireBrick
-    case Card.Color.Yellow => Color.Goldenrod
+  def fxColor(color: Card.Color): Color = WizardTheme.Card.colorFor(color)
