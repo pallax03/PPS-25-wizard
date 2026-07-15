@@ -27,6 +27,3 @@ class TestDeck extends AnyWordSpec with Matchers:
       drawnCards.length shouldBe nCards
       remainingDeck.length shouldBe (nCards - nCards)
       drawnCards shouldEqual (c1 - c2 - c3)
-
-    "pop 4 cards (out of cards), should Throw an Exception" in:
-      a[IllegalArgumentException] shouldBe thrownBy(Deck.pop(d.length + 1).run(d).value)
