@@ -49,7 +49,7 @@ class CardView(val card: Card) extends StackPane:
         style = "-fx-effect: dropshadow(gaussian, black, 3, 1.0, 0, 0);"
 
       children = Seq(bgRect, valueText)
-
+  
   def setGlow(glowColor: Color): Unit =
     this.effect = new DropShadow:
       this.color = glowColor
