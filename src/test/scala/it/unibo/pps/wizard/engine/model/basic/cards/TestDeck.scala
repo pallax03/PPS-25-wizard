@@ -24,8 +24,8 @@ class TestDeck extends AnyWordSpec with Matchers:
       d.length shouldBe nCards
 
     "pop 3 cards in the same order" in:
-      val drawnAction = Deck.pop(nCards)
+      val drawnAction = Deck.pop(nCards + 1)
       val (remainingDeck, drawnCards) = drawnAction.run(d).value
       drawnCards.length shouldBe nCards
-      remainingDeck.length shouldBe (nCards - nCards)
+      remainingDeck.length shouldBe 0
       drawnCards shouldEqual (c1 - c2 - c3)
