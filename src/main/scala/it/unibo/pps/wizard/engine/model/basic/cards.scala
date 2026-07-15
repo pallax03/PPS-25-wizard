@@ -97,7 +97,6 @@ object Deck:
    */
   def pop(n: Int): State[Deck, List[Card]] =
     State: (currentDeck: Deck) =>
-      require(currentDeck.length >= n)
       currentDeck.splitAt(n).swap
 
   private object DeckFactory:
