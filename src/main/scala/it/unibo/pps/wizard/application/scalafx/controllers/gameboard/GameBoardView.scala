@@ -4,6 +4,7 @@ import it.unibo.pps.wizard.application.scalafx.util.UiPhase
 import it.unibo.pps.wizard.engine.model.basic.*
 
 trait GameBoardView:
+  def getCurrentPlayerId: PlayerId
   def displayWaitingForTrump(playerId: PlayerId): Unit
   def displayTrickWon(winnerId: PlayerId, tricksWon: Trick, trickedCards: List[Card]): Unit
   def clearTable(): Unit

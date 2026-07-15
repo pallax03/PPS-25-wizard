@@ -3,8 +3,7 @@ package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.util.{PresentationQueue, PresentationScript, PresentationStep, UiPhase}
 import it.unibo.pps.wizard.engine.events.{ActionEvent, FailureEvent, InvitationEvent, LifecycleEvent, ProgressEvent, WizardEvent}
-//import it.unibo.pps.wizard.engine.model.core.{CardNotAllowedReasons, GameError, InconsistentStateReasons}
-import it.unibo.pps.wizard.engine.model.core.GameError
+import it.unibo.pps.wizard.engine.model.core.{CardNotAllowedReasons, GameError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -88,9 +87,13 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
         PresentationScript(run(view.displayGameEnded(scoreboard, players)))
 
       case FailureEvent.ActionFailed(playerId, error) => error match
-//        case GameError.NotYourTurn =>
-//          PresentationScript(run(view.displayErrorMessage("It's not your turn.")))
-        case GameError.InvalidBid =>
+        case GameError.NotYourTurn =>
+          PresentationScript(run(view.displayErrorMessage("It's not your turn."))) 
+        case GameError.CardNotAllowed(reason) => reason match
+          case CardNotAllowedReasons.MustFollowColor(requiredColor, cards) =>
+            PresentationScript(run(view.displayErrorMessage(s"Must follow color $requiredColor.")))
+          case _ => PresentationScript()
+        case GameError.InvalidBid if playerId == view.getCurrentPlayerId =>
           PresentationScript(
             run:
               view.displayErrorMessage("Invalid bid.")
@@ -99,22 +102,6 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
             run(view.displayClearInvalidBid())
           )
         case error: GameError => PresentationScript(run(view.displayErrorMessage(error.toString)))
-//        case GameError.CardNotAllowed(reason) => reason match
-//          case CardNotAllowedReasons.CardNotInHand(cards) =>
-//            PresentationScript(run(view.displayErrorMessage("Card is not in hand.")))
-//          case CardNotAllowedReasons.MustFollowColor(requiredColor, cards) =>
-//            PresentationScript(run(view.displayErrorMessage(s"Must follow color $requiredColor.")))
-//        case GameError.InvalidAction =>
-//          PresentationScript(run(view.displayErrorMessage("Invalid action.")))
-//        case GameError.InconsistentState(reason) =>
-//          PresentationScript(
-//            run:
-//              reason match
-//                case InconsistentStateReasons.TableNoWinner =>
-//                  view.displayErrorMessage("No winner found for the current trick.")
-//                case InconsistentStateReasons.HandNotFoundFor(playerId) =>
-//                  view.displayErrorMessage(s"Hand not found for player $playerId.")
-//          )
 
   private def run(action: => Unit): PresentationStep = PresentationStep.run(action)
 

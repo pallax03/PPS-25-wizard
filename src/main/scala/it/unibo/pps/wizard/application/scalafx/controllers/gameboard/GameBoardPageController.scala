@@ -50,7 +50,6 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
   @FXML
   def initialize(): Unit =
-    println("Initializing GameBoardPageController...")
     List(tableContainer, handContainer, trumpContainer, currentPlayerContainer, playersContainer)
       .foreach(_.getChildren.clear())
     buildUI()
@@ -88,8 +87,9 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
     activeScoreboardPage = ScoreboardPage(activeScoreboardStage)
 
+  override def getCurrentPlayerId: PlayerId = currentPlayerId
+  
   override def displayGameStarted(players: Players): Unit =
-    println(s"Event received: Game started with players: $players")
     this.opponentsManager.renderAllOpponents(players.filter(_.id != currentPlayerId))
     val currentPlayer = players.findById(currentPlayerId).get
     this.currentPlayerView = HumanPlayerView(
@@ -101,7 +101,6 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     this.activeScoreboardPage.initializeTable(players)
 
   override def displayWaitingForTrump(playerId: PlayerId): Unit =
-    println(s"Event received: Waiting for Trump selection from player $playerId")
     if playerId == currentPlayerId then trumpManager.enableResolveTrumpColor(true)
 
   override def displayTrickWon(
@@ -109,7 +108,6 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
       tricksWon: Trick,
       trickedCards: List[Card]
   ): Unit =
-    println(s"Event received: Trick won by player $winnerId with cards: $trickedCards")
     if winnerId == currentPlayerId then this.currentPlayerView.updateTricksWon(tricksWon)
     else this.opponentsManager.updateOpponentsTricksWon(winnerId, tricksWon)
 
@@ -128,7 +126,6 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
       round: Round
   ): Unit =
     this.gameInfo.incrementRound(round.value)
-    println(s"Event received: Cards dealt. Player: $playerId Trump: $trump Hands: $hands")
     this.trumpManager.initialize(trump)
     val newHand = hands.getHand(currentPlayerId).getOrElse(Hand.empty)
     this.handManager.updateHand(newHand)
@@ -141,7 +138,6 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
       winningCard: Option[Card],
       followingColor: Option[Card.Color]
   ): Unit =
-    println(s"Event received: Card played by player $playerId ($playerName): $card")
     val tablePlayerName = if playerId == currentPlayerId then PlayerName("You") else playerName
     tableManager.addCard(card, tablePlayerName, winningCard, followingColor)
     handManager.removeCard(card)
@@ -149,12 +145,10 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     setVisibleNode(hintBestCardButton)(false)
 
   override def displayTrumpSelected(playerId: PlayerId, color: Card.Color): Unit =
-    println(s"Event received: Trump selected by player $playerId: $color")
     trumpManager.glowTrump(color)
     trumpManager.enableResolveTrumpColor(false)
 
   override def displayBidPlaced(playerId: PlayerId, bid: Bid): Unit =
-    println(s"Event received: Bid placed by player $playerId: $bid")
     if playerId != currentPlayerId then this.opponentsManager.updateOpponentBid(playerId, bid)
 
   override def displayTurnChanged(nextPlayerId: PlayerId, phase: UiPhase): Unit =
@@ -165,22 +159,18 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     this.opponentsManager.updateActiveTurn(nextPlayerId, phase)
 
   override def displayRoundScored(scoreboard: Scoreboard, players: Players): Unit =
-    println(s"Event received: Round scored. Scoreboard: $scoreboard")
     refreshScoreboardIfOpen(scoreboard, players)
     this.currentPlayerView.resetBid()
     this.opponentsManager.resetOpponentsBid()
 
   override def displayLegalCards(playerId: PlayerId, legalCards: List[Card]): Unit =
-    println(s"Event received: Legal cards for player $playerId: $legalCards")
     if playerId == currentPlayerId then this.handManager.highlightLegalCards(legalCards)
 
   override def displayGameEnded(scoreboard: Scoreboard, players: Players): Unit =
-    println(s"Event received: Game ended. Final Scoreboard: $scoreboard")
     refreshScoreboardIfOpen(scoreboard, players)
     displayGameEndedAlert()
 
   override def displayErrorMessage(message: String): Unit =
-    println(s"Event received: Game Error: - $message")
     val toastLabel = new Label:
       text = message
       style = "-fx-background-color: rgba(0, 0, 0, 0); " +
@@ -210,12 +200,10 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
     alert.showAndWait() match
       case Some(_) =>
-        println("Redirecting to home screen...")
         gameBoardDispatcher.stopListening()
         activeScoreboardStage.close()
         MainPage(stage)
       case _ =>
-        println("Alert closed without action.")
 
   override def displayShowInvalidBid(): Unit =
     currentPlayerView.showErrorEffect(true)
