@@ -33,7 +33,6 @@ class OpponentsManager(val container: HBox):
     opponents.values.foreach:
       case bot: BotPlayerView =>
         bot.resetBid()
-        bot.resetTricksWon()
       case _                  =>
 
   def updateOpponentsTricksWon(winnerId: PlayerId, tricks: Int): Unit =

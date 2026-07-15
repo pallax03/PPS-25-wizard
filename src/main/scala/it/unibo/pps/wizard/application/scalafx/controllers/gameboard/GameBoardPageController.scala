@@ -130,6 +130,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     this.trumpManager.initialize(trump)
     val newHand = hands.getHand(currentPlayerId).getOrElse(Hand.empty)
     this.handManager.updateHand(newHand)
+    this.currentPlayerView.setMaxBid(round.value)
 
   override def displayCardPlayed(playerId: PlayerId, playerName: PlayerName, card: Card): Unit =
     println(s"Event received: Card played by player $playerId ($playerName): $card")
@@ -157,7 +158,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
   override def displayRoundScored(scoreboard: Scoreboard, players: Players): Unit =
     println(s"Event received: Round scored. Scoreboard: $scoreboard")
     refreshScoreboardIfOpen(scoreboard, players)
-    this.currentPlayerView.resetTricksWon()
+//    this.currentPlayerView.resetTricksWon()
     this.opponentsManager.resetOpponentsBid()
 
   override def displayLegalCards(playerId: PlayerId, legalCards: List[Card]): Unit =
@@ -207,6 +208,11 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
       case _ =>
         println("Alert closed without action.")
 
+  override def displayShowInvalidBid(): Unit =
+    currentPlayerView.showErrorEffect(true)
+  override def displayClearInvalidBid(): Unit =
+    currentPlayerView.showErrorEffect(false)
+
   @FXML
   def openScoreboardWindow(): Unit =
     activeScoreboardStage match
@@ -247,7 +253,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
   @FXML
   def toggleRulesPanel(): Unit =
-    setVisibleNode(rulesPanel)(rulesPanel.isVisible)
+    setVisibleNode(rulesPanel)(!rulesPanel.isVisible)
 
   @FXML
   def requestHintBestCard(): Unit =

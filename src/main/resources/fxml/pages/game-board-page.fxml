@@ -19,11 +19,6 @@
                 <BorderPane.margin>
                     <Insets bottom="15.0" />
                 </BorderPane.margin>
-                <VBox fx:id="gameInfoContainer" alignment="CENTER_LEFT" prefHeight="80.0" spacing="10.0">
-                    <padding>
-                        <Insets bottom="0" left="0" right="0" top="0" />
-                    </padding>
-                </VBox>
                 <Region HBox.hgrow="ALWAYS" />
                 <HBox fx:id="playersContainer" alignment="CENTER_RIGHT" prefHeight="80.0" spacing="30.0" />
             </HBox>
@@ -34,6 +29,11 @@
                 <BorderPane.margin>
                     <Insets right="20.0" />
                 </BorderPane.margin>
+                <VBox fx:id="gameInfoContainer" alignment="CENTER_LEFT" prefHeight="80.0" spacing="10.0">
+                    <padding>
+                        <Insets bottom="0" left="0" right="0" top="0" />
+                    </padding>
+                </VBox>
                 <StackPane fx:id="trumpContainer">
                     <VBox fx:id="trumpColorSelector" alignment="CENTER" managed="false" spacing="15.0" style="-fx-background-color: rgba(30, 30, 30, 0.85); -fx-background-radius: 15; -fx-padding: 15;" visible="false">
                     </VBox>
