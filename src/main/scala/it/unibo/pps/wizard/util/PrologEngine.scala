@@ -12,7 +12,7 @@ object PrologEngine:
     val solver = Prolog()
     solver.setTheory(theory)
     goal =>
-      new Iterable[SolveInfo]:
+      val iterable = new Iterable[SolveInfo]:
         override def iterator: Iterator[SolveInfo] = new Iterator[SolveInfo]:
           private var solution: Option[SolveInfo] = Some(solver.solve(goal))
 
@@ -25,7 +25,8 @@ object PrologEngine:
               solution =
                 if solution.get.hasOpenAlternatives then Some(solver.solveNext())
                 else None
-      .to(LazyList)
+
+      iterable.to(LazyList)
 
   def extractVars(solution: SolveInfo): Map[String, Term] =
     if solution.isSuccess then
