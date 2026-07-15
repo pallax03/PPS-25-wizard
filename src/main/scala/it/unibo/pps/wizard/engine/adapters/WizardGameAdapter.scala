@@ -17,7 +17,6 @@ import scala.reflect.ClassTag
 enum WizardGameState:
   case NotConfigured
   case Running(state: GameState)
-  case Finished
 
 class WizardGameAdapter(private val vertx: Vertx, private val outboundPort: WizardOutboundPort)
     extends WizardInboundPort:

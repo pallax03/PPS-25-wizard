@@ -11,6 +11,6 @@ import it.unibo.pps.wizard.engine.model.basic.*
 enum GameAction:
   def playerId: PlayerId
 
-  case PlaceBid(playerId: PlayerId, bid: Bid)
   case ResolveTrumpColor(playerId: PlayerId, color: Card.Color)
+  case PlaceBid(playerId: PlayerId, bid: Bid)
   case PlayCard(playerId: PlayerId, card: Card)
