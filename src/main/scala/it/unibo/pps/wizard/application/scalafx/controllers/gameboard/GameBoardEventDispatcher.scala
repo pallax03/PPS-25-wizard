@@ -36,7 +36,7 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
       case ActionEvent.BidPlaced(playerId, bid) =>
         PresentationScript(
           run(view.displayBidPlaced(playerId, bid)),
-          waitFor(200)
+          waitFor(300)
         )
 
       case ProgressEvent.CardsDealt(playerId, hands, trump, round) =>
@@ -63,13 +63,13 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
           run:
             view.displayTurnChanged(playerId, UiPhase.ChoosingTrump)
             view.displayWaitingForTrump(playerId),
-          waitFor(200)
+          waitFor(300)
         )
 
       case InvitationEvent.WaitingForBid(playerId, _) =>
         PresentationScript(
           run(view.displayTurnChanged(playerId, UiPhase.Bidding)),
-          waitFor(200)
+          waitFor(300)
         )
 
       case InvitationEvent.WaitingForCard(playerId, legalCards) =>
@@ -77,7 +77,7 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
           run:
             view.displayTurnChanged(playerId, UiPhase.Playing)
             view.displayLegalCards(playerId, legalCards),
-          waitFor(200)
+          waitFor(300)
         )
 
       case LifecycleEvent.GameStarted(players, _) =>

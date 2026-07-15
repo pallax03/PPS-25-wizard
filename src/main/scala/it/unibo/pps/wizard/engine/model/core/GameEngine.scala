@@ -141,7 +141,8 @@ object GameEngine:
       case (_, _) => Left(InvalidAction)
 
   def initializeGame(players: Players): GameEngine =
-    val round = Round.start
+    val round = (1 to 9).foldRight(Round.start)((_, r) => r.next)
+
 
     val (core, gameState) =
       round.initialize(Deck.create).run(CoreState.initialize(players, round)).value

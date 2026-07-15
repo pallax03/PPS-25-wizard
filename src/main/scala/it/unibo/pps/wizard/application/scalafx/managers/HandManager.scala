@@ -38,14 +38,21 @@ class HandManager(
       dragContextX = event.sceneX - cardView.translateX.value
       dragContextY = event.sceneY - cardView.translateY.value
 
-      cardView.delegate.setViewOrder(-10.0)
+//      cardView.delegate.setViewOrder(-10.0)
 
-      cardView.scaleX = 1.15
-      cardView.scaleY = 1.15
+      cardView.scaleX = 1.6
+      cardView.scaleY = 1.6
 
     cardView.onMouseDragged = event =>
+      val deltaY = math.abs(event.sceneY - dragContextY)
       cardView.translateX = event.sceneX - dragContextX
       cardView.translateY = event.sceneY - dragContextY
+      if deltaY > 100 then
+        cardView.scaleX = 3
+        cardView.scaleY = 3
+      else
+        cardView.scaleX = 1.8
+        cardView.scaleY = 1.8
       onCardDragged(event.sceneX, event.sceneY)
 
     cardView.onMouseReleased = event =>
