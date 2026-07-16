@@ -2,7 +2,8 @@ package it.unibo.pps.wizard.application.scalafx.pages
 
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.controllers.scoreboard.ScoreboardPageController
-import it.unibo.pps.wizard.engine.model.basic.{Players, RoundRow}
+import it.unibo.pps.wizard.engine.model.basic.Players
+import it.unibo.pps.wizard.engine.model.basic.RoundRow
 import scalafx.stage.Stage
 
 case class ScoreboardPage(override protected val stage: Stage)(using

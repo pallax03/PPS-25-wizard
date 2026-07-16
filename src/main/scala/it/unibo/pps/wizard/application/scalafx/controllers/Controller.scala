@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard.application.scalafx.controllers
 
-import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.FXComponent
+import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import scalafx.application.Platform
 import scalafx.stage.Stage
 

@@ -2,14 +2,18 @@ package it.unibo.pps.wizard.engine.adapters
 
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.MessageConsumer
-import it.unibo.pps.wizard.engine.events.*
 import it.unibo.pps.wizard.engine.events.FailureEvent.ActionFailed
 import it.unibo.pps.wizard.engine.events.LifecycleEvent.GameStarted
+import it.unibo.pps.wizard.engine.events._
 import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
-import it.unibo.pps.wizard.engine.model.core.{GameAction, GameEngine, GameState}
-import it.unibo.pps.wizard.engine.ports.{WizardInboundPort, WizardOutboundPort}
-import it.unibo.pps.wizard.util.{Id, VerticleExecutor}
+import it.unibo.pps.wizard.engine.model.core.GameAction
+import it.unibo.pps.wizard.engine.model.core.GameEngine
+import it.unibo.pps.wizard.engine.model.core.GameState
+import it.unibo.pps.wizard.engine.ports.WizardInboundPort
+import it.unibo.pps.wizard.engine.ports.WizardOutboundPort
+import it.unibo.pps.wizard.util.Id
+import it.unibo.pps.wizard.util.VerticleExecutor
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag

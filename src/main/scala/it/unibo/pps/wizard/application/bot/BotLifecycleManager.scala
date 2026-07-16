@@ -1,8 +1,11 @@
 package it.unibo.pps.wizard.application.bot
 
 import io.vertx.core.Vertx
-import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
-import scala.concurrent.{Future, Promise}
+import it.unibo.pps.wizard.engine.ports.WizardAIPort
+import it.unibo.pps.wizard.engine.ports.WizardInboundPort
+
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 class BotLifecycleManager(
     private val vertx: Vertx,

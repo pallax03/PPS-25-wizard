@@ -3,7 +3,8 @@ package it.unibo.pps.wizard.application.scalafx
 import io.vertx.core.Vertx
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext.WizardApplicationContextBuilder
 import it.unibo.pps.wizard.application.scalafx.pages.MainPage
-import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
+import it.unibo.pps.wizard.engine.ports.WizardAIPort
+import it.unibo.pps.wizard.engine.ports.WizardInboundPort
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
 

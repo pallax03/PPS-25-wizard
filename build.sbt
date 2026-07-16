@@ -13,6 +13,8 @@ val tuPrologVersion       = "4.1.1"
 ThisBuild / scalaVersion := scala3Version
 ThisBuild / scalacOptions := Seq("-Wunused:all", "-Wunused:imports", "-Werror", "-language:implicitConversions")
 
+ThisBuild / scalafixDependencies += "org.typelevel" %% "typelevel-scalafix" % "0.2.0"
+
 ThisBuild / libraryDependencies ++= Seq(
   "org.typelevel"             %%    "cats-core"               % catsVersion,
   "org.scalafx"               %%    "scalafx"                 % scalafxVersion,
@@ -30,9 +32,9 @@ lazy val root = (project in file("."))
         "it\\.unibo\\.pps\\.wizard\\.Main;" +
         "it\\.unibo\\.pps\\.wizard\\.application\\..*;" +
         "it\\.unibo\\.pps\\.wizard\\.engine\\.adapters\\..*;" +
-        "it\\.unibo\\.pps\\.wizard\\.engine\\.events\\..*"
+        "it\\.unibo\\.pps\\.wizard\\.engine\\.events\\..*",
 
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
-    wartremoverErrors ++= Warts.unsafe,
+//    wartremoverErrors ++= Warts.unsafe,
   )

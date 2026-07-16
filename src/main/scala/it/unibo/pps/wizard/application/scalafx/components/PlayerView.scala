@@ -1,12 +1,20 @@
 package it.unibo.pps.wizard.application.scalafx.components
 
-import it.unibo.pps.wizard.application.scalafx.util.{UiPhase, WizardTheme}
-import it.unibo.pps.wizard.engine.model.basic.{Bid, Player}
-import scalafx.geometry.{Insets, Pos}
+import it.unibo.pps.wizard.application.scalafx.util.UiPhase
+import it.unibo.pps.wizard.application.scalafx.util.WizardTheme
+import it.unibo.pps.wizard.engine.model.basic.Bid
+import it.unibo.pps.wizard.engine.model.basic.Player
+import scalafx.geometry.Insets
+import scalafx.geometry.Pos
 import scalafx.scene.Node
-import scalafx.scene.control.{Label, TextField}
-import scalafx.scene.layout.{HBox, Priority, VBox}
-import scalafx.scene.text.{Font, FontWeight}
+import scalafx.scene.control.Label
+import scalafx.scene.control.TextField
+import scalafx.scene.layout.HBox
+import scalafx.scene.layout.Priority
+import scalafx.scene.layout.VBox
+import scalafx.scene.text.Font
+import scalafx.scene.text.FontWeight
+
 import scala.compiletime.uninitialized
 
 /**

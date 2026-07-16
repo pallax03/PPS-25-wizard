@@ -1,8 +1,10 @@
 package it.unibo.pps.wizard.engine.events
 
-import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.basic.cards.{Hands, Card}
-import it.unibo.pps.wizard.engine.model.basic.gameplay.{Round, Trump}
+import it.unibo.pps.wizard.engine.model.basic._
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
+import it.unibo.pps.wizard.engine.model.basic.cards.Hands
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Trump
 
 /** Represents game progress updates, such as phase changes or round results. */
 sealed trait ProgressEvent extends WizardEvent
