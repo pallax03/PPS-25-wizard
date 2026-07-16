@@ -7,11 +7,23 @@ import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
 
+/**
+ * The WizardApplication object is the entry point of the Wizard game application.
+ * It extends JFXApp3 to provide a JavaFX application framework.
+ */
 object WizardApplication extends JFXApp3:
   private val contextBuilder: WizardApplicationContextBuilder = WizardApplicationContext.builder
 
   given applicationContext: WizardApplicationContext = this.contextBuilder.build
 
+  /**
+   * Launches the Wizard application with the specified inbound and hint ports, and the Vert.x instance.
+   *
+   * @param inboundPort the inbound port for receiving events
+   * @param hintPort the hint port for AI hints
+   * @param vertx the Vert.x instance used for event handling
+   * @param args command-line arguments passed to the application
+   */
   def launch(inboundPort: WizardInboundPort, hintPort: WizardAIPort, vertx: Vertx)(
       args: Array[String]
   ): Unit =

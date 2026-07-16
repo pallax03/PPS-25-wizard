@@ -6,6 +6,11 @@ import it.unibo.pps.wizard.engine.model.basic.{Bid, PlayerId, Players}
 import scalafx.scene.Node
 import scalafx.scene.layout.HBox
 
+/**
+ * The OpponentsManager class is responsible for managing the display and updates of opponent players in the game.
+ *
+ * @param container the HBox container that holds the opponent views
+ */
 class OpponentsManager(val container: HBox):
 
   private var opponents: Map[PlayerId, Node] = Map.empty
