@@ -109,7 +109,6 @@ object GameEngine:
                 List(
                   ActionEvent
                     .CardPlayed(playerId, playerName, card, winningCard, followingColor),
-                  ProgressEvent.IsTurnOf(nextPlayer, currentState.getClass.getSimpleName),
                   InvitationEvent.WaitingForCard(
                     nextPlayer,
                     hand.legalCards(updatedTable)
@@ -158,7 +157,6 @@ object GameEngine:
           List(
             ProgressEvent.PhaseChanged(GameState.Playing.toString),
             ActionEvent.BidPlaced(playerId, bid),
-            ProgressEvent.IsTurnOf(firstPlayer, GameState.Playing.toString),
             InvitationEvent.WaitingForCard(
               firstPlayer,
               hand.legalCards(Table.empty)
@@ -175,7 +173,6 @@ object GameEngine:
           ),
           List(
             ActionEvent.BidPlaced(playerId, bid),
-            ProgressEvent.IsTurnOf(nextPlayer, currentState.getClass.getSimpleName),
             InvitationEvent.WaitingForBid(nextPlayer, currentState.core.round)
           )
         )
@@ -209,7 +206,6 @@ object GameEngine:
         List(
           ActionEvent.TrumpColorResolved(playerId, color),
           ProgressEvent.PhaseChanged(nextState.getClass.getSimpleName),
-          ProgressEvent.IsTurnOf(nextState.currentPlayer, nextState.getClass.getSimpleName),
           InvitationEvent.WaitingForBid(nextState.currentPlayer, nextState.core.round)
         )
       )
@@ -230,12 +226,10 @@ object GameEngine:
     val specificEvents = gameState match
       case _: GameState.ChoosingTrump =>
         List(
-          ProgressEvent.IsTurnOf(core.dealerId, gameState.getClass.getSimpleName),
           InvitationEvent.WaitingForTrump(core.dealerId)
         )
       case bidding: GameState.Bidding =>
         List(
-          ProgressEvent.IsTurnOf(bidding.currentPlayer, gameState.getClass.getSimpleName),
           InvitationEvent.WaitingForBid(bidding.currentPlayer, round)
         )
       case _ => Nil
@@ -301,7 +295,6 @@ object GameEngine:
                 List(
                   ProgressEvent
                     .TrickWon(winnerId, updatedTricks(winnerId), completedTable.playedCards),
-                  ProgressEvent.IsTurnOf(winnerId, state.getClass.getSimpleName),
                   InvitationEvent.WaitingForCard(
                     winnerId,
                     hand.toList.filter(_.validateAgainst(Table.empty, hand).isRight)
@@ -351,12 +344,10 @@ object GameEngine:
       val specificEvents = gameState match
         case _: GameState.ChoosingTrump =>
           List(
-            ProgressEvent.IsTurnOf(nextDealer, gameState.getClass.getSimpleName),
             InvitationEvent.WaitingForTrump(nextDealer)
           )
         case bidding: GameState.Bidding =>
           List(
-            ProgressEvent.IsTurnOf(bidding.currentPlayer, gameState.getClass.getSimpleName),
             InvitationEvent.WaitingForBid(bidding.currentPlayer, nextRound)
           )
         case _ => Nil

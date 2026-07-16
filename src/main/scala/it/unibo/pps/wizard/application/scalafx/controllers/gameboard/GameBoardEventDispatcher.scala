@@ -94,8 +94,6 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
         PresentationScript(run(view.displayRoundScored(scoreboard, players)))
       case PhaseChanged(phase) =>
         PresentationScript(run(view.displayPhaseChanged(phase)))
-      case IsTurnOf(_, _) =>
-        PresentationScript()
 
   /**
    * Handles InvitationEvent types and creates a corresponding PresentationScript.
