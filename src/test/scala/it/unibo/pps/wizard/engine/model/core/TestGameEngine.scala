@@ -1,6 +1,6 @@
 package it.unibo.pps.wizard.engine.model.core
 
-import it.unibo.pps.wizard.engine.events.{ActionEvent, ProgressEvent}
+import it.unibo.pps.wizard.engine.events.{ActionEvent, LifecycleEvent, ProgressEvent}
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.cards.Card.*
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Table
@@ -26,6 +26,87 @@ class TestGameEngine extends AnyWordSpec with Matchers:
     CoreState.initialize(mockPlayers, round)
 
   "A GameEngine" should:
+    "initialize a new game correctly via initializeGame" in:
+      val engine = GameEngine.initializeGame(mockPlayers)
+
+      engine.state match
+        case _: GameState.Bidding       =>
+        case _: GameState.ChoosingTrump =>
+        case _ => fail("Expected GameState.Bidding or GameState.ChoosingTrump")
+
+      engine.events.exists(_.isInstanceOf[ProgressEvent.CardsDealt]) shouldBe true
+      engine.events.exists(_.isInstanceOf[ProgressEvent.PhaseChanged]) shouldBe true
+
+    "trigger completeRound and nextRoundOrEnd when the last trick of a round is played" in:
+      val c0 = Two of Blue
+      val c1 = Ten of Blue
+      val c2 = Four of Red
+      val c3 = Five of Blue
+
+      val hands = handsOf(
+        p4.id holds c3
+      )
+
+      val core = createMockCore(1).copy(hands = hands)
+      val currentTable = Table.empty + (p1.id -> c0) + (p2.id -> c1) + (p3.id -> c2)
+
+      val playingState = GameState.Playing(
+        core = core,
+        bids = Bids.empty,
+        table = currentTable,
+        currentPlayerTurn = p4.id,
+        tricksWon = Tricks.initialize(mockPlayers)
+      )
+
+      val action = GameAction.PlayCard(p4.id, c3)
+      val result = GameEngine.processAction(playingState, action)
+
+      result.isRight shouldBe true
+      result.foreach: engine =>
+        engine.state match
+          case bidding: GameState.Bidding =>
+            bidding.core.round.value shouldBe 2
+          case choosing: GameState.ChoosingTrump =>
+            choosing.core.round.value shouldBe 2
+          case _ => fail("Expected transition to Round 2 (Bidding or ChoosingTrump)")
+
+        engine.events.exists(_.isInstanceOf[ProgressEvent.RoundScored]) shouldBe true
+        engine.events.exists(_.isInstanceOf[ProgressEvent.CardsDealt]) shouldBe true
+
+    "trigger nextRoundOrEnd to end the game when the last trick of the final round is played" in:
+      val lastRound = 60 / mockPlayers.totalPlayers
+      val c0 = Two of Blue
+      val c1 = Ten of Blue
+      val c2 = Four of Red
+      val c3 = Five of Blue
+
+      val hands = handsOf(
+        p4.id holds c3
+      )
+
+      val core = createMockCore(lastRound).copy(hands = hands)
+      val currentTable = Table.empty + (p1.id -> c0) + (p2.id -> c1) + (p3.id -> c2)
+
+      val playingState = GameState.Playing(
+        core = core,
+        bids = Bids.empty,
+        table = currentTable,
+        currentPlayerTurn = p4.id,
+        tricksWon = Tricks.initialize(mockPlayers)
+      )
+
+      val action = GameAction.PlayCard(p4.id, c3)
+      val result = GameEngine.processAction(playingState, action)
+
+      result.isRight shouldBe true
+      result.foreach: engine =>
+        engine.state match
+          case _: GameState.Ended =>
+          case _                  => fail("Expected GameState.Ended")
+
+        engine.events.exists(_.isInstanceOf[ProgressEvent.RoundScored]) shouldBe true
+        engine.events.exists(_.isInstanceOf[LifecycleEvent.GameEnded]) shouldBe true
+
     "allow resolving an unresolved wizard trump during ChoosingTrump phase" in:
       val core = createMockCore(1).updateTrump(Option(wizard).asTrump)
       val choosingState = GameState.ChoosingTrump(core)
@@ -152,3 +233,12 @@ class TestGameEngine extends AnyWordSpec with Matchers:
             nextState.tricksWon(p2.id) shouldBe Trick(1)
             nextState.currentPlayerTurn shouldBe p2.id
           case _ => fail("Expected GameState.Playing")
+
+    "fail with InvalidAction when does not match the current game state" in:
+      val core = createMockCore(1)
+      val choosingState = GameState.ChoosingTrump(core)
+      val action = GameAction.PlaceBid(p1.id, Bid(1))
+
+      val result = GameEngine.processAction(choosingState, action)
+
+      result shouldBe Left(InvalidAction)

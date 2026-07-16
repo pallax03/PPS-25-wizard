@@ -30,6 +30,13 @@ class MainPageController(stage: Stage)(using context: WizardApplicationContext)
   def initialize(): Unit =
     botsDifficultyCombo.getItems.setAll(BotsDifficulty.values*)
     botsDifficultyCombo.setValue(BotsDifficulty.Dumb)
+    context.botLifecycleManager
+      .shutdownBotManager()
+      .onComplete:
+        case Success(_) =>
+          println("Bot manager shutdown completed successfully.")
+        case Failure(exception) =>
+          throw exception
 
   /**
    * Handles the click event of the "Start Game" button. It retrieves the player name, number of opponents, and bots difficulty from the UI components,
@@ -46,20 +53,24 @@ class MainPageController(stage: Stage)(using context: WizardApplicationContext)
     val gameBoardPage = GameBoardPage(stage, currentPlayerId)
 
     println(s"Configuration:\n  Player Name: $playerName, Opponents: $opponentsNum")
+
+    def startGame(): Unit =
+      println("Bot manager setup completed successfully.")
+      context.inboundPort
+        .startGame(players, GameConfiguration(playerName, opponentsNum, botsDifficulty))
+        .onComplete:
+          case Success(_) =>
+            runOnUi:
+              gameBoardPage._1.title =
+                s"${gameBoardPage._1.title.value}: Bots: ${botsDifficultyCombo.value.value}"
+              gameBoardPage._1.show()
+          case Failure(exception) =>
+            throw exception
+
     context.botLifecycleManager
       .setupNewBotManager()
       .onComplete:
         case Success(_) =>
-          println("Bot manager setup completed successfully.")
-          context.inboundPort
-            .startGame(players, GameConfiguration(playerName, opponentsNum, botsDifficulty))
-            .onComplete:
-              case Success(_) =>
-                runOnUi:
-                  gameBoardPage._1.title =
-                    s"${gameBoardPage._1.title.value}: Bots: ${botsDifficultyCombo.value.value}"
-                  gameBoardPage._1.show()
-              case Failure(exception) =>
-                throw exception
+          startGame()
         case Failure(exception) =>
           throw exception
