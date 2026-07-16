@@ -3,10 +3,12 @@ package it.unibo.pps.wizard.engine.model.core
 import it.unibo.pps.wizard.engine.events.{ActionEvent, ProgressEvent}
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.Card.*
-import it.unibo.pps.wizard.engine.model.basic.Hand.*
 import it.unibo.pps.wizard.engine.model.core.GameError.*
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+
+import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL.*
+import scala.language.postfixOps
 
 class TestGameEngine extends AnyWordSpec with Matchers:
 
@@ -64,7 +66,9 @@ class TestGameEngine extends AnyWordSpec with Matchers:
       result shouldBe Left(NotYourTurn)
 
     "transition from Bidding to Playing phase when the last player places their bid" in:
-      val hands = Hands.empty + (p1.id -> (Five of Red).asHand)
+      val hands = handsOf(
+        p1.id holds (Five of Red)
+      )
       val core = createMockCore(1).copy(hands = hands)
 
       val currentBids = Bids.empty + (p1.id -> Bid(0)) + (p2.id -> Bid(1)) + (p3.id -> Bid(0))
@@ -85,7 +89,10 @@ class TestGameEngine extends AnyWordSpec with Matchers:
 
     "allow playing a card, removing it from hand and adding it to the table" in:
       val c1 = Five of Blue
-      val hands = Hands.empty + (p1.id -> c1.asHand) + (p2.id -> c1.asHand)
+      val hands = handsOf(
+        p1.id holds c1,
+        p2.id holds c1
+      )
       val core = createMockCore(1).copy(hands = hands)
 
       val playingState = GameState.Playing(
@@ -114,11 +121,12 @@ class TestGameEngine extends AnyWordSpec with Matchers:
       val c3 = Five of Blue
 
       val extraCard = Three of Yellow
-      val hands = Hands.empty
-        + (p1.id -> extraCard.asHand)
-        + (p2.id -> extraCard.asHand)
-        + (p3.id -> extraCard.asHand)
-        + (p4.id -> (c3 - extraCard).asHand)
+      val hands = handsOf(
+        p1.id holds extraCard,
+        p2.id holds extraCard,
+        p3.id holds extraCard,
+        p4.id holds (c3 - extraCard)
+      )
 
       val core = createMockCore(2).copy(hands = hands)
       val currentTable = Table.empty + (p1.id -> c0) + (p2.id -> c1) + (p3.id -> c2)

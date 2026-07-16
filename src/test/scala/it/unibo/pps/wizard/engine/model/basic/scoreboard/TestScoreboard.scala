@@ -1,5 +1,6 @@
-package it.unibo.pps.wizard.engine.model.basic
+package it.unibo.pps.wizard.engine.model.basic.scoreboard
 
+import it.unibo.pps.wizard.engine.model.basic.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

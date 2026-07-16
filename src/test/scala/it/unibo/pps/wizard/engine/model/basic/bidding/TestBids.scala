@@ -1,5 +1,6 @@
-package it.unibo.pps.wizard.engine.model.basic
+package it.unibo.pps.wizard.engine.model.basic.bidding
 
+import it.unibo.pps.wizard.engine.model.basic.{Bid, Bids, PlayerId, Round}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

@@ -92,10 +92,11 @@ object GameEngine:
         for
           _ <- currentState.currentPlayerTurn.validateTurnOf(playerId)
           _ <- card.validateAgainst(currentState.table, playerHand)
+          updatedHands <- currentState.core.hands
+            .remove(playerId, card)
+            .toRight(GameError.InconsistentState(HandNotFoundFor(playerId)))
 
-          updatedCore = currentState.core.copy(hands =
-            currentState.core.hands.remove(playerId, card)
-          )
+          updatedCore = currentState.core.copy(hands = updatedHands)
           updatedTable = currentState.table + (playerId, card)
           winningCard = updatedTable.evaluateTrick(currentState.core.trump)
           followingColor = updatedTable.followingColor

@@ -7,11 +7,11 @@ import it.unibo.pps.wizard.engine.model.core.GameError
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL.*
 import scala.language.postfixOps
 
 class TestTableRules extends AnyWordSpec with Matchers:
   import Card.*
-  import Hand.*
   import Table.*
   import TableRules.*
 

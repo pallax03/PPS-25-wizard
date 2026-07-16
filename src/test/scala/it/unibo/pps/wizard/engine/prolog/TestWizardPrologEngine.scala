@@ -8,6 +8,8 @@ import it.unibo.pps.wizard.engine.model.rules.TableRules.*
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL.*
+
 class TestWizardPrologEngine extends AnyWordSpec with Matchers:
 
   "WizardPrologEngine" should:
