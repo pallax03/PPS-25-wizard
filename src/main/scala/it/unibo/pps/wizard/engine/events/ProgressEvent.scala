@@ -4,6 +4,7 @@ import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.cards.{Hands, Card}
 import it.unibo.pps.wizard.engine.model.basic.gameplay.{Round, Trump}
 
+/** Represents game progress updates, such as phase changes or round results. */
 sealed trait ProgressEvent extends WizardEvent
 
 object ProgressEvent:
@@ -11,6 +12,5 @@ object ProgressEvent:
       extends ProgressEvent
   case class TrickWon(winnerId: PlayerId, tricksWon: Trick, trickedCards: List[Card])
       extends ProgressEvent
-  case class IsTurnOf(currentPlayer: PlayerId, phase: String) extends ProgressEvent
   case class RoundScored(scoreboard: Scoreboard, players: Players) extends ProgressEvent
   case class PhaseChanged(phaseName: String) extends ProgressEvent

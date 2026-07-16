@@ -18,6 +18,17 @@ import scala.concurrent.{Future, Promise}
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success}
 
+/**
+ * A Verticle responsible for managing the lifecycle and the reaction loop of game bots.
+ *
+ * This component orchestrates bot behavior by:
+ * 1. Listening to game lifecycle events to register/deregister bots when a game starts or ends.
+ * 2. Subscribing to [[InvitationEvent]] and [[FailureEvent]] to trigger bot logic.
+ * 3. Introducing artificial delays (via [[delayed]]) to simulate human thinking time,
+ *    ensuring the game flow is not instantaneous.
+ *
+ * It delegates the actual strategy execution to instances of [[BotStrategy]].
+ */
 class BotManagerVerticle(
     wizardInboundPort: WizardInboundPort,
     wizardAIPort: WizardAIPort

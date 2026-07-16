@@ -27,13 +27,6 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
 
   private val engine = WizardPrologEngine()
 
-  /**
-   * Ensures that AI actions are only executed when the game is in the 'Running' phase.
-   *
-   * @throws IllegalStateException
-   *  - if [[WizardGameAdapter]] is not in a valid Running(state)
-   *  - if any api is not be called in a specific [[GameState]]
-   */
   private def onRunningPhase[T](actionName: String)(
       phaseLogic: PartialFunction[GameState, Future[T]]
   ): Future[T] =
@@ -45,13 +38,13 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
         )
       case _ => Future.failed(IllegalStateException("Game is not running"))
 
-  /** Helper to retrieve the player's hand, failing the future if the player is missing. */
   private def withHand[T](handOpt: Option[Hand])(prologLogic: Hand => T): Future[T] =
     handOpt match
       case Some(hand) => Future.successful(prologLogic(hand))
       case None       => Future.failed(IllegalArgumentException("Player not found in game state"))
 
   /**
+   * @inheritdoc
    * @param playerId given a player, retrieve every playerId's data
    * @return the best Color to resolve trump
    * @note falls back to the first Card.Color.values
@@ -63,8 +56,7 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
           engine.chooseTrumpColor(hand).getOrElse(Card.Color.values.head)
 
   /**
-   * Queries Prolog to suggest a bid for the specified player.
-   *
+   * @inheritdoc
    * @param playerId the ID of the player requesting the bid.
    * @return A suggested [[Bid]].
    * @see [[adjustBid]] for adjest teh suggested bid to a valid bid, based on the suggested.
@@ -79,8 +71,7 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
             .getOrElse(firstValidBid(core.round, currentBids, core.players.totalPlayers))
 
   /**
-   * Queries Prolog to provide an adjusted bid after the initial bid was rejected.
-   *
+   * @inheritdoc
    * @param playerId the ID of the player requesting the adjustment.
    * @return A valid [[Bid]] that satisfies game constraints.
    * @note falls back to [[firstValidBid]].
@@ -96,8 +87,7 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
             .getOrElse(firstValidBid(core.round, currentBids, core.players.totalPlayers))
 
   /**
-   * Evaluates the best legal card to play from the player's hand.
-   *
+   * @inheritdoc
    * @param playerId the ID of the player.
    * @return The best [[Card]] to play.
    * @note If Prolog fails or suggests a card not in `legalCards`, it falls back to
@@ -120,13 +110,6 @@ class WizardPrologAdapter(private val inboundPort: WizardInboundPort) extends Wi
             .filter(legalCards.contains)
             .getOrElse(legalCards.head)
 
-  /**
-   * Calculate a valid Bid for the specified round.
-   * @param round current round
-   * @param bids every bid
-   * @param totalPlayers number of the total players
-   * @return a valid bid.
-   */
   private def firstValidBid(round: Round, bids: Bids, totalPlayers: Int): Bid =
     (0 to round.value)
       .map(Bid(_))

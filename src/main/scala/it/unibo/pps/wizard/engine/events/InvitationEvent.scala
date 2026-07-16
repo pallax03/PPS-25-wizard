@@ -4,6 +4,7 @@ import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
 import it.unibo.pps.wizard.engine.model.basic.cards.Card
 import it.unibo.pps.wizard.engine.model.basic.PlayerId
 
+/** Represents a request for input for a specific player. */
 sealed trait InvitationEvent extends WizardEvent, PlayerScoped
 
 object InvitationEvent:
