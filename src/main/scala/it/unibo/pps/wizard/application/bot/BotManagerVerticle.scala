@@ -2,21 +2,23 @@ package it.unibo.pps.wizard.application.bot
 
 import io.vertx.core.AbstractVerticle
 import it.unibo.pps.wizard.application.bot.strategy.BotStrategy
-import it.unibo.pps.wizard.engine.events.{
-  FailureEvent,
-  InvitationEvent,
-  LifecycleEvent,
-  PlayerScoped
-}
-import it.unibo.pps.wizard.engine.model.basic.{PlayerId, Players}
+import it.unibo.pps.wizard.engine.events.FailureEvent
+import it.unibo.pps.wizard.engine.events.InvitationEvent
+import it.unibo.pps.wizard.engine.events.LifecycleEvent
+import it.unibo.pps.wizard.engine.events.PlayerScoped
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
+import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.configuration.BotsDifficulty
 import it.unibo.pps.wizard.engine.model.core.GameAction
-import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
+import it.unibo.pps.wizard.engine.ports.WizardAIPort
+import it.unibo.pps.wizard.engine.ports.WizardInboundPort
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.Future
+import scala.concurrent.Promise
 import scala.reflect.ClassTag
-import scala.util.{Failure, Success}
+import scala.util.Failure
+import scala.util.Success
 
 /**
  * A Verticle responsible for managing the lifecycle and the reaction loop of game bots.

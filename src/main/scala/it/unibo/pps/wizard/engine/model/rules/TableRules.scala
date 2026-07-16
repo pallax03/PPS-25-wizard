@@ -1,9 +1,9 @@
 package it.unibo.pps.wizard.engine.model.rules
 
-import it.unibo.pps.wizard.engine.model.basic.cards.*
-import it.unibo.pps.wizard.engine.model.basic.gameplay.*
+import it.unibo.pps.wizard.engine.model.basic.cards._
+import it.unibo.pps.wizard.engine.model.basic.gameplay._
+import it.unibo.pps.wizard.engine.model.core.CardNotAllowedReasons._
 import it.unibo.pps.wizard.engine.model.core.GameError
-import it.unibo.pps.wizard.engine.model.core.CardNotAllowedReasons.*
 
 /** Defines the rules for card validation and trick evaluation. */
 object TableRules:

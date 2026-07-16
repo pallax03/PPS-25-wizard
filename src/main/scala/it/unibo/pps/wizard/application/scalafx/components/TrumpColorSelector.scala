@@ -2,12 +2,14 @@ package it.unibo.pps.wizard.application.scalafx.components
 
 import it.unibo.pps.wizard.engine.model.basic.cards.Card
 import scalafx.geometry.Insets
-import scalafx.scene.control.{Button, Label}
+import scalafx.scene.control.Button
+import scalafx.scene.control.Label
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.layout.VBox
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Circle
-import scalafx.scene.text.{Font, FontWeight}
+import scalafx.scene.text.Font
+import scalafx.scene.text.FontWeight
 
 class TrumpColorSelector(onColorSelected: Card.Color => Unit) extends VBox:
   private val titleLabel = new Label("Select a Color:"):

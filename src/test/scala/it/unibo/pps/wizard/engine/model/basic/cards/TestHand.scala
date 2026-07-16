@@ -1,14 +1,13 @@
 package it.unibo.pps.wizard.engine.model.basic.cards
 
+import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL._
 import it.unibo.pps.wizard.engine.model.basic.PlayerId
-
-import it.unibo.pps.wizard.engine.model.basic.cards.*
-import it.unibo.pps.wizard.engine.model.basic.cards.Card.{jester, wizard}
-
+import it.unibo.pps.wizard.engine.model.basic.cards.Card.jester
+import it.unibo.pps.wizard.engine.model.basic.cards.Card.wizard
+import it.unibo.pps.wizard.engine.model.basic.cards._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL.*
 import scala.language.postfixOps
 
 class TestHand extends AnyWordSpec with Matchers:

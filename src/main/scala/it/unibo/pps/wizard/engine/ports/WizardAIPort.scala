@@ -1,7 +1,8 @@
 package it.unibo.pps.wizard.engine.ports
 
+import it.unibo.pps.wizard.engine.model.basic.Bid
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
 import it.unibo.pps.wizard.engine.model.basic.cards.Card
-import it.unibo.pps.wizard.engine.model.basic.{PlayerId, Bid}
 
 import scala.concurrent.Future
 

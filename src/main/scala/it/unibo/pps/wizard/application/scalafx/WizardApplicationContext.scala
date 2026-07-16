@@ -2,7 +2,8 @@ package it.unibo.pps.wizard.application.scalafx
 
 import io.vertx.core.Vertx
 import it.unibo.pps.wizard.application.bot.BotLifecycleManager
-import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
+import it.unibo.pps.wizard.engine.ports.WizardAIPort
+import it.unibo.pps.wizard.engine.ports.WizardInboundPort
 import scalafx.stage.Stage
 
 /** Represents the context of the Wizard application, providing access to the primary stage, inbound port, hint port, and bot lifecycle manager. */

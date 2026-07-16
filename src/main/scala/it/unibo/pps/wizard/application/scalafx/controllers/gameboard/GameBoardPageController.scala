@@ -1,36 +1,41 @@
 package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
-import it.unibo.pps.wizard.application.scalafx.components.*
+import it.unibo.pps.wizard.application.scalafx.components._
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
-import it.unibo.pps.wizard.application.scalafx.managers.{
-  HandManager,
-  OpponentsManager,
-  TableManager,
-  TrumpManager
-}
-import it.unibo.pps.wizard.application.scalafx.pages.{MainPage, ScoreboardPage}
-import it.unibo.pps.wizard.application.scalafx.util.{UiPhase, WizardTheme}
-import it.unibo.pps.wizard.engine.model.basic.{
-  Bid,
-  PlayerId,
-  PlayerName,
-  Players,
-  RoundRow,
-  Scoreboard,
-  Trick
-}
-import it.unibo.pps.wizard.engine.model.basic.cards.*
-import it.unibo.pps.wizard.engine.model.basic.gameplay.*
-import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
+import it.unibo.pps.wizard.application.scalafx.managers.HandManager
+import it.unibo.pps.wizard.application.scalafx.managers.OpponentsManager
+import it.unibo.pps.wizard.application.scalafx.managers.TableManager
+import it.unibo.pps.wizard.application.scalafx.managers.TrumpManager
+import it.unibo.pps.wizard.application.scalafx.pages.MainPage
+import it.unibo.pps.wizard.application.scalafx.pages.ScoreboardPage
+import it.unibo.pps.wizard.application.scalafx.util.UiPhase
+import it.unibo.pps.wizard.application.scalafx.util.WizardTheme
+import it.unibo.pps.wizard.engine.model.basic.Bid
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
+import it.unibo.pps.wizard.engine.model.basic.PlayerName
+import it.unibo.pps.wizard.engine.model.basic.Players
+import it.unibo.pps.wizard.engine.model.basic.RoundRow
+import it.unibo.pps.wizard.engine.model.basic.Scoreboard
+import it.unibo.pps.wizard.engine.model.basic.Trick
+import it.unibo.pps.wizard.engine.model.basic.cards._
+import it.unibo.pps.wizard.engine.model.basic.gameplay._
 import it.unibo.pps.wizard.engine.model.core.GameAction
-import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
-import javafx.event.ActionEvent as JfxActionEvent
-import javafx.scene.control.{Button, Alert as JfxAlert, ButtonType as JfxButtonType}
-import javafx.scene.layout.{HBox, StackPane, VBox}
+import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
+import javafx.animation.ParallelTransition
+import javafx.animation.ScaleTransition
+import javafx.animation.TranslateTransition
+import javafx.event.{ActionEvent => JfxActionEvent}
+import javafx.scene.control.Button
+import javafx.scene.control.{Alert => JfxAlert}
+import javafx.scene.control.{ButtonType => JfxButtonType}
+import javafx.scene.layout.HBox
+import javafx.scene.layout.StackPane
+import javafx.scene.layout.VBox
 import scalafx.scene.Node
 import scalafx.scene.control.Label
-import scalafx.stage.{Modality, Stage}
+import scalafx.stage.Modality
+import scalafx.stage.Stage
 import scalafx.util.Duration
 
 import scala.compiletime.uninitialized

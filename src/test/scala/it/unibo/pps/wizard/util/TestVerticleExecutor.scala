@@ -6,7 +6,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.Await
-import scala.concurrent.duration.{Duration, SECONDS}
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.SECONDS
 
 class TestVerticleExecutor extends AnyWordSpec with Matchers:
   private val verticleExecutor: VerticleExecutor = VerticleExecutor(Vertx.vertx())

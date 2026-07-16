@@ -2,15 +2,18 @@ package it.unibo.pps.wizard.application.scalafx.controllers.scoreboard
 
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
-import it.unibo.pps.wizard.engine.model.basic.{Players, RoundRow}
-import javafx.collections.{ListChangeListener, ObservableList}
-import javafx.scene.control.{TableColumn as FXTableColumn, TableView as FXTableView}
+import it.unibo.pps.wizard.engine.model.basic.Players
+import it.unibo.pps.wizard.engine.model.basic.RoundRow
+import javafx.collections.ListChangeListener
+import javafx.collections.ObservableList
+import javafx.scene.control.{TableColumn => FXTableColumn}
+import javafx.scene.control.{TableView => FXTableView}
 import scalafx.beans.property.StringProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.stage.Stage
 
 import scala.annotation.nowarn
-import scala.jdk.CollectionConverters.*
+import scala.jdk.CollectionConverters._
 
 class ScoreboardPageController(stage: Stage)(using context: WizardApplicationContext)
     extends Controller(stage):

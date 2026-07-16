@@ -1,10 +1,12 @@
 package it.unibo.pps.wizard.application.bot.strategy
 
-import it.unibo.pps.wizard.engine.events.{FailureEvent, InvitationEvent}
-import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
-import it.unibo.pps.wizard.engine.model.basic.cards.Card
+import it.unibo.pps.wizard.engine.events.FailureEvent
+import it.unibo.pps.wizard.engine.events.InvitationEvent
 import it.unibo.pps.wizard.engine.model.basic.Bid
-import it.unibo.pps.wizard.engine.model.core.{GameAction, GameError}
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
+import it.unibo.pps.wizard.engine.model.core.GameAction
+import it.unibo.pps.wizard.engine.model.core.GameError
 
 import scala.concurrent.Future
 import scala.util.Random

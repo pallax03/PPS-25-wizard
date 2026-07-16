@@ -1,19 +1,18 @@
 package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
-import it.unibo.pps.wizard.application.scalafx.util.{
-  PresentationQueue,
-  PresentationScript,
-  PresentationStep,
-  UiPhase
-}
-import it.unibo.pps.wizard.engine.events.*
-import it.unibo.pps.wizard.engine.events.ActionEvent.*
-import it.unibo.pps.wizard.engine.events.ProgressEvent.*
-import it.unibo.pps.wizard.engine.events.InvitationEvent.*
-import it.unibo.pps.wizard.engine.events.LifecycleEvent.*
-import it.unibo.pps.wizard.engine.events.FailureEvent.*
-import it.unibo.pps.wizard.engine.model.core.{CardNotAllowedReasons, GameError}
+import it.unibo.pps.wizard.application.scalafx.util.PresentationQueue
+import it.unibo.pps.wizard.application.scalafx.util.PresentationScript
+import it.unibo.pps.wizard.application.scalafx.util.PresentationStep
+import it.unibo.pps.wizard.application.scalafx.util.UiPhase
+import it.unibo.pps.wizard.engine.events.ActionEvent._
+import it.unibo.pps.wizard.engine.events.FailureEvent._
+import it.unibo.pps.wizard.engine.events.InvitationEvent._
+import it.unibo.pps.wizard.engine.events.LifecycleEvent._
+import it.unibo.pps.wizard.engine.events.ProgressEvent._
+import it.unibo.pps.wizard.engine.events._
+import it.unibo.pps.wizard.engine.model.core.CardNotAllowedReasons
+import it.unibo.pps.wizard.engine.model.core.GameError
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

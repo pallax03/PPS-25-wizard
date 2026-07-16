@@ -1,13 +1,14 @@
 package it.unibo.pps.wizard.engine.model.core
 
-import GameError.*
-import it.unibo.pps.wizard.engine.events.*
-import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.basic.cards.*
-import it.unibo.pps.wizard.engine.model.basic.gameplay.{Round, Table}
-import it.unibo.pps.wizard.engine.model.core.InconsistentStateReasons.*
+import it.unibo.pps.wizard.engine.events._
+import it.unibo.pps.wizard.engine.model.basic._
+import it.unibo.pps.wizard.engine.model.basic.cards._
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Table
+import it.unibo.pps.wizard.engine.model.core.InconsistentStateReasons._
+import it.unibo.pps.wizard.engine.model.rules._
 
-import it.unibo.pps.wizard.engine.model.rules.*
+import GameError._
 
 /**
  * The GameEngine is responsible for processing game actions and managing the game state.

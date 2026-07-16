@@ -1,8 +1,10 @@
 package it.unibo.pps.wizard.application.scalafx.components
 
-import it.unibo.pps.wizard.application.scalafx.util.{UiPhase, WizardTheme}
+import it.unibo.pps.wizard.application.scalafx.util.UiPhase
+import it.unibo.pps.wizard.application.scalafx.util.WizardTheme
 import scalafx.scene.control.Label
-import scalafx.scene.text.{Font, FontWeight}
+import scalafx.scene.text.Font
+import scalafx.scene.text.FontWeight
 
 /**
  * A view that displays the current round and phase of the game.

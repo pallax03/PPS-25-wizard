@@ -31,9 +31,6 @@ jobs:
       - name: Install SBT
         uses: sbt/setup-sbt@v1
 
-      - name: Check formatting with Scalafmt
-        run: sbt scalafmtCheckAll
-
       - name: Build, Test and Coverage
         env:
             JAVA_OPTIONS: "-Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw"

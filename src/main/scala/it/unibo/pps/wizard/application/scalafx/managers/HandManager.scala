@@ -1,9 +1,12 @@
 package it.unibo.pps.wizard.application.scalafx.managers
 
 import it.unibo.pps.wizard.application.scalafx.components.CardView
-import it.unibo.pps.wizard.engine.model.basic.cards.{Card, Hand}
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
+import it.unibo.pps.wizard.engine.model.basic.cards.Hand
 import scalafx.Includes.jfxMouseEvent2sfx
-import scalafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
+import scalafx.animation.ParallelTransition
+import scalafx.animation.ScaleTransition
+import scalafx.animation.TranslateTransition
 import scalafx.scene.layout.HBox
 import scalafx.scene.paint.Color
 import scalafx.util.Duration

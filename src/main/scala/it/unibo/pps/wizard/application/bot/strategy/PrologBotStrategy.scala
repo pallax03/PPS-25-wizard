@@ -1,11 +1,13 @@
 package it.unibo.pps.wizard.application.bot.strategy
 
-import it.unibo.pps.wizard.engine.events.{FailureEvent, InvitationEvent}
-import it.unibo.pps.wizard.engine.model.core.{GameAction, GameError}
+import it.unibo.pps.wizard.engine.events.FailureEvent
+import it.unibo.pps.wizard.engine.events.InvitationEvent
+import it.unibo.pps.wizard.engine.model.core.GameAction
+import it.unibo.pps.wizard.engine.model.core.GameError
 import it.unibo.pps.wizard.engine.ports.WizardAIPort
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
  * An intelligent implementation of [[BotStrategy]] that leverages the [[WizardAIPort]].

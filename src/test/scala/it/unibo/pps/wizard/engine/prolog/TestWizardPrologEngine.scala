@@ -1,15 +1,14 @@
 package it.unibo.pps.wizard.engine.prolog
 
-import it.unibo.pps.wizard.engine.model.basic.cards.Card.*
-import it.unibo.pps.wizard.engine.model.basic.cards.Hand.*
+import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL._
+import it.unibo.pps.wizard.engine.model.basic.Bid
+import it.unibo.pps.wizard.engine.model.basic.Trick
+import it.unibo.pps.wizard.engine.model.basic.cards.Card._
+import it.unibo.pps.wizard.engine.model.basic.cards.Hand._
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Table
-import it.unibo.pps.wizard.engine.model.basic.{Bid, Trick}
-import it.unibo.pps.wizard.engine.model.rules.TableRules.*
-
+import it.unibo.pps.wizard.engine.model.rules.TableRules._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-
-import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL.*
 
 class TestWizardPrologEngine extends AnyWordSpec with Matchers:
 

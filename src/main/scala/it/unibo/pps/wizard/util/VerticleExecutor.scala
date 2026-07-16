@@ -3,8 +3,10 @@ package it.unibo.pps.wizard.util
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.Message
 
-import scala.collection.concurrent.{Map, TrieMap}
-import scala.concurrent.{Future, Promise}
+import scala.collection.concurrent.Map
+import scala.collection.concurrent.TrieMap
+import scala.concurrent.Future
+import scala.concurrent.Promise
 import scala.util.Try
 
 /**

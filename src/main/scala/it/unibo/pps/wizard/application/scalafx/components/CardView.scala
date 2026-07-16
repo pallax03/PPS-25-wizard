@@ -2,14 +2,16 @@ package it.unibo.pps.wizard.application.scalafx.components
 
 import it.unibo.pps.wizard.application.scalafx.util.WizardTheme
 import it.unibo.pps.wizard.engine.model.basic.cards.Card
-
 import scalafx.geometry.Pos
 import scalafx.scene.effect.DropShadow
-import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.image.Image
+import scalafx.scene.image.ImageView
 import scalafx.scene.layout.StackPane
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Rectangle
-import scalafx.scene.text.{Font, FontWeight, Text}
+import scalafx.scene.text.Font
+import scalafx.scene.text.FontWeight
+import scalafx.scene.text.Text
 
 class CardView(val card: Card) extends StackPane:
   alignment = Pos.Center

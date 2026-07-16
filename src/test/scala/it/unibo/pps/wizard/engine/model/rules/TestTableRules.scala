@@ -1,17 +1,16 @@
 package it.unibo.pps.wizard.engine.model.rules
 
-import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL._
+import it.unibo.pps.wizard.engine.model.basic._
 import it.unibo.pps.wizard.engine.model.basic.cards.Card
-import it.unibo.pps.wizard.engine.model.basic.cards.Card.*
-import it.unibo.pps.wizard.engine.model.basic.gameplay.{Table, Trump}
-
-import it.unibo.pps.wizard.engine.model.core.CardNotAllowedReasons.*
+import it.unibo.pps.wizard.engine.model.basic.cards.Card._
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Table
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Trump
+import it.unibo.pps.wizard.engine.model.core.CardNotAllowedReasons._
 import it.unibo.pps.wizard.engine.model.core.GameError
-
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL.*
 import scala.language.postfixOps
 
 class TestTableRules extends AnyWordSpec with Matchers:

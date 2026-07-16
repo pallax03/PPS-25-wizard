@@ -1,6 +1,8 @@
 package it.unibo.pps.wizard.application.scalafx.components
 
-import scalafx.animation.{FadeTransition, PauseTransition, SequentialTransition}
+import scalafx.animation.FadeTransition
+import scalafx.animation.PauseTransition
+import scalafx.animation.SequentialTransition
 import scalafx.scene.control.Label
 import scalafx.util.Duration
 

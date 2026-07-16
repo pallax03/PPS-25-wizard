@@ -1,10 +1,14 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import cats.data.State
-import it.unibo.pps.wizard.engine.model.basic.{Bids, PlayerId, Players}
-import it.unibo.pps.wizard.engine.model.basic.gameplay.*
-import it.unibo.pps.wizard.engine.model.basic.cards.*
-import it.unibo.pps.wizard.engine.model.core.{CoreState, GameError, GameState}
+import it.unibo.pps.wizard.engine.model.basic.Bids
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
+import it.unibo.pps.wizard.engine.model.basic.Players
+import it.unibo.pps.wizard.engine.model.basic.cards._
+import it.unibo.pps.wizard.engine.model.basic.gameplay._
+import it.unibo.pps.wizard.engine.model.core.CoreState
+import it.unibo.pps.wizard.engine.model.core.GameError
+import it.unibo.pps.wizard.engine.model.core.GameState
 
 object RoundManager:
 

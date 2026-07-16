@@ -1,15 +1,13 @@
 package it.unibo.pps.wizard.engine.adapters
 
 import io.vertx.core.Vertx
+import it.unibo.pps.wizard.engine.events.ActionEvent
 import it.unibo.pps.wizard.engine.events.Event.addressOf
-import it.unibo.pps.wizard.engine.events.{
-  ActionEvent,
-  FailureEvent,
-  InvitationEvent,
-  LifecycleEvent,
-  ProgressEvent,
-  WizardEvent
-}
+import it.unibo.pps.wizard.engine.events.FailureEvent
+import it.unibo.pps.wizard.engine.events.InvitationEvent
+import it.unibo.pps.wizard.engine.events.LifecycleEvent
+import it.unibo.pps.wizard.engine.events.ProgressEvent
+import it.unibo.pps.wizard.engine.events.WizardEvent
 import it.unibo.pps.wizard.engine.ports.WizardOutboundPort
 
 import scala.concurrent.Future

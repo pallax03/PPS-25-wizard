@@ -3,13 +3,20 @@ package it.unibo.pps.wizard.application.scalafx.controllers.mainpage
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
 import it.unibo.pps.wizard.application.scalafx.pages.GameBoardPage
-import it.unibo.pps.wizard.engine.model.basic.{Player, PlayerId, PlayerName, Players}
-import it.unibo.pps.wizard.engine.model.configuration.{BotsDifficulty, GameConfiguration}
-import javafx.scene.control.{Button, ComboBox, TextField}
+import it.unibo.pps.wizard.engine.model.basic.Player
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
+import it.unibo.pps.wizard.engine.model.basic.PlayerName
+import it.unibo.pps.wizard.engine.model.basic.Players
+import it.unibo.pps.wizard.engine.model.configuration.BotsDifficulty
+import it.unibo.pps.wizard.engine.model.configuration.GameConfiguration
+import javafx.scene.control.Button
+import javafx.scene.control.ComboBox
+import javafx.scene.control.TextField
 import scalafx.stage.Stage
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
+import scala.util.Failure
+import scala.util.Success
 
 /**
  * Controller for the main page of the application, responsible for handling user interactions and managing the state of the main page.

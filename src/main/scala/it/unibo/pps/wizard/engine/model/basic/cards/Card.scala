@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.model.basic.cards
 
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Trump
+
 import java.util.concurrent.atomic.AtomicInteger
 
 /**

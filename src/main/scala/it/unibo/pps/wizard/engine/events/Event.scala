@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.events
 
-import scala.reflect.{ClassTag, classTag}
+import scala.reflect.ClassTag
+import scala.reflect.classTag
 
 /** Represents an event in the game engine. */
 trait Event

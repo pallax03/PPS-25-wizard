@@ -1,6 +1,9 @@
 package it.unibo.pps.wizard.engine.model.basic.players
 
-import it.unibo.pps.wizard.engine.model.basic.{Player, PlayerId, PlayerName, Players}
+import it.unibo.pps.wizard.engine.model.basic.Player
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
+import it.unibo.pps.wizard.engine.model.basic.PlayerName
+import it.unibo.pps.wizard.engine.model.basic.Players
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

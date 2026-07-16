@@ -1,6 +1,6 @@
 package it.unibo.pps.wizard.engine.events
 
-import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic._
 import it.unibo.pps.wizard.engine.model.basic.cards.Card
 
 /** Represents successful game actions performed by players. */

@@ -1,6 +1,6 @@
 package it.unibo.pps.wizard.engine.model.rules
 
-import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic._
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
 
 object ScoringRules:

@@ -1,8 +1,11 @@
 package it.unibo.pps.wizard.util
 
-import alice.tuprolog.{Prolog, SolveInfo, Term, Theory}
+import alice.tuprolog.Prolog
+import alice.tuprolog.SolveInfo
+import alice.tuprolog.Term
+import alice.tuprolog.Theory
 
-import scala.jdk.CollectionConverters.*
+import scala.jdk.CollectionConverters._
 
 /**
  * Utility object to interface Scala with tuProlog.
