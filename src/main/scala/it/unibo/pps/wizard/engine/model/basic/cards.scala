@@ -3,20 +3,23 @@ package it.unibo.pps.wizard.engine.model.basic
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * A card in the Wizard game.
+ * Represents a card in the Wizard game.
  *
- * Implemented as a sealed trait with three concrete kinds:
- *   - Standard: a color + rank card (1..13)
- *   - Wizard: the special Wizard card
- *   - Jester: the special Jester card
- *
- * Companion object provides enums for Color and Rank and factory methods.
+ * A card can be either a standard card with a color and rank, or a special card (Wizard or Jester).
  */
 sealed trait Card
+
+/**
+ * A special card in the Wizard game (Wizard or Jester).
+ *
+ * Each special card has a unique ID to distinguish between multiple instances of the same type.
+ */
 sealed trait SpecialCard extends Card:
   def id: Int
 
 object Card:
+
+  /** Color of a standard card. */
   enum Color:
     case Blue, Green, Red, Yellow
   export Color.*
@@ -38,8 +41,13 @@ object Card:
     case Thirteen extends Rank(13)
   export Rank.*
 
+  /** A standard card with a color and rank. */
   final case class Standard(color: Color, rank: Rank) extends Card
+
+  /** A special Wizard card with a unique ID. */
   final case class Wizard(id: Int) extends SpecialCard
+
+  /** A special Jester card with a unique ID. */
   final case class Jester(id: Int) extends SpecialCard
 
   private val specialIdGenWizard = new AtomicInteger(0)
@@ -49,7 +57,14 @@ object Card:
 
   extension (rank: Rank) infix def of(color: Color): Card = Standard(color, rank)
 
-  extension (c: Card) infix def -(other: Card): List[Card] = List(c, other)
+  extension (c: Card)
+    infix def -(other: Card): List[Card] = List(c, other)
+    def isWizard: Boolean = c match
+      case _: Wizard => true
+      case _ => false
+    def isJester: Boolean = c match
+      case _: Jester => true
+      case _ => false
 
   extension (optCard: Option[Card])
     def asTrump: Trump = optCard match
