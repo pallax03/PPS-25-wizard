@@ -7,6 +7,11 @@ import scala.collection.concurrent.{Map, TrieMap}
 import scala.concurrent.{Future, Promise}
 import scala.util.Try
 
+/**
+ * A utility class that allows executing tasks in a Vert.x verticle context.
+ *
+ * @param vertx the Vert.x instance used to execute tasks
+ */
 class VerticleExecutor(private val vertx: Vertx):
   import it.unibo.pps.wizard.util.Id
   import VerticleExecutor.*

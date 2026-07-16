@@ -2,6 +2,7 @@ package it.unibo.pps.wizard.engine.model.basic
 
 import it.unibo.pps.wizard.engine.model.basic.cards.Card
 
+/** Represents the unique identifier of a player in the game. */
 opaque type PlayerId = Int
 
 object PlayerId:
@@ -9,18 +10,20 @@ object PlayerId:
 
   extension (p: PlayerId) infix def plays(c: Card): (PlayerId, Card) = (p, c)
 
+/** Represents the name of a player in the game. */
 opaque type PlayerName = String
 
 object PlayerName:
   def apply(s: String): PlayerName = s
 
-/** Represent a player in the game that can be human or computer. */
+/** Represents a player in the game, including their ID, name, and whether they are a bot. */
 final case class Player(id: PlayerId, name: PlayerName, isBot: Boolean)
 
 object Player:
   def human(id: PlayerId, name: PlayerName): Player = Player(id, name, isBot = false)
   def bot(id: PlayerId): Player = Player(id, PlayerName(s"Bot $id"), isBot = true)
 
+/** Represents a collection of players in the game. */
 opaque type Players = List[Player]
 
 object Players:
