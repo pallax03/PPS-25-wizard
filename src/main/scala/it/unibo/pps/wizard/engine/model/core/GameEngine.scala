@@ -5,10 +5,8 @@ import it.unibo.pps.wizard.engine.events.*
 import it.unibo.pps.wizard.engine.model.basic.*
 import it.unibo.pps.wizard.engine.model.basic.cards.*
 import it.unibo.pps.wizard.engine.model.basic.gameplay.{Round, Table}
-import it.unibo.pps.wizard.engine.model.core.InconsistentStateReasons.{
-  HandNotFoundFor,
-  TableNoWinner
-}
+import it.unibo.pps.wizard.engine.model.core.InconsistentStateReasons.*
+
 import it.unibo.pps.wizard.engine.model.rules.*
 
 /**

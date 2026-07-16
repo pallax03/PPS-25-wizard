@@ -3,10 +3,23 @@ package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.components.*
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
-import it.unibo.pps.wizard.application.scalafx.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
+import it.unibo.pps.wizard.application.scalafx.managers.{
+  HandManager,
+  OpponentsManager,
+  TableManager,
+  TrumpManager
+}
 import it.unibo.pps.wizard.application.scalafx.pages.{MainPage, ScoreboardPage}
 import it.unibo.pps.wizard.application.scalafx.util.{UiPhase, WizardTheme}
-import it.unibo.pps.wizard.engine.model.basic.{Bid, PlayerId, PlayerName, Players, RoundRow, Scoreboard, Trick}
+import it.unibo.pps.wizard.engine.model.basic.{
+  Bid,
+  PlayerId,
+  PlayerName,
+  Players,
+  RoundRow,
+  Scoreboard,
+  Trick
+}
 import it.unibo.pps.wizard.engine.model.basic.cards.*
 import it.unibo.pps.wizard.engine.model.basic.gameplay.*
 import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
@@ -108,8 +121,8 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
 
     activeScoreboardPage = ScoreboardPage(activeScoreboardStage)
 
-    stage.onCloseRequest =
-      _ => gameBoardDispatcher.stopListening()
+    stage.onCloseRequest = _ =>
+      gameBoardDispatcher.stopListening()
       activeScoreboardStage.close()
 
   override def getCurrentPlayerId: PlayerId = currentPlayerId
