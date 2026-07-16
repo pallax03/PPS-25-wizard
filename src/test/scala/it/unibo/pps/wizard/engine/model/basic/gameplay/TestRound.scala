@@ -2,7 +2,6 @@ package it.unibo.pps.wizard.engine.model.basic.gameplay
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import it.unibo.pps.wizard.engine.model.basic.Round
 
 class TestRound extends AnyWordSpec with Matchers:
   import Round.*

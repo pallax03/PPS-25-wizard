@@ -1,12 +1,29 @@
 package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
-import it.unibo.pps.wizard.application.scalafx.util.{PresentationQueue, PresentationScript, PresentationStep}
-import it.unibo.pps.wizard.engine.events.{ActionEvent, FailureEvent, InvitationEvent, LifecycleEvent, ProgressEvent, WizardEvent}
-import it.unibo.pps.wizard.engine.model.core.{CardNotAllowedReasons, GameError, InconsistentStateReasons}
+import it.unibo.pps.wizard.application.scalafx.util.{
+  PresentationQueue,
+  PresentationScript,
+  PresentationStep,
+  UiPhase
+}
+import it.unibo.pps.wizard.engine.events.*
+import it.unibo.pps.wizard.engine.events.ActionEvent.*
+import it.unibo.pps.wizard.engine.events.ProgressEvent.*
+import it.unibo.pps.wizard.engine.events.InvitationEvent.*
+import it.unibo.pps.wizard.engine.events.LifecycleEvent.*
+import it.unibo.pps.wizard.engine.events.FailureEvent.*
+import it.unibo.pps.wizard.engine.model.core.{CardNotAllowedReasons, GameError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
+/**
+ * The GameBoardEventDispatcher class is responsible for listening to game events and dispatching them to the GameBoardView.
+ * It uses a PresentationQueue to manage the presentation of events in a sequential manner.
+ *
+ * @param view The GameBoardView that will display the events.
+ * @param context The WizardApplicationContext providing access to the inbound port for event subscription.
+ */
 class GameBoardEventDispatcher(private val view: GameBoardView)(using
     context: WizardApplicationContext
 ):
@@ -22,91 +39,137 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
     context.inboundPort.unsubscribe(subscriptionIds*)
     subscriptionIds = Nil
 
+  /**
+   * Converts a WizardEvent into a PresentationScript that defines how the event should be presented in the UI.
+   *
+   * @param event The WizardEvent to be converted.
+   * @return A PresentationScript representing the presentation of the event.
+   */
   private def toPresentationScript(event: WizardEvent): PresentationScript =
     event match
-      case ActionEvent.CardPlayed(playerId, playerName, card, _, _) =>
+      case e: ActionEvent     => handleActionEvent(e)
+      case e: ProgressEvent   => handleProgressEvent(e)
+      case e: InvitationEvent => handleInvitationEvent(e)
+      case e: LifecycleEvent  => handleLifecycleEvent(e)
+      case e: FailureEvent    => handleFailureEvent(e)
+
+  /**
+   * Handles ActionEvent types and creates a corresponding PresentationScript.
+   *
+   * @param event The ActionEvent to be handled.
+   * @return A PresentationScript representing the presentation of the ActionEvent.
+   */
+  private def handleActionEvent(event: ActionEvent): PresentationScript =
+    event match
+      case CardPlayed(playerId, playerName, card, winningCard, followingColor) =>
         PresentationScript(
-          run(view.displayCardPlayed(playerId, playerName, card)),
-          waitFor(200)
+          run(view.displayCardPlayed(playerId, playerName, card, winningCard, followingColor)),
+          waitFor(350)
         )
-
-      case ActionEvent.TrumpColorResolved(playerId, color) =>
+      case TrumpColorResolved(playerId, color) =>
         PresentationScript(run(view.displayTrumpSelected(playerId, color)))
-
-      case ActionEvent.BidPlaced(playerId, bid) =>
+      case BidPlaced(playerId, bid) =>
         PresentationScript(
           run(view.displayBidPlaced(playerId, bid)),
-          waitFor(200)
+          waitFor(300)
         )
 
-      case ProgressEvent.CardsDealt(playerId, hands, trump, round) =>
+  /**
+   * Handles ProgressEvent types and creates a corresponding PresentationScript.
+   *
+   * @param event The ProgressEvent to be handled.
+   * @return A PresentationScript representing the presentation of the ProgressEvent.
+   */
+  private def handleProgressEvent(event: ProgressEvent): PresentationScript =
+    event match
+      case CardsDealt(playerId, hands, trump, round) =>
         PresentationScript(run(view.displayCardsDealt(playerId, hands, trump, round)))
-
-      case ProgressEvent.TrickWon(winnerId, tricksWon, trickedCards) =>
+      case TrickWon(winnerId, tricksWon, trickedCards) =>
         PresentationScript(
           run(view.displayTrickWon(winnerId, tricksWon, trickedCards)),
           waitFor(3000),
           run(view.clearTable())
         )
-
-      case ProgressEvent.RoundScored(scoreboard, players) =>
+      case RoundScored(scoreboard, players) =>
         PresentationScript(run(view.displayRoundScored(scoreboard, players)))
-
-      case ProgressEvent.PhaseChanged(phase) =>
+      case PhaseChanged(phase) =>
         PresentationScript(run(view.displayPhaseChanged(phase)))
 
-      case ProgressEvent.IsTurnOf(_, _) =>
-        PresentationScript()
-
-      case InvitationEvent.WaitingForTrump(playerId) =>
+  /**
+   * Handles InvitationEvent types and creates a corresponding PresentationScript.
+   *
+   * @param event The InvitationEvent to be handled.
+   * @return A PresentationScript representing the presentation of the InvitationEvent.
+   */
+  private def handleInvitationEvent(event: InvitationEvent): PresentationScript =
+    event match
+      case WaitingForTrump(playerId) =>
         PresentationScript(
           run:
-            view.displayTurnChanged(playerId, "ChoosingTrump")
-            view.displayWaitingForTrump(playerId),
-          waitFor(200)
+            view.displayTurnChanged(playerId, UiPhase.ChoosingTrump)
+            view.displayWaitingForTrump(playerId)
+          ,
+          waitFor(300)
         )
-
-      case InvitationEvent.WaitingForBid(playerId, _) =>
+      case WaitingForBid(playerId, _) =>
         PresentationScript(
-          run(view.displayTurnChanged(playerId, "Bidding")),
-          waitFor(200)
+          run(view.displayTurnChanged(playerId, UiPhase.Bidding)),
+          waitFor(300)
         )
-
-      case InvitationEvent.WaitingForCard(playerId, legalCards) =>
+      case WaitingForCard(playerId, legalCards) =>
         PresentationScript(
           run:
-            view.displayTurnChanged(playerId, "Playing")
-            view.displayLegalCards(playerId, legalCards),
-          waitFor(200)
+            view.displayTurnChanged(playerId, UiPhase.Playing)
+            view.displayLegalCards(playerId, legalCards)
+          ,
+          waitFor(300)
         )
 
-      case LifecycleEvent.GameStarted(players, _) =>
+  /**
+   * Handles LifecycleEvent types and creates a corresponding PresentationScript.
+   *
+   * @param event The LifecycleEvent to be handled.
+   * @return A PresentationScript representing the presentation of the LifecycleEvent.
+   */
+  private def handleLifecycleEvent(event: LifecycleEvent): PresentationScript =
+    event match
+      case GameStarted(players, _) =>
         PresentationScript(run(view.displayGameStarted(players)))
+      case GameEnded(scoreboard, players) =>
+        PresentationScript(
+          run(view.displayGameEnded(scoreboard, players))
+        )
 
-      case LifecycleEvent.GameEnded(scoreboard, players) =>
-        PresentationScript(run(view.displayGameEnded(scoreboard, players)))
-
-      case FailureEvent.ActionFailed(playerId, error) => error match
-        case GameError.NotYourTurn =>
-          PresentationScript(run(view.displayErrorMessage("It's not your turn.")))
-        case GameError.InvalidBid =>
-          PresentationScript(run(view.displayErrorMessage("Invalid bid.")))
-        case GameError.CardNotAllowed(reason) => reason match
-          case CardNotAllowedReasons.CardNotInHand(cards) =>
-            PresentationScript(run(view.displayErrorMessage("Card is not in hand.")))
-          case CardNotAllowedReasons.MustFollowColor(requiredColor, cards) =>
-            PresentationScript(run(view.displayErrorMessage(s"Must follow color $requiredColor.")))
-        case GameError.InvalidAction =>
-          PresentationScript(run(view.displayErrorMessage("Invalid action.")))
-        case GameError.InconsistentState(reason) =>
-          PresentationScript(
-            run:
-              reason match
-                case InconsistentStateReasons.TableNoWinner =>
-                  view.displayErrorMessage("No winner found for the current trick.")
-                case InconsistentStateReasons.HandNotFoundFor(playerId) =>
-                  view.displayErrorMessage(s"Hand not found for player $playerId.")
-          )
+  /**
+   * Handles FailureEvent types and creates a corresponding PresentationScript.
+   *
+   * @param event The FailureEvent to be handled.
+   * @return A PresentationScript representing the presentation of the FailureEvent.
+   */
+  private def handleFailureEvent(event: FailureEvent): PresentationScript =
+    event match
+      case ActionFailed(playerId, error) =>
+        error match
+          case GameError.NotYourTurn =>
+            PresentationScript(run(view.displayErrorMessage("It's not your turn.")))
+          case GameError.CardNotAllowed(reason) =>
+            reason match
+              case CardNotAllowedReasons.MustFollowColor(requiredColor, cards) =>
+                PresentationScript(
+                  run(view.displayErrorMessage(s"Must follow color $requiredColor."))
+                )
+              case _ => PresentationScript()
+          case GameError.InvalidBid if playerId == view.getCurrentPlayerId =>
+            PresentationScript(
+              run:
+                view.displayErrorMessage("Invalid bid.")
+                view.displayShowInvalidBid()
+              ,
+              waitFor(3000),
+              run(view.displayClearInvalidBid())
+            )
+          case error: GameError =>
+            PresentationScript(run(view.displayErrorMessage(error.toString)))
 
   private def run(action: => Unit): PresentationStep = PresentationStep.run(action)
 

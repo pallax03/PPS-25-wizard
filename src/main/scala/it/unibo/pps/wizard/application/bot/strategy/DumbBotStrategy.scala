@@ -1,12 +1,20 @@
 package it.unibo.pps.wizard.application.bot.strategy
 
 import it.unibo.pps.wizard.engine.events.{FailureEvent, InvitationEvent}
-import it.unibo.pps.wizard.engine.model.basic.{Bid, Card, Round}
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
+import it.unibo.pps.wizard.engine.model.basic.Bid
 import it.unibo.pps.wizard.engine.model.core.{GameAction, GameError}
 
 import scala.concurrent.Future
 import scala.util.Random
 
+/**
+ * A simple, randomized implementation of [[BotStrategy]].
+ *
+ * This strategy provides basic behavior suitable for testing or low-difficulty settings.
+ * Actions are chosen randomly from valid possibilities.
+ */
 class DumbBotStrategy(random: Random = Random()) extends BotStrategy:
   private var bid: (Round, Bid) = Round.start -> Bid(0)
 

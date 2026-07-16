@@ -1,40 +1,44 @@
 package it.unibo.pps.wizard.engine.prolog
 
-import it.unibo.pps.wizard.engine.model.basic.Card.*
-import it.unibo.pps.wizard.engine.model.basic.Hand.*
-import it.unibo.pps.wizard.engine.model.basic.{Table, Bid, Trick}
+import it.unibo.pps.wizard.engine.model.basic.cards.Card.*
+import it.unibo.pps.wizard.engine.model.basic.cards.Hand.*
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Table
+import it.unibo.pps.wizard.engine.model.basic.{Bid, Trick}
 import it.unibo.pps.wizard.engine.model.rules.TableRules.*
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL.*
+
 class TestWizardPrologEngine extends AnyWordSpec with Matchers:
 
   "WizardPrologEngine" should:
     val engine = WizardPrologEngine()
-    val hand = (1.red - jester - wizard - 12.yellow).asHand
+    val hand = ((One of Red) - jester - wizard - (Twelve of Yellow)).asHand
     "choosing trump color" in:
       val trumpColor = engine.chooseTrumpColor(hand).head
       Color.values should contain(trumpColor)
 
     "place bid" in:
-      val bid = engine.placeBid(hand, Option(1.yellow).asTrump).head
+      val bid = engine.placeBid(hand, Option(One of Yellow).asTrump).head
       bid should be >= 0
-      bid should be <= hand.size
+      bid should be <= hand.toList.size
 
     "adjust bid" in:
-      val bid = engine.adjustBid(hand, Bid(hand.size + 1)).head
+      val handSize = hand.toList.size
+      val bid = engine.adjustBid(hand, Bid(handSize + 1)).head
       bid should be >= 0
-      bid should be <= hand.size
+      bid should be <= handSize
 
     "best playable card" in:
       val legalCards = hand.legalCards(Table.empty)
       val bestCard = engine
         .bestPlayableCard(
           hand = hand,
-          winningCard = Option(10.yellow),
+          winningCard = Option(Ten of Yellow),
           followingColor = Option(Yellow),
-          trump = Option(5.blue).asTrump,
+          trump = Option(Five of Blue).asTrump,
           playerBid = Bid(5),
           playerTrick = Trick(3)
         )

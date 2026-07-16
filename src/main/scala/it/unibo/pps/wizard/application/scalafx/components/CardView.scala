@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.application.scalafx.components
 
-import it.unibo.pps.wizard.engine.model.basic.Card
+import it.unibo.pps.wizard.application.scalafx.util.WizardTheme
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
 
 import scalafx.geometry.Pos
 import scalafx.scene.effect.DropShadow
@@ -69,7 +70,7 @@ class CardView(val card: Card) extends StackPane:
     case 2 => s"/cards/blue/B$name.webp"
     case 3 => s"/cards/red/R$name.webp"
     case 4 => s"/cards/green/G$name.webp"
-    case _ => s"/cards/green/G$name.webp" // todo
+    case _ => s"/cards/green/G$name.webp"
 
   private def getFallbackColor(card: Card): Color = card match
     case Card.Jester(_)          => Color.Purple
@@ -81,10 +82,5 @@ class CardView(val card: Card) extends StackPane:
     case Card.Wizard(_)         => "W"
     case Card.Jester(_)         => "J"
 
-// todo: refactoring of this helper
 object CardView:
-  def fxColor(color: Card.Color): Color = color match
-    case Card.Color.Blue   => Color.DodgerBlue
-    case Card.Color.Green  => Color.ForestGreen
-    case Card.Color.Red    => Color.FireBrick
-    case Card.Color.Yellow => Color.Goldenrod
+  def fxColor(color: Card.Color): Color = WizardTheme.Card.colorFor(color)

@@ -1,5 +1,7 @@
 package it.unibo.pps.wizard.engine.model.basic
 
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
+
 case class RoundRow(round: Round, playerStats: Map[PlayerId, Option[(Score, Bid)]]):
   def getScore(pId: PlayerId): String =
     playerStats.get(pId).flatten.map(data => data._1.value.toString).getOrElse("")

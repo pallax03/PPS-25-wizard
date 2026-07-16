@@ -5,10 +5,34 @@ import it.unibo.pps.wizard.application.bot.BotLifecycleManager
 import it.unibo.pps.wizard.engine.ports.{WizardAIPort, WizardInboundPort}
 import scalafx.stage.Stage
 
+/** Represents the context of the Wizard application, providing access to the primary stage, inbound port, hint port, and bot lifecycle manager. */
 trait WizardApplicationContext:
+  /**
+   * Returns the primary stage of the application.
+   *
+   * @return the primary stage
+   */
   def primaryStage: Stage
+
+  /**
+   * Returns the inbound port for receiving events.
+   *
+   * @return the inbound port
+   */
   def inboundPort: WizardInboundPort
+
+  /**
+   * Returns the hint port for AI hints.
+   *
+   * @return the hint port
+   */
   def hintPort: WizardAIPort
+
+  /**
+   * Returns the bot lifecycle manager.
+   *
+   * @return the bot lifecycle manager
+   */
   def botLifecycleManager: BotLifecycleManager
 
 object WizardApplicationContext:
@@ -22,6 +46,14 @@ object WizardApplicationContext:
 
   def builder: WizardApplicationContextBuilder = WizardApplicationContextBuilder()
 
+  /**
+   * A private case class that implements the WizardApplicationContext trait.
+   *
+   * @param primaryStage the primary stage of the application
+   * @param inboundPort the inbound port for receiving events
+   * @param hintPort the hint port for AI hints
+   * @param vertx the Vert.x instance used for event handling
+   */
   private case class BasicWizardApplicationContext(
       override val primaryStage: Stage,
       override val inboundPort: WizardInboundPort,
@@ -32,6 +64,7 @@ object WizardApplicationContext:
     override val botLifecycleManager: BotLifecycleManager =
       BotLifecycleManager(vertx, inboundPort, hintPort)
 
+  /** A builder for creating instances of WizardApplicationContext. */
   case class WizardApplicationContextBuilder private[WizardApplicationContext] ():
     private var stage: Option[Stage] = Option.empty
     private var inboundPort: Option[WizardInboundPort] = Option.empty

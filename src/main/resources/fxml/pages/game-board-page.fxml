@@ -11,49 +11,65 @@
     <BorderPane fx:id="rootPane" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #1a1a1a;">
 
         <padding>
-            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
         </padding>
 
         <top>
             <HBox alignment="CENTER" maxWidth="Infinity">
                 <BorderPane.margin>
-                    <Insets bottom="15.0" />
+                    <Insets bottom="15.0"/>
                 </BorderPane.margin>
-                <VBox fx:id="gameInfoContainer" alignment="CENTER_LEFT" prefHeight="80.0" spacing="10.0">
-                    <padding>
-                        <Insets bottom="0" left="0" right="0" top="0" />
-                    </padding>
-                </VBox>
-                <Region HBox.hgrow="ALWAYS" />
-                <HBox fx:id="playersContainer" alignment="CENTER_RIGHT" prefHeight="80.0" spacing="30.0" />
+                <HBox fx:id="playersContainer" alignment="CENTER" prefHeight="80.0" spacing="30.0" />
             </HBox>
         </top>
 
         <left>
             <VBox alignment="CENTER" spacing="30.0">
                 <BorderPane.margin>
-                    <Insets right="20.0" />
+                    <Insets right="20.0"/>
                 </BorderPane.margin>
+                <VBox fx:id="gameInfoContainer" alignment="CENTER_LEFT" prefHeight="80.0" spacing="10.0">
+                    <padding>
+                        <Insets bottom="0" left="0" right="0" top="0"/>
+                    </padding>
+                </VBox>
                 <StackPane fx:id="trumpContainer">
-                    <VBox fx:id="trumpColorSelector" alignment="CENTER" managed="false" spacing="15.0" style="-fx-background-color: rgba(30, 30, 30, 0.85); -fx-background-radius: 15; -fx-padding: 15;" visible="false">
+                    <VBox fx:id="trumpColorSelector" alignment="CENTER" managed="false" spacing="15.0"
+                          style="-fx-background-color: rgba(30, 30, 30, 0.85); -fx-background-radius: 15; -fx-padding: 15;"
+                          visible="false">
                     </VBox>
                 </StackPane>
-                <VBox fx:id="currentPlayerContainer" alignment="CENTER" spacing="10.0" />
+                <VBox fx:id="currentPlayerContainer" alignment="CENTER" spacing="10.0"/>
             </VBox>
         </left>
 
         <center>
-            <HBox fx:id="tableContainer" alignment="CENTER" style="-fx-background-color: rgba(43, 92, 63, 0.85); -fx-background-radius: 15;">
-                <padding>
-                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                </padding>
-            </HBox>
+            <VBox alignment="CENTER" spacing="10.0">
+                <BorderPane.margin>
+                    <Insets bottom="0.0"/>
+                </BorderPane.margin>
+
+                <HBox fx:id="tableContainer" alignment="CENTER" VBox.vgrow="ALWAYS"
+                      style="-fx-background-color: rgba(43, 92, 63, 0.85); -fx-background-radius: 15;">
+                    <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                    </padding>
+                </HBox>
+
+                <HBox fx:id="messageNotificationContainer" alignment="CENTER" minHeight="40.0" prefHeight="40.0"
+                      maxWidth="Infinity">
+                    <padding>
+                        <Insets bottom="5.0" top="5.0"/>
+                    </padding>
+                </HBox>
+            </VBox>
         </center>
 
         <bottom>
-            <HBox fx:id="handContainer" alignment="CENTER" prefHeight="180.0" style="-fx-background-color: #A0A2A180; -fx-background-radius: 15;">
+            <HBox fx:id="handContainer" alignment="CENTER" prefHeight="180.0"
+                  style="-fx-background-color: #A0A2A180; -fx-background-radius: 15;">
                 <BorderPane.margin>
-                    <Insets top="15.0" />
+                    <Insets top="15.0"/>
                 </BorderPane.margin>
             </HBox>
         </bottom>
@@ -61,83 +77,120 @@
         <right>
             <VBox alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
                 <BorderPane.margin>
-                    <Insets left="15.0" />
+                    <Insets left="15.0"/>
                 </BorderPane.margin>
 
-                <StackPane fx:id="scoreboardContainer" maxHeight="280.0" onMouseClicked="#openScoreboardWindow" onMouseEntered="#handleScoreboardHover" onMouseExited="#handleScoreboardExit" prefWidth="45.0" style="-fx-background-color: linear-gradient(to left, #16301f, #254d34);                                   -fx-background-radius: 15 0 0 15;                                   -fx-border-color: rgba(212, 175, 55, 0.5);                                   -fx-border-width: 1 0 1 1;                                   -fx-border-radius: 15 0 0 15;                                   -fx-cursor: hand;                                   -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, -2, 0);">
+                <StackPane fx:id="scoreboardContainer" maxHeight="280.0" onMouseClicked="#openScoreboardWindow"
+                           onMouseEntered="#handleScoreboardHover" onMouseExited="#handleScoreboardExit"
+                           prefWidth="45.0"
+                           style="-fx-background-color: linear-gradient(to left, #16301f, #254d34);                                   -fx-background-radius: 15 0 0 15;                                   -fx-border-color: rgba(212, 175, 55, 0.5);                                   -fx-border-width: 1 0 1 1;                                   -fx-border-radius: 15 0 0 15;                                   -fx-cursor: hand;                                   -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, -2, 0);">
                     <padding>
-                        <Insets bottom="15.0" left="5.0" right="5.0" top="15.0" />
+                        <Insets bottom="15.0" left="5.0" right="5.0" top="15.0"/>
                     </padding>
                     <VBox alignment="CENTER" spacing="4.0">
-                        <SVGPath content="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.66 4.43 4.91C8.21 14.14 10 16 12 16v3H9v2h6v-2h-3v-3c2 0 3.79-1.86 4.57-4.09C19.08 11.66 21 9.55 21 7V5c0-1.1-.9-2-2-2zm-14 3V7h2v3c0-1.1-.9-2-2-2zm14 0c-1.1 0-2 .9-2 2V7h2v1z" fill="#d4af37" scaleX="0.9" scaleY="0.9" />
-                        <Region prefHeight="8.0" />
-                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="S" />
-                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="C" />
-                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="O" />
-                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="R" />
-                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="E" />
-                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="B" />
-                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="O" />
-                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="A" />
-                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="R" />
-                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="D" />
+                        <SVGPath
+                                content="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.66 4.43 4.91C8.21 14.14 10 16 12 16v3H9v2h6v-2h-3v-3c2 0 3.79-1.86 4.57-4.09C19.08 11.66 21 9.55 21 7V5c0-1.1-.9-2-2-2zm-14 3V7h2v3c0-1.1-.9-2-2-2zm14 0c-1.1 0-2 .9-2 2V7h2v1z"
+                                fill="#d4af37" scaleX="0.9" scaleY="0.9"/>
+                        <Region prefHeight="8.0"/>
+                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="S"/>
+                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="C"/>
+                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="O"/>
+                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="R"/>
+                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="E"/>
+                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="B"/>
+                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="O"/>
+                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="A"/>
+                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="R"/>
+                        <Label style="-fx-text-fill: #f0eae1; -fx-font-weight: bold; -fx-font-size: 11px;" text="D"/>
                     </VBox>
                 </StackPane>
 
-                <Button onAction="#toggleRulesPanel" style="-fx-background-color: #254d34;                                -fx-text-fill: #e67e22;                                -fx-font-weight: bold;                                -fx-background-radius: 10;                                -fx-border-color: #e67e22;                                -fx-border-radius: 10;                                -fx-cursor: hand;" text="RULES" />
-                <Button fx:id="hintBestCardButton" alignment="CENTER" onAction="#requestHintBestCard" prefHeight="46.0" prefWidth="53.0" style="-fx-background-color: #d3af37; -fx-text-fill: #000; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand;" text="HINT">
-               <font>
-                  <Font name="System Bold" size="14.0" />
-               </font></Button>
+                <Button onAction="#toggleRulesPanel"
+                        style="-fx-background-color: #254d34;                                -fx-text-fill: #e67e22;                                -fx-font-weight: bold;                                -fx-background-radius: 10;                                -fx-border-color: #e67e22;                                -fx-border-radius: 10;                                -fx-cursor: hand;"
+                        text="RULES"/>
+                <Button fx:id="hintBestCardButton" alignment="CENTER" onAction="#requestHintBestCard" prefHeight="46.0"
+                        prefWidth="53.0"
+                        style="-fx-background-color: #d3af37; -fx-text-fill: #000; -fx-background-radius: 20; -fx-border-radius: 20; -fx-cursor: hand;"
+                        text="HINT">
+                    <font>
+                        <Font name="System Bold" size="14.0"/>
+                    </font>
+                </Button>
             </VBox>
         </right>
     </BorderPane>
 
-    <VBox fx:id="rulesPanel" alignment="CENTER" managed="false" maxHeight="550.0" maxWidth="650.0" style="-fx-background-color: rgba(30, 30, 30, 0.98);                  -fx-border-color: #e67e22;                  -fx-border-width: 2;                  -fx-background-radius: 15;                  -fx-border-radius: 15;                  -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 15, 0, 0, 0);" visible="false">
+    <VBox fx:id="rulesPanel" alignment="CENTER" managed="false" maxHeight="550.0" maxWidth="650.0"
+          style="-fx-background-color: rgba(30, 30, 30, 0.98);                  -fx-border-color: #e67e22;                  -fx-border-width: 2;                  -fx-background-radius: 15;                  -fx-border-radius: 15;                  -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 15, 0, 0, 0);"
+          visible="false">
         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
         </padding>
 
-        <Label style="-fx-text-fill: #e67e22; -fx-font-size: 18px; -fx-font-weight: bold;" text="WIZARD GAME RULES" />
-        <Region prefHeight="15.0" />
+        <Label style="-fx-text-fill: #e67e22; -fx-font-size: 18px; -fx-font-weight: bold;" text="WIZARD GAME RULES"/>
+        <Region prefHeight="15.0"/>
 
-        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="400.0" style="-fx-background: transparent; -fx-background-color: transparent;">
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="400.0"
+                    style="-fx-background: transparent; -fx-background-color: transparent;">
             <VBox spacing="10.0">
                 <padding>
-                    <Insets right="10.0" />
+                    <Insets right="10.0"/>
                 </padding>
                 <!-- 1. OBJECT OF THE GAME & BIDDING -->
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;" text="1. Object of the Game &amp; Bidding:" wrapText="true" />
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;" text="Predict exactly how many tricks you will win in each round to earn points. In Round 1 you have 1 card, in Round 2 you have 2 cards, and so on. Your maximum bid equals the current round number." wrapText="true" />
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;"
+                       text="1. Object of the Game &amp; Bidding:" wrapText="true"/>
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;"
+                       text="Predict exactly how many tricks you will win in each round to earn points. In Round 1 you have 1 card, in Round 2 you have 2 cards, and so on. Your maximum bid equals the current round number."
+                       wrapText="true"/>
 
                 <!-- 2. CARD HIERARCHY -->
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;" text="2. Card Hierarchy:" wrapText="true" />
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;" text="Wizards (Z) always win the trick. Jesters (N) always lose. Trump suit cards beat any standard suit card. If no Trump or Wizard is played, the highest card of the led suit wins." wrapText="true" />
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;"
+                       text="2. Card Hierarchy:" wrapText="true"/>
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;"
+                       text="Wizards (Z) always win the trick. Jesters (N) always lose. Trump suit cards beat any standard suit card. If no Trump or Wizard is played, the highest card of the led suit wins."
+                       wrapText="true"/>
 
                 <!-- 3. TRUMP SELECTION CASES -->
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;" text="3. Special Trump Cases:" wrapText="true" />
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;" text="If a Wizard is flipped for Trump, the dealer chooses the Trump suit before bidding. If a Jester is flipped, or in the final round of the game, there is NO Trump suit for that round." wrapText="true" />
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;"
+                       text="3. Special Trump Cases:" wrapText="true"/>
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;"
+                       text="If a Wizard is flipped for Trump, the dealer chooses the Trump suit before bidding. If a Jester is flipped, or in the final round of the game, there is NO Trump suit for that round."
+                       wrapText="true"/>
 
                 <!-- 4. PLAYING RULES -->
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;" text="4. What Card Can You Play?:" wrapText="true" />
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;" text="You must follow the led suit if possible. However, you can ALWAYS play a Wizard or a Jester at any time, even if you have the led suit. If you do not have the led suit, you may play any card (Trump or slough)." wrapText="true" />
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;"
+                       text="4. What Card Can You Play?:" wrapText="true"/>
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;"
+                       text="You must follow the led suit if possible. However, you can ALWAYS play a Wizard or a Jester at any time, even if you have the led suit. If you do not have the led suit, you may play any card (Trump or slough)."
+                       wrapText="true"/>
 
                 <!-- 5. EDGE CASES: MULTIPLE WIZARDS/JESTERS -->
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;" text="5. Multiple Wizards or Jesters:" wrapText="true" />
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;" text="If multiple Wizards are played, the FIRST Wizard played wins the trick. Jesters always lose; however, if a trick consists ONLY of Jesters, the FIRST Jester played wins the trick." wrapText="true" />
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;"
+                       text="5. Multiple Wizards or Jesters:" wrapText="true"/>
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;"
+                       text="If multiple Wizards are played, the FIRST Wizard played wins the trick. Jesters always lose; however, if a trick consists ONLY of Jesters, the FIRST Jester played wins the trick."
+                       wrapText="true"/>
 
                 <!-- 6. EDGE CASES: SPECIAL LEADS -->
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;" text="6. Special Card Led First:" wrapText="true" />
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;" text="If a Wizard is led first, there are no suit restrictions for that trick (players can throw anything). If a Jester is led first, it has no suit, so the SECOND player's card establishes the led suit." wrapText="true" />
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;"
+                       text="6. Special Card Led First:" wrapText="true"/>
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;"
+                       text="If a Wizard is led first, there are no suit restrictions for that trick (players can throw anything). If a Jester is led first, it has no suit, so the SECOND player's card establishes the led suit."
+                       wrapText="true"/>
 
                 <!-- 7. SCORING -->
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;" text="7. Scoring System:" wrapText="true" />
-                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;" text="Correct bids award 20 points plus 10 points per trick won (e.g., bid 2, win 2 = +40 pts). Incorrect bids deduct 10 points for each trick you are over or under your bid (e.g., bid 1, win 0 = -10 pts)." wrapText="true" />
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 16px; -fx-font-weight: bold;"
+                       text="7. Scoring System:" wrapText="true"/>
+                <Label style="-fx-text-fill: #f0eae1; -fx-font-size: 13px;"
+                       text="Correct bids award 20 points plus 10 points per trick won (e.g., bid 2, win 2 = +40 pts). Incorrect bids deduct 10 points for each trick you are over or under your bid (e.g., bid 1, win 0 = -10 pts)."
+                       wrapText="true"/>
             </VBox>
         </ScrollPane>
 
-        <Region prefHeight="20.0" />
-        <Button onAction="#toggleRulesPanel" style="-fx-background-color: #e67e22; -fx-text-fill: #1a1a1a; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;" text="Close" />
+        <Region prefHeight="20.0"/>
+        <Button onAction="#toggleRulesPanel"
+                style="-fx-background-color: #e67e22; -fx-text-fill: #1a1a1a; -fx-font-weight: bold; -fx-background-radius: 5; -fx-cursor: hand;"
+                text="Close"/>
     </VBox>
 
 </StackPane>

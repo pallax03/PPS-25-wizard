@@ -1,8 +1,8 @@
 package it.unibo.pps.wizard.engine.model.basic.gameplay
 
-import it.unibo.pps.wizard.engine.model.basic.Card.Color.{Blue, Red}
-import it.unibo.pps.wizard.engine.model.basic.Card.{jester, wizard}
-import it.unibo.pps.wizard.engine.model.basic.{Card, Trump}
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
+import it.unibo.pps.wizard.engine.model.basic.cards.Card.{jester, wizard}
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Trump
 import it.unibo.pps.wizard.engine.model.core.GameError
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -12,7 +12,6 @@ import scala.language.postfixOps
 class TestTrump extends AnyWordSpec with Matchers:
 
   "A Trump" when:
-    import Trump.*
     import Card.*
     "Absent" should:
       val trump = Trump.Absent
@@ -24,11 +23,11 @@ class TestTrump extends AnyWordSpec with Matchers:
           case _           =>
 
     "created from a Standard card" should:
-      val trump = Trump(5.red)
+      val trump = Trump(Five of Red)
       "extract color and card natively" in:
         trump shouldBe a[Trump.Standard]
         trump.effectiveColor shouldBe Some(Red)
-        trump.card.get shouldBe (5 of Red)
+        trump.card.get shouldBe (Five of Red)
 
     "created from a Jester" should:
       val j = jester
@@ -60,7 +59,7 @@ class TestTrump extends AnyWordSpec with Matchers:
         trump shouldBe Trump.Absent
 
       "Standard if Option is a Trump.Standard" in:
-        val trump = Option(5.red).asTrump
+        val trump = Option(Five of Red).asTrump
         trump shouldBe a[Trump.Standard]
 
       "Jester if Option is a Trump.Jester" in:

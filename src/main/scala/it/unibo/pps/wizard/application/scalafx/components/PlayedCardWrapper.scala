@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.application.scalafx.components
 
-import it.unibo.pps.wizard.engine.model.basic.Card
+import it.unibo.pps.wizard.application.scalafx.util.WizardTheme
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
 import scalafx.geometry.Pos
 import scalafx.scene.control.Label
 import scalafx.scene.layout.VBox
@@ -13,6 +14,7 @@ class PlayedCardWrapper(
 ) extends VBox:
   alignment = Pos.Center
   spacing = 8
+  style = WizardTheme.Table.cardWrapperStyle
 
   val cardView = new CardView(card)
 
@@ -20,20 +22,21 @@ class PlayedCardWrapper(
   cardView.prefHeight <== cardView.prefWidth * 1.4
 
   val nameLabel: Label = new Label(playerName):
-    style = "-fx-text-fill: #e0e0e0; -fx-font-weight: bold; -fx-font-size: 11px;"
-
-  private val followingLabel = new Label(if isFollowing then "Following Card" else ""):
     style =
-      "-fx-text-fill: red; -fx-font-weight: bold; -fx-font-size: 12px;" // todo: matching css color using CardView.fxcolor(color)
-    minHeight = 15
+      s"-fx-text-fill: ${WizardTheme.Colors.textSoft}; -fx-font-weight: bold; -fx-font-size: 30px;"
 
-  private val winningLabel = new Label(if isWinning then "Winning Card" else ""):
-    style = "-fx-text-fill: gold; -fx-font-weight: bold; -fx-font-size: 12px;"
-    minHeight = 15
+  children = Seq(cardView, nameLabel)
 
-//  if isTrump then
-//    card match
-//      case Card.Standard(color, rank) => cardView.setGlow(CardView.fxColor(color))
-//      case _                          =>
+  updateStatus(isWinning, isFollowing)
 
-  children = Seq(followingLabel, winningLabel, cardView, nameLabel)
+  def updateStatus(isWinning: Boolean, isFollowing: Boolean): Unit =
+    style =
+      if isWinning then WizardTheme.Table.winningCardWrapperStyle
+      else WizardTheme.Table.cardWrapperStyle
+    cardColor.filter(_ => isFollowing) match
+      case Some(color) => cardView.setGlow(CardView.fxColor(color))
+      case None        => cardView.removeGlow()
+
+  private def cardColor: Option[Card.Color] = card match
+    case Card.Standard(color, _) => Some(color)
+    case _                       => None

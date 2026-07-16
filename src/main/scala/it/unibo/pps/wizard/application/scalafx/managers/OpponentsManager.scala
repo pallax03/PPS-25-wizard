@@ -1,10 +1,16 @@
 package it.unibo.pps.wizard.application.scalafx.managers
 
 import it.unibo.pps.wizard.application.scalafx.components.{BasePlayerView, BotPlayerView}
+import it.unibo.pps.wizard.application.scalafx.util.UiPhase
 import it.unibo.pps.wizard.engine.model.basic.{Bid, PlayerId, Players}
 import scalafx.scene.Node
 import scalafx.scene.layout.HBox
 
+/**
+ * The OpponentsManager class is responsible for managing the display and updates of opponent players in the game.
+ *
+ * @param container the HBox container that holds the opponent views
+ */
 class OpponentsManager(val container: HBox):
 
   private var opponents: Map[PlayerId, Node] = Map.empty
@@ -23,7 +29,7 @@ class OpponentsManager(val container: HBox):
         opponentView.updateBid(bid.toString)
       case _ => println(s"Opponent with ID $playerId not found.")
 
-  def updateActiveTurn(currentTurnPlayerId: PlayerId, phase: String): Unit =
+  def updateActiveTurn(currentTurnPlayerId: PlayerId, phase: UiPhase): Unit =
     opponents.foreach: (id, view) =>
       view match
         case bot: BasePlayerView => bot.setTurnActive(id == currentTurnPlayerId, phase)
@@ -33,8 +39,7 @@ class OpponentsManager(val container: HBox):
     opponents.values.foreach:
       case bot: BotPlayerView =>
         bot.resetBid()
-        bot.resetTricksWon()
-      case _                  =>
+      case _ =>
 
   def updateOpponentsTricksWon(winnerId: PlayerId, tricks: Int): Unit =
     opponents.get(winnerId) match
