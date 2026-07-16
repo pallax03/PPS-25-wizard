@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.model.rules
 
-import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.cards.*
+import it.unibo.pps.wizard.engine.model.basic.gameplay.*
 import it.unibo.pps.wizard.engine.model.core.GameError
 import it.unibo.pps.wizard.engine.model.core.CardNotAllowedReasons.*
 
@@ -54,7 +55,7 @@ object TableRules:
           .maxByOption(_.rank.value)
 
       cards
-        .find(_.isInstanceOf[Card.Wizard])
+        .find(_.isWizard)
         .orElse(highestOf(trumpColor))
         .orElse(highestOf(followingColor))
         .orElse(cards.headOption)

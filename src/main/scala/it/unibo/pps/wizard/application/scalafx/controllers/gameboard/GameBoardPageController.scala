@@ -12,12 +12,13 @@ import it.unibo.pps.wizard.application.scalafx.managers.{
 import it.unibo.pps.wizard.application.scalafx.pages.{MainPage, ScoreboardPage}
 import it.unibo.pps.wizard.application.scalafx.util.{UiPhase, WizardTheme}
 import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.basic.Card.*
+import it.unibo.pps.wizard.engine.model.basic.cards.*
+import it.unibo.pps.wizard.engine.model.basic.gameplay.*
 import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
 import it.unibo.pps.wizard.engine.model.core.GameAction
 import javafx.animation.{ParallelTransition, ScaleTransition, TranslateTransition}
 import javafx.event.ActionEvent as JfxActionEvent
-import javafx.scene.control.{Alert as JfxAlert, Button, ButtonType as JfxButtonType}
+import javafx.scene.control.{Button, Alert as JfxAlert, ButtonType as JfxButtonType}
 import javafx.scene.layout.{HBox, StackPane, VBox}
 import scalafx.scene.Node
 import scalafx.scene.control.Label

@@ -2,6 +2,8 @@ package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 
 import it.unibo.pps.wizard.application.scalafx.util.UiPhase
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.cards.*
+import it.unibo.pps.wizard.engine.model.basic.gameplay.*
 
 trait GameBoardView:
   def getCurrentPlayerId: PlayerId

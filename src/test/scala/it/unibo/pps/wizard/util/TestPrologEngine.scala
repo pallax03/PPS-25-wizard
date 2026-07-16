@@ -1,6 +1,6 @@
 package it.unibo.pps.wizard.util
 
-import it.unibo.pps.wizard.engine.model.basic.Card.Color
+import it.unibo.pps.wizard.engine.model.basic.cards.Card.Color
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

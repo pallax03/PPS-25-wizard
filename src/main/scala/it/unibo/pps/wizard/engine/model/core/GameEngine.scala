@@ -3,6 +3,8 @@ package it.unibo.pps.wizard.engine.model.core
 import GameError.*
 import it.unibo.pps.wizard.engine.events.*
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.cards.*
+import it.unibo.pps.wizard.engine.model.basic.gameplay.{Round, Table}
 import it.unibo.pps.wizard.engine.model.core.InconsistentStateReasons.{
   HandNotFoundFor,
   TableNoWinner

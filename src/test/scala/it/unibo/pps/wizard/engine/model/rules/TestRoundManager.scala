@@ -1,6 +1,8 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.cards.*
+import it.unibo.pps.wizard.engine.model.basic.gameplay.*
 import it.unibo.pps.wizard.engine.model.core.{CoreState, GameError, GameState}
 import org.scalatest.OptionValues.convertOptionToValuable
 import org.scalatest.matchers.should.Matchers
@@ -40,8 +42,8 @@ class TestRoundManager extends AnyWordSpec with Matchers:
         val round = Round.start
         val (deckAfter, (hands, trump)) = round.deal(players).run(initialDeck).value
 
-        hands.getHand(p1.id).size shouldBe 1
-        hands.getHand(p2.id).size shouldBe 1
+        hands.getHand(p1.id).toList should have size 1
+        hands.getHand(p2.id).toList should have size 1
         trump shouldBe defined
         deckAfter.length shouldBe (Deck.TOTAL_SIZE - 3 - 1)
 
@@ -51,7 +53,7 @@ class TestRoundManager extends AnyWordSpec with Matchers:
 
         val (deckAfter, (hands, trump)) = maxRound.deal(players).run(initialDeck).value
 
-        hands.getHand(p1.id).value.size shouldBe 20
+        hands.getHand(p1.id).value.toList should have size 20
         trump shouldBe empty
         deckAfter.length shouldBe 0
         maxRound.isLastRound(players) shouldBe true
@@ -89,7 +91,7 @@ class TestRoundManager extends AnyWordSpec with Matchers:
           .runA(CoreState.initialize(players, round))
           .value match
           case biddingState: GameState.Bidding =>
-            biddingState.core.hands.getHand(p1.id).value.size shouldBe 1
+            biddingState.core.hands.getHand(p1.id).value.toList should have size 1
             biddingState.currentPlayer shouldBe p1.id
             biddingState.core.trump shouldBe TrumpResolved
           case _ => ()
@@ -105,6 +107,6 @@ class TestRoundManager extends AnyWordSpec with Matchers:
           .runA(CoreState.initialize(players, round))
           .value match
           case choosingState: GameState.ChoosingTrump =>
-            choosingState.core.hands.getHand(p1.id).value.size shouldBe 1
+            choosingState.core.hands.getHand(p1.id).value.toList should have size 1
             choosingState.core.trump shouldBe TrumpUnResolved
           case _ => ()

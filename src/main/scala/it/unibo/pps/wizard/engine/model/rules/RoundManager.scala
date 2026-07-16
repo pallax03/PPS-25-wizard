@@ -2,6 +2,8 @@ package it.unibo.pps.wizard.engine.model.rules
 
 import cats.data.State
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.gameplay.*
+import it.unibo.pps.wizard.engine.model.basic.cards.*
 import it.unibo.pps.wizard.engine.model.core.{CoreState, GameError, GameState}
 
 object RoundManager:

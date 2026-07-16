@@ -1,8 +1,7 @@
 package it.unibo.pps.wizard.application.scalafx.components
 
 import it.unibo.pps.wizard.application.scalafx.util.WizardTheme
-import it.unibo.pps.wizard.engine.model.basic.Card
-import it.unibo.pps.wizard.engine.model.basic.Card.Color
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
 import scalafx.geometry.Pos
 import scalafx.scene.control.Label
 import scalafx.scene.layout.VBox
@@ -38,6 +37,6 @@ class PlayedCardWrapper(
       case Some(color) => cardView.setGlow(CardView.fxColor(color))
       case None        => cardView.removeGlow()
 
-  private def cardColor: Option[Color] = card match
+  private def cardColor: Option[Card.Color] = card match
     case Card.Standard(color, _) => Some(color)
     case _                       => None

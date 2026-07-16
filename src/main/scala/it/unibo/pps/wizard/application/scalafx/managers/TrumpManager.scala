@@ -1,7 +1,8 @@
 package it.unibo.pps.wizard.application.scalafx.managers
 
 import it.unibo.pps.wizard.application.scalafx.components.{CardView, TrumpColorSelector}
-import it.unibo.pps.wizard.engine.model.basic.{Card, Trump}
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Trump
 import scalafx.scene.Node
 import scalafx.scene.control.Label
 import scalafx.scene.layout.StackPane

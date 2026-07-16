@@ -1,14 +1,17 @@
 package it.unibo.pps.wizard.engine.model.basic.cards
 
-import it.unibo.pps.wizard.engine.model.basic.Card.{jester, wizard}
-import it.unibo.pps.wizard.engine.model.basic.{Card, Hand, Hands, PlayerId}
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
+
+import it.unibo.pps.wizard.engine.model.basic.cards.*
+import it.unibo.pps.wizard.engine.model.basic.cards.Card.{jester, wizard}
+
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL.*
 import scala.language.postfixOps
 
-class TestHands extends AnyWordSpec with Matchers:
+class TestHand extends AnyWordSpec with Matchers:
   import Card.*
   import Hand.*
 
@@ -18,7 +21,6 @@ class TestHands extends AnyWordSpec with Matchers:
 
       "have size 0 and be completely empty" in:
         emptyHand.isEmpty shouldBe true
-        emptyHand.size shouldBe 0
         emptyHand.toList shouldBe empty
         emptyHand.contains(jester) shouldBe false
 
@@ -29,7 +31,7 @@ class TestHands extends AnyWordSpec with Matchers:
       val hand = Hand(c1 - c2)
 
       "return the correct size and emptiness state" in:
-        hand.size shouldBe 2
+        hand.toList should have size 2
         hand.isEmpty shouldBe false
 
       "check containment correctly" in:
@@ -39,13 +41,13 @@ class TestHands extends AnyWordSpec with Matchers:
 
       "allow removing an existing card" in:
         val smallerHand = Hand.without(hand, c1)
-        smallerHand.size shouldBe 1
+        smallerHand.toList should have size 1
         smallerHand.contains(c1) shouldBe false
         smallerHand.contains(c2) shouldBe true
 
       "remain unchanged when removing a card not present" in:
         val sameHand = Hand.without(hand, notInHand)
-        sameHand.size shouldBe 2
+        sameHand.toList should have size 2
         sameHand.toList should contain theSameElementsInOrderAs List(c1, c2)
 
       "convert to List properly" in:
@@ -73,7 +75,7 @@ class TestHands extends AnyWordSpec with Matchers:
 
       val p1Hand = hands.getHand(p1)
       p1Hand shouldBe defined
-      p1Hand.get.size shouldBe 2
+      p1Hand.get.toList should have size 2
 
       hands.getHand(p3) shouldBe None
 
@@ -84,7 +86,7 @@ class TestHands extends AnyWordSpec with Matchers:
 
       updatedHandsOpt shouldBe defined
       val newP1Hand = updatedHandsOpt.get.getHand(p1).get
-      newP1Hand.size shouldBe 1
+      newP1Hand.toList should have size 1
       newP1Hand.contains(c1) shouldBe false
 
     "return None when trying to remove a card from a non-existent player" in:

@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.prolog
 
-import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.cards.*
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Trump
 
 object WizardTermMapper:
   final val NO_VALUE: String = "none"

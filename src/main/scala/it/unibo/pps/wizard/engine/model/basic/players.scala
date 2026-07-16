@@ -1,5 +1,7 @@
 package it.unibo.pps.wizard.engine.model.basic
 
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
+
 opaque type PlayerId = Int
 
 object PlayerId:

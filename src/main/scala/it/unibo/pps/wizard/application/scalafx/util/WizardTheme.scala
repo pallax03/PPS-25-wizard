@@ -1,6 +1,6 @@
 package it.unibo.pps.wizard.application.scalafx.util
 
-import it.unibo.pps.wizard.engine.model.basic.Card as WizardCard
+import it.unibo.pps.wizard.engine.model.basic.cards.Card as WizardCard
 import scalafx.scene.paint.Color
 
 object WizardTheme:

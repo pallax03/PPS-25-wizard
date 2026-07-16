@@ -1,6 +1,8 @@
 package it.unibo.pps.wizard.engine.model.basic
 
 object BasicTestDSL:
+  import cards.*
+
   extension (cards: List[Card]) def asHand: Hand = Hand(cards)
 
   extension (card: Card) def asHand: Hand = Hand(List(card))

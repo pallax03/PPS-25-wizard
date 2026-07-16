@@ -1,6 +1,10 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
+import it.unibo.pps.wizard.engine.model.basic.cards.Card.*
+import it.unibo.pps.wizard.engine.model.basic.gameplay.{Table, Trump}
+
 import it.unibo.pps.wizard.engine.model.core.CardNotAllowedReasons.*
 import it.unibo.pps.wizard.engine.model.core.GameError
 
@@ -11,8 +15,6 @@ import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL.*
 import scala.language.postfixOps
 
 class TestTableRules extends AnyWordSpec with Matchers:
-  import Card.*
-  import Table.*
   import TableRules.*
 
   "TableRules Validation" when:
@@ -25,7 +27,7 @@ class TestTableRules extends AnyWordSpec with Matchers:
         result shouldBe Left(GameError.CardNotAllowed(CardNotInHand(hand.legalCards(Table.empty))))
 
     "evaluating standard rules" should:
-      val c1: Card = (Five of Blue)
+      val c1: Card = Five of Blue
       val c2: Card = Ten of Red
       val hand = (c1 - c2 - myWizard).asHand
       "allow playing anything if there is no cards" in:
@@ -47,7 +49,7 @@ class TestTableRules extends AnyWordSpec with Matchers:
         myWizard.validateAgainst(table, hand) shouldBe Right(())
 
       "always allow any standard card if table have a wizard" in:
-        val table = Table.empty + (p1 plays (Four of Blue)) + (p1 plays (myWizard))
+        val table = Table.empty + (p1 plays (Four of Blue)) + (p1 plays myWizard)
         c2.validateAgainst(table, hand) shouldBe Right(())
 
   "TableRules Winner Evaluation" should:

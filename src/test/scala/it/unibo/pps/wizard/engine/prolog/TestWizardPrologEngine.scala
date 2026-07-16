@@ -1,8 +1,9 @@
 package it.unibo.pps.wizard.engine.prolog
 
-import it.unibo.pps.wizard.engine.model.basic.Card.*
-import it.unibo.pps.wizard.engine.model.basic.Hand.*
-import it.unibo.pps.wizard.engine.model.basic.{Table, Bid, Trick}
+import it.unibo.pps.wizard.engine.model.basic.cards.Card.*
+import it.unibo.pps.wizard.engine.model.basic.cards.Hand.*
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Table
+import it.unibo.pps.wizard.engine.model.basic.{Bid, Trick}
 import it.unibo.pps.wizard.engine.model.rules.TableRules.*
 
 import org.scalatest.matchers.should.Matchers
@@ -22,12 +23,13 @@ class TestWizardPrologEngine extends AnyWordSpec with Matchers:
     "place bid" in:
       val bid = engine.placeBid(hand, Option(One of Yellow).asTrump).head
       bid should be >= 0
-      bid should be <= hand.size
+      bid should be <= hand.toList.size
 
     "adjust bid" in:
-      val bid = engine.adjustBid(hand, Bid(hand.size + 1)).head
+      val handSize = hand.toList.size
+      val bid = engine.adjustBid(hand, Bid(handSize + 1)).head
       bid should be >= 0
-      bid should be <= hand.size
+      bid should be <= handSize
 
     "best playable card" in:
       val legalCards = hand.legalCards(Table.empty)

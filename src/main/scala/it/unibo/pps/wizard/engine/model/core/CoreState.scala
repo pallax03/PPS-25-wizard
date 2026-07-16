@@ -1,6 +1,8 @@
 package it.unibo.pps.wizard.engine.model.core
 
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.cards.Hands
+import it.unibo.pps.wizard.engine.model.basic.gameplay.{Round, Trump}
 import it.unibo.pps.wizard.engine.model.rules.RoundManager.firstPlayer
 
 case class CoreState(

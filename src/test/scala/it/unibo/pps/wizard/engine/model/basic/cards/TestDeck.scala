@@ -1,11 +1,12 @@
 package it.unibo.pps.wizard.engine.model.basic.cards
 
-import it.unibo.pps.wizard.engine.model.basic.{Card, Deck}
+import it.unibo.pps.wizard.engine.model.basic.cards.{Card, Deck}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class TestDeck extends AnyWordSpec with Matchers:
-  import Deck.*
+  import Deck.TOTAL_SIZE
+
   "A new randomized Deck" should:
     val d = Deck.create
     "have a size of 60 cards" in:

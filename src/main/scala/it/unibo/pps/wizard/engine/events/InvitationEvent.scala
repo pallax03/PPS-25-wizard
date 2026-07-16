@@ -1,6 +1,8 @@
 package it.unibo.pps.wizard.engine.events
 
-import it.unibo.pps.wizard.engine.model.basic.{Card, PlayerId, Round}
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
 
 sealed trait InvitationEvent extends WizardEvent, PlayerScoped
 

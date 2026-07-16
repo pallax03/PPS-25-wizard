@@ -1,7 +1,6 @@
 package it.unibo.pps.wizard.engine.model.basic.cards
 
-import it.unibo.pps.wizard.engine.model.basic.{Deck, Trump}
-
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Trump
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -63,10 +62,10 @@ object Card:
     infix def -(other: Card): List[Card] = List(c, other)
     def isWizard: Boolean = c match
       case _: Wizard => true
-      case _ => false
+      case _         => false
     def isJester: Boolean = c match
       case _: Jester => true
-      case _ => false
+      case _         => false
 
   extension (optCard: Option[Card])
     def asTrump: Trump = optCard match

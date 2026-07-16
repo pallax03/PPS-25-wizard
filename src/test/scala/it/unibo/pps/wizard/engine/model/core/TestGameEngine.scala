@@ -2,12 +2,14 @@ package it.unibo.pps.wizard.engine.model.core
 
 import it.unibo.pps.wizard.engine.events.{ActionEvent, ProgressEvent}
 import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.basic.Card.*
+import it.unibo.pps.wizard.engine.model.basic.cards.Card.*
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Table
 import it.unibo.pps.wizard.engine.model.core.GameError.*
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
-
 import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL.*
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
+
 import scala.language.postfixOps
 
 class TestGameEngine extends AnyWordSpec with Matchers:
@@ -81,7 +83,7 @@ class TestGameEngine extends AnyWordSpec with Matchers:
       result.foreach: engine =>
         engine.state match
           case playingState: GameState.Playing =>
-            playingState.table.isEmpty shouldBe true
+            playingState.table.playedCards.isEmpty shouldBe true
             playingState.currentPlayerTurn shouldBe p1.id
           case _ => fail("Expected GameState.Playing")
 
@@ -146,7 +148,7 @@ class TestGameEngine extends AnyWordSpec with Matchers:
       result.foreach: engine =>
         engine.state match
           case nextState: GameState.Playing =>
-            nextState.table.isEmpty shouldBe true
+            nextState.table.playedCards.isEmpty shouldBe true
             nextState.tricksWon(p2.id) shouldBe Trick(1)
             nextState.currentPlayerTurn shouldBe p2.id
           case _ => fail("Expected GameState.Playing")

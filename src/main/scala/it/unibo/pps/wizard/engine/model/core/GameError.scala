@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.model.core
 
-import it.unibo.pps.wizard.engine.model.basic.{Card, PlayerId}
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
 
 enum CardNotAllowedReasons(val legitCards: List[Card]):
   case CardNotInHand(cards: List[Card]) extends CardNotAllowedReasons(cards)

@@ -1,6 +1,6 @@
 package it.unibo.pps.wizard.application.scalafx.components
 
-import it.unibo.pps.wizard.engine.model.basic.Card
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
 import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Label}
 import scalafx.scene.effect.DropShadow

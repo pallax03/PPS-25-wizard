@@ -2,8 +2,8 @@ package it.unibo.pps.wizard.application.scalafx.managers
 
 import it.unibo.pps.wizard.application.scalafx.components.PlayedCardWrapper
 import it.unibo.pps.wizard.application.scalafx.util.WizardTheme
-//import it.unibo.pps.wizard.engine.model.basic.Card.*
-import it.unibo.pps.wizard.engine.model.basic.{Card, PlayerName}
+import it.unibo.pps.wizard.engine.model.basic.PlayerName
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
 import scalafx.scene.layout.HBox
 
 class TableManager(val container: HBox):

@@ -1,7 +1,8 @@
 package it.unibo.pps.wizard.engine.prolog
 
-import it.unibo.pps.wizard.engine.model.basic.{Bid, Card, Hand, Trick, Trump}
-import it.unibo.pps.wizard.engine.model.basic.Card.Color
+import it.unibo.pps.wizard.engine.model.basic.{Bid, Trick}
+import it.unibo.pps.wizard.engine.model.basic.cards.{Card, Hand}
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Trump
 
 import it.unibo.pps.wizard.engine.prolog.WizardTermMapper.*
 
@@ -17,7 +18,7 @@ class WizardPrologEngine:
     import PrologEngine.given
     Using.resource(scala.io.Source.fromFile("prolog/all.pl"))(_.mkString)
 
-  def chooseTrumpColor(hand: Hand): Option[Color] =
+  def chooseTrumpColor(hand: Hand): Option[Card.Color] =
     query(s"choose_trump(${cardsTerm(hand.toList)}, TrumpColor)", "TrumpColor").flatMap(term =>
       Card.Color.values.find(colorTerm(_) == term.toString)
     )
@@ -35,7 +36,7 @@ class WizardPrologEngine:
   def bestPlayableCard(
       hand: Hand,
       winningCard: Option[Card],
-      followingColor: Option[Color],
+      followingColor: Option[Card.Color],
       trump: Trump,
       playerBid: Bid,
       playerTrick: Trick

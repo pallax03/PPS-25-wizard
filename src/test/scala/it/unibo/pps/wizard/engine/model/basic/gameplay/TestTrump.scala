@@ -1,7 +1,8 @@
 package it.unibo.pps.wizard.engine.model.basic.gameplay
 
-import it.unibo.pps.wizard.engine.model.basic.Card.{jester, wizard}
-import it.unibo.pps.wizard.engine.model.basic.{Card, Trump}
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
+import it.unibo.pps.wizard.engine.model.basic.cards.Card.{jester, wizard}
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Trump
 import it.unibo.pps.wizard.engine.model.core.GameError
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -11,7 +12,6 @@ import scala.language.postfixOps
 class TestTrump extends AnyWordSpec with Matchers:
 
   "A Trump" when:
-    import Trump.*
     import Card.*
     "Absent" should:
       val trump = Trump.Absent

@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.model.core
 
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
 
 /**
  * Represents an explicit command or intention submitted by a player. * GameActions are the only

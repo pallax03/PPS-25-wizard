@@ -1,6 +1,8 @@
 package it.unibo.pps.wizard.engine.events
 
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.cards.{Hands, Card}
+import it.unibo.pps.wizard.engine.model.basic.gameplay.{Round, Trump}
 
 sealed trait ProgressEvent extends WizardEvent
 

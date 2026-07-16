@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.events
 
 import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
 
 sealed trait ActionEvent extends WizardEvent
 

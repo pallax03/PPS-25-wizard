@@ -1,7 +1,9 @@
 package it.unibo.pps.wizard.engine.model.basic.gameplay
 
-import it.unibo.pps.wizard.engine.model.basic.Card.wizard
-import it.unibo.pps.wizard.engine.model.basic.{Card, PlayerId, Table}
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
+import it.unibo.pps.wizard.engine.model.basic.cards.Card.wizard
+import it.unibo.pps.wizard.engine.model.basic.gameplay.Table
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -17,7 +19,7 @@ class TestTable extends AnyWordSpec with Matchers:
     "empty" should:
       val table = Table.empty
       "be empty and have no leader" in:
-        table.isEmpty shouldBe true
+        table.playedCards shouldBe empty
         table.followingColor shouldBe None
 
     "receiving plays" should:
@@ -27,9 +29,8 @@ class TestTable extends AnyWordSpec with Matchers:
         + (p1 plays cardP1)
         + (p2 plays cardP2)
       "store the plays in chronological order" in:
-        table.size shouldBe 2
+        table.playedCards should have size 2
         table.playedCards shouldEqual (cardP1 - cardP2)
-        table.plays shouldEqual List((p1, cardP1), (p2, cardP2))
 
       "identify the player of a specific card" in:
         table.playerOf(cardP1) shouldBe Some(p1)

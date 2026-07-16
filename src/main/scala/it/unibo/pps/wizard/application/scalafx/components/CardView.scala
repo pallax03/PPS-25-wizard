@@ -1,7 +1,7 @@
 package it.unibo.pps.wizard.application.scalafx.components
 
 import it.unibo.pps.wizard.application.scalafx.util.WizardTheme
-import it.unibo.pps.wizard.engine.model.basic.Card
+import it.unibo.pps.wizard.engine.model.basic.cards.Card
 
 import scalafx.geometry.Pos
 import scalafx.scene.effect.DropShadow

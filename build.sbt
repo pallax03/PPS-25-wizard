@@ -25,5 +25,4 @@ ThisBuild / libraryDependencies ++= Seq(
 lazy val root = (project in file("."))
   .settings(
 //    assembly / mainClass := Some("it.unibo.pps.wizard.main")
-    coverageExcludedPackages := ".*\\$package.*"
   )
