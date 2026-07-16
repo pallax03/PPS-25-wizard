@@ -47,7 +47,7 @@ class WizardGameAdapter(private val vertx: Vertx, private val outboundPort: Wiza
         case _ =>
 
   override def submitAction(action: GameAction): Future[Unit] =
-    runOnVerticle("Action Submission"):
+    runOnVerticle(s"Action Submission: $action"):
       this.currentState match
         case WizardGameState.Running(oldState) =>
           GameEngine.processAction(oldState, action) match

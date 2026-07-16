@@ -3,23 +3,10 @@ package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.components.*
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
-import it.unibo.pps.wizard.application.scalafx.managers.{
-  HandManager,
-  OpponentsManager,
-  TableManager,
-  TrumpManager
-}
+import it.unibo.pps.wizard.application.scalafx.managers.{HandManager, OpponentsManager, TableManager, TrumpManager}
 import it.unibo.pps.wizard.application.scalafx.pages.{MainPage, ScoreboardPage}
 import it.unibo.pps.wizard.application.scalafx.util.{UiPhase, WizardTheme}
-import it.unibo.pps.wizard.engine.model.basic.{
-  Bid,
-  PlayerId,
-  PlayerName,
-  Players,
-  RoundRow,
-  Scoreboard,
-  Trick
-}
+import it.unibo.pps.wizard.engine.model.basic.{Bid, PlayerId, PlayerName, Players, RoundRow, Scoreboard, Trick}
 import it.unibo.pps.wizard.engine.model.basic.cards.*
 import it.unibo.pps.wizard.engine.model.basic.gameplay.*
 import it.unibo.pps.wizard.engine.model.core.GameAction.PlayCard
@@ -33,6 +20,7 @@ import scalafx.scene.control.Label
 import scalafx.stage.{Modality, Stage}
 import scalafx.util.Duration
 
+import scala.compiletime.uninitialized
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Success
 
@@ -60,16 +48,16 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
   @nowarn @FXML private var hintBestCardButton: Button = _
   @nowarn @FXML private var messageNotificationContainer: HBox = _
 
-  @nowarn private var tableManager: TableManager = _
-  @nowarn private var handManager: HandManager = _
-  @nowarn private var opponentsManager: OpponentsManager = _
-  @nowarn private var trumpManager: TrumpManager = _
-  @nowarn private var currentPlayerView: HumanPlayerView = _
-  @nowarn private var gameInfo: GameInfoView = _
-  @nowarn private var activeScoreboardStage: Stage = _
-  @nowarn private var activeScoreboardPage: ScoreboardPage = _
-  @nowarn private var gameBoardDispatcher: GameBoardEventDispatcher = _
-  @nowarn private var currentMessageLabel: MessageLabel = _
+  private var tableManager: TableManager = uninitialized
+  private var handManager: HandManager = uninitialized
+  private var opponentsManager: OpponentsManager = uninitialized
+  private var trumpManager: TrumpManager = uninitialized
+  private var currentPlayerView: HumanPlayerView = uninitialized
+  private var gameInfo: GameInfoView = uninitialized
+  private var activeScoreboardStage: Stage = uninitialized
+  private var activeScoreboardPage: ScoreboardPage = uninitialized
+  private var gameBoardDispatcher: GameBoardEventDispatcher = uninitialized
+  private var currentMessageLabel: MessageLabel = uninitialized
 
   /** Initializes the game board page by clearing existing UI components, building the UI, and starting the event dispatcher. */
   @FXML
@@ -119,6 +107,10 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
       onCloseRequest = _ => activeScoreboardStage.hide()
 
     activeScoreboardPage = ScoreboardPage(activeScoreboardStage)
+
+    stage.onCloseRequest =
+      _ => gameBoardDispatcher.stopListening()
+      activeScoreboardStage.close()
 
   override def getCurrentPlayerId: PlayerId = currentPlayerId
 
