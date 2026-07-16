@@ -14,6 +14,11 @@ import it.unibo.pps.wizard.engine.ports.WizardOutboundPort
 
 import scala.concurrent.Future
 
+/**
+ * An implementation of the [[WizardOutboundPort]] that uses Vert.x event bus to publish events.
+ *
+ * @param vertx the Vert.x instance used to publish events
+ */
 class VertxEventBusAdapter(private val vertx: Vertx) extends WizardOutboundPort:
 
   override def publishEvent(event: WizardEvent): Future[Unit] =
@@ -25,6 +30,12 @@ class VertxEventBusAdapter(private val vertx: Vertx) extends WizardOutboundPort:
     events.foreach(publishEvent)
     Future.successful(())
 
+  /**
+   * Returns a list of addresses to which the given event should be published.
+   *
+   * @param event the event to be published
+   * @return a list of addresses to which the event should be published
+   */
   private def eventAddresses(event: WizardEvent): List[String] =
     val familyAddress = event match
       case _: ActionEvent     => addressOf[ActionEvent]

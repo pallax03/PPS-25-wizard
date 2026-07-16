@@ -14,10 +14,17 @@ import it.unibo.pps.wizard.util.{Id, VerticleExecutor}
 import scala.concurrent.Future
 import scala.reflect.ClassTag
 
+/** Represents the state of the Wizard game. */
 enum WizardGameState:
   case NotConfigured
   case Running(state: GameState)
 
+/**
+ * An adapter that implements the [[WizardInboundPort]] interface, allowing interaction with the Wizard game engine.
+ *
+ * @param vertx the Vert.x instance used for event handling
+ * @param outboundPort the outbound port used to publish events
+ */
 class WizardGameAdapter(private val vertx: Vertx, private val outboundPort: WizardOutboundPort)
     extends WizardInboundPort:
   private var currentState: WizardGameState = WizardGameState.NotConfigured
@@ -76,6 +83,14 @@ class WizardGameAdapter(private val vertx: Vertx, private val outboundPort: Wiza
             consumer.unregister()
             this.subscriptions -= subscriptionId
 
+  /**
+   * Runs a given activity on the Vert.x event loop, ensuring thread safety and proper execution context.
+   *
+   * @param activityName A descriptive name for the activity being executed.
+   * @param activity The code block representing the activity to be executed.
+   * @tparam T The return type of the activity.
+   * @return A Future containing the result of the activity.
+   */
   private def runOnVerticle[T](activityName: String)(activity: => T): Future[T] =
     this.verticleExecutor.runLater:
       println(s"Running activity '$activityName' on verticle...")
