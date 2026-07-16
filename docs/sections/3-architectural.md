@@ -13,12 +13,14 @@ vengono suddivisi a loro volta in altri sotto-componenti:
 
 - *Application*: gestisce l'interazione dell'utente col servizio. In particolare, è composto da:
 
-    - *Proxy*: media l'interazione tra l'applicazione e l'engine al fine di proteggere l'utilizzatore dai cambiamenti
-      del servizio.
+    - *Proxy*: media l'interazione tra l'applicazione e l'engine al fine di proteggere l'utilizzatore dai cambiamenti del servizio.
     - *ViewController*: gestisce l'interazione tra utente e l'applicazione.
 
 Di seguito, si riporta l'architettura del sistema in cui l'engine può includere modelli, porte e adapter diversi.
 
+![image](../images/hexagonal-diagram.png)
+
+![image](../images/pub-sub-diagram.png)
 
 ## Engine
 

@@ -9,11 +9,17 @@ import scalafx.scene.layout.{HBox, Priority, VBox}
 import scalafx.scene.text.{Font, FontWeight}
 import scala.compiletime.uninitialized
 
+/**
+ * A view that represents a player in the game.
+ *
+ * @param player        the player to be represented
+ * @param isCurrentTurn a boolean indicating if it's the player's turn
+ */
 abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = false) extends VBox:
   alignment = Pos.Center
   spacing = 0
 
-  protected val normalStyle = WizardTheme.Player.normalStyle
+  protected val normalStyle: String = WizardTheme.Player.normalStyle
 
   style = if isCurrentTurn then WizardTheme.Player.activeStyle(UiPhase.Bidding) else normalStyle
 
@@ -75,6 +81,12 @@ abstract class BasePlayerView(val player: Player, val isCurrentTurn: Boolean = f
       style = if hasBottomBorder then WizardTheme.Player.rowBorderStyle else ""
       children = Seq(leftCell, rightCell)
 
+/**
+ * A view that represents a bot player in the game.
+ *
+ * @param player        the bot player to be represented
+ * @param isCurrentTurn a boolean indicating if it's the bot player's turn
+ */
 class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
     extends BasePlayerView(player, isCurrentTurn):
 
@@ -96,6 +108,13 @@ class BotPlayerView(player: Player, isCurrentTurn: Boolean = false)
 
   buildUI()
 
+/**
+ * A view that represents a human player in the game.
+ *
+ * @param player        the human player to be represented
+ * @param isCurrentTurn a boolean indicating if it's the human player's turn
+ * @param onBidSubmitted a callback function to handle bid submission
+ */
 class HumanPlayerView(
     player: Player,
     isCurrentTurn: Boolean = false,

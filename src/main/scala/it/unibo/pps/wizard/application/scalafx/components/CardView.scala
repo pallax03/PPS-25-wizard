@@ -70,7 +70,7 @@ class CardView(val card: Card) extends StackPane:
     case 2 => s"/cards/blue/B$name.webp"
     case 3 => s"/cards/red/R$name.webp"
     case 4 => s"/cards/green/G$name.webp"
-    case _ => s"/cards/green/G$name.webp" // todo
+    case _ => s"/cards/green/G$name.webp"
 
   private def getFallbackColor(card: Card): Color = card match
     case Card.Jester(_)          => Color.Purple
