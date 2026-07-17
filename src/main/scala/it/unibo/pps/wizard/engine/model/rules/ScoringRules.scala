@@ -3,11 +3,22 @@ package it.unibo.pps.wizard.engine.model.rules
 import it.unibo.pps.wizard.engine.model.basic._
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
 
+/** Rules and calculations governing the scoring phase at the end of a round. */
 object ScoringRules:
   // Official Wizard rules scoring constants
   private final val BASE_WIN_POINTS = 20
   private final val POINTS_PER_TRICK = 10
 
+  /**
+   * Calculates the cumulative scores for all players at the end of a round and updates the scoreboard.
+   *
+   * @param players    the list of players.
+   * @param bids       the bids placed for this round.
+   * @param tricks     the tricks won by each player in this round.
+   * @param round      the current game round.
+   * @param scoreboard the current scoreboard before adding this round's points.
+   * @return the updated [[Scoreboard]] containing the new cumulative scores.
+   */
   def compute(
       players: Players,
       bids: Bids,
@@ -30,6 +41,13 @@ object ScoringRules:
       sb.addScore(player.id, round, cumulativePoints, bid)
 
   extension (bid: Bid)
+    /**
+     * Calculates the score obtained for a round based on the bid and the actual tricks won.
+     * Gains points if the bid is exactly met, otherwise loses points proportional to the difference.
+     *
+     * @param tricksWon the number of tricks actually won by the player.
+     * @return the [[Score]] gained (or lost) in the round.
+     */
     def calculatePointsFor(tricksWon: Trick): Score =
       val points =
         if bid == tricksWon

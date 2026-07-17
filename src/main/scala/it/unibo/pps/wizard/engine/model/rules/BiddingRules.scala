@@ -5,8 +5,19 @@ import it.unibo.pps.wizard.engine.model.basic._
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
 import it.unibo.pps.wizard.engine.model.core.GameError
 
+/** Rules and validations governing the bidding phase of a round. */
 object BiddingRules:
 
+  /**
+   * Validates and processes a player's bid, adding it to the current bids if valid.
+   *
+   * @param bid           the bid value to be processed.
+   * @param currentBids   the bids placed so far in this round.
+   * @param currentPlayer the ID of the player placing the bid.
+   * @param round         the current game round.
+   * @param totalPlayers  the total number of players in the game.
+   * @return Right with the updated [[Bids]] if valid, Left with a [[GameError]] otherwise.
+   */
   def processBid(
       bid: Bid,
       currentBids: Bids,
@@ -19,6 +30,14 @@ object BiddingRules:
       .map(_ => currentBids + (currentPlayer -> bid))
 
   extension (bid: Bid)
+    /**
+     * Validates if a bid conforms to both boundary rules and the last-player restriction.
+     *
+     * @param round the current game round.
+     * @param currentBids the bids placed so far in this round.
+     * @param totalPlayers the total number of players in the game.
+     * @return Right(()) if valid, Left with a [[GameError]] otherwise.
+     */
     def validateBid(round: Round, currentBids: Bids, totalPlayers: Int): Either[GameError, Unit] =
       if !bid.isWithinBounds(round) then Left(GameError.InvalidBid)
       else if bid.isLastPlayerInvalid(round, currentBids, totalPlayers) then
