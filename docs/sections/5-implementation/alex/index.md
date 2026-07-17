@@ -107,7 +107,7 @@ agli eventi pubblicati dal sistema e inviare normali `GameAction`.
 
 Per questo motivo i bot sono stati progettati come componenti applicativi, collegati all'engine tramite porte.
 
-![Bots Architecture](/docs/diagrams/bots.png)
+![Bots Architecture](/docs/diagrams/bots.webp)
 
 ### BotManagerVerticle / BotStrategy
 
