@@ -24,7 +24,7 @@ Inoltre, altre due tecnologie sono state utilizzate per effettuare il _testing_ 
 Infine, grazie alla **_SCoverage_** è possibile conoscere in maniera approssimativa la quantità di codice verificato.\
 Ovviamente questo non dà una certezza assoluta di mancanza di _bug_, però permette di essere relativamente sicuri
 sul codice coperto dalla _coverage_.\
-Volontariamente, per mancanze di tempistiche, non sono stati sviluppati test per l'interfaccia grafica.
+Volontariamente, e per mancanze di tempistiche, non sono stati sviluppati test per l'interfaccia grafica.
 
 ## Engine Module
 
@@ -35,43 +35,19 @@ reattivi a certi eventi.
 
 ## Prolog Module
 
+Per agevolare la testabilità delle query, le teorie sono strutturate in un unico file sorgente, 
+ma i commenti e l'indentazione delineano la separazione logica dei moduli e la loro gerarchia di dipendenze.
+
 ![Prolog Package Diagram](/docs/diagrams/prolog.png)
 
-### Utils (Utilità Generiche)
-Fornisce predicati di base per la manipolazione di liste e matematica generale. Funge da libreria standard.
-Responsabilità: Operazioni pure su liste e numeri (conteggio, ricerca del minimo/massimo, lunghezza, deduplicazione).
-Assenza di logica di gioco: Nessun predicato qui sa cos'è una "carta" o il "gioco di Wizard".
+- **Utils**: predicati di base utilizzati da tutti gli altri packages, funge da supporto alla libreria standard.
+- **Engine_Basic**: Definisce le teorie di base del gioco di Wizard.
+- **Engine_Rules**: Implementa le regole rigide del gioco.
+- **Strategy_Helper**: Presenta varie utility per il calcolo delle strategie calcolando informazioni aggiuntive derivate dalle regole del gioco e dalle teorie di base.
+- **Strategy**: Descrive le tattiche di gioco utilizzate nelle API finali.
+- **Wizard_API**: Interfaccia pubblica, espone i predicati che l'applicazione chiamante dovrà utilizzare per interagire con l'intelligenza.
 
-### Engine_Basic (Dominio del Gioco)
-Definisce l'ontologia base del gioco di Wizard. Rappresenta i "tipi di dato" del sistema.
-card/2: Costruttore e validatore di una carta standard.
-validate_cards/1: Verifica che un'intera lista contenga solo entità valide (carte standard, wizard, jester).
-card_value/2: Normalizza il valore delle carte (Jester = 0, Standard = 1-13, Wizard = 14) per permettere i confronti matematici.
-
-### Engine_Rules (Motore delle Regole)
-Implementa le regole rigide del gioco relative alla risposta alle prese (il meccanismo del rispondere a colore).
-following_standard_cards/3: Estrae le carte che rispettano il colore di base richiesto.
-playable_cards/3: Il cuore della validazione delle mosse. Unisce le carte legali del colore richiesto alle carte speciali (wizard, jester), che possono sempre essere giocate.
-
-### Strategy_Helper (Estrattori di Features)
-Genera insight statici dalla mano del giocatore e valuta le condizioni di vittoria/sconfitta.
-Frequenze e Colori: Predicati come color_frequencies/2 e count_color/3 analizzano la composizione della mano per supportare la scelta del seme di briscola o la valutazione dei rischi.
-Analisi Obiettivi: wants_to_win/2 e wants_to_lose/2 determinano l'intenzione del bot (deve fare prese o evitarle in base alla sua dichiarazione e alle prese attuali?).
-Utility di Mano: lowest_card/2 estrae semplicemente la carta matematicamente più bassa a disposizione.
-
-### Strategy (Tattiche di Gioco)
-Implementa l'intelligenza artificiale per le singole micro-decisioni all'interno di una mano.
-Valutazione Prese: safe_trick/3 e risky_trick/3 identificano quali carte hanno altissime probabilità di vincere la mano.
-Simulatore di Scontro: beats/3 calcola la risoluzione tra due carte tenendo conto di speciali e briscole. winning_options/4 e losing_options/4 lo usano per filtrare i rami decisionali.
-Gestione Scarti e Pericoli: smart_discard/3 tenta di proteggere le carte forti liberandosi della "spazzatura", mentre la famiglia dangerous_value quantifica quanto una carta rischia di far prendere accidentalmente una mano che si vuole perdere.
-
-### Wizard_API (Interfaccia Pubblica)
-Il livello superiore del bot, espone i predicati che l'applicazione chiamante dovrà utilizzare per interagire con l'intelligenza. Usa il pattern Cuts (!) per garantire esecuzioni deterministiche (una sola decisione finale per situazione).
-choose_trump/2: Determina il colore di briscola ottimale in base alla densità (dominant_color).
-place_bid/3: Stima il numero di prese dichiarabili analizzando le carte "sicure" e "rischiose".
-adjust_bid/3: Applicativo di salvataggio per rientrare in regole di bidding ristrette (quando la dichiarazione calcolata non è ammessa dalle regole di tavolo).
-best_playable_card/7: L'albero decisionale principale. Incrocia l'intenzione (wants_to_win vs wants_to_lose) con lo stato del tavolo (prima carta vs risposta) e invoca la Strategy corretta per generare la mossa perfetta.
-
+---
 
 ## Avvio della partita
 
