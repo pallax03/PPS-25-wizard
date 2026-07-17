@@ -13,6 +13,11 @@ import scalafx.scene.text.Font
 import scalafx.scene.text.FontWeight
 import scalafx.scene.text.Text
 
+/**
+ * A view for displaying a card in the Wizard game.
+ *
+ * @param card the card to be displayed
+ */
 class CardView(val card: Card) extends StackPane:
   alignment = Pos.Center
 

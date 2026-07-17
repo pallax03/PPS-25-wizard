@@ -11,6 +11,11 @@ import scalafx.scene.shape.Circle
 import scalafx.scene.text.Font
 import scalafx.scene.text.FontWeight
 
+/**
+ * A selector for choosing a trump color in the Wizard game.
+ *
+ * @param onColorSelected a callback function that is called when a color is selected
+ */
 class TrumpColorSelector(onColorSelected: Card.Color => Unit) extends VBox:
   private val titleLabel = new Label("Select a Color:"):
     style = "-fx-text-fill: white; -fx-text-alignment: center;"

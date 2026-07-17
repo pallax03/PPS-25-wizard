@@ -6,8 +6,11 @@ import scalafx.animation.SequentialTransition
 import scalafx.scene.control.Label
 import scalafx.util.Duration
 
-import scala.annotation.nowarn
+import scala.compiletime.uninitialized
 
+/**
+ * A label that displays messages with fade-in and fade-out animations.
+ */
 class MessageLabel extends Label:
   private val baseStyle = "-fx-background-color: rgba(0, 0, 0, 0); " +
     "-fx-font-size: 20px; " +
@@ -17,7 +20,7 @@ class MessageLabel extends Label:
   style = baseStyle
   opacity = 0.0
 
-  @nowarn private var activeTransition: SequentialTransition = _
+  private var activeTransition: SequentialTransition = uninitialized
 
   def show(message: String, textColor: String, onFinishedAction: => Unit): Unit =
     if activeTransition != null then activeTransition.stop()
