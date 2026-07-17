@@ -6,6 +6,14 @@ import scalafx.geometry.Pos
 import scalafx.scene.control.Label
 import scalafx.scene.layout.VBox
 
+/**
+ * A wrapper for displaying a played card along with the player's name.
+ *
+ * @param card the card that was played
+ * @param playerName the name of the player who played the card
+ * @param isWinning indicates if the card is currently winning
+ * @param isFollowing indicates if the card is following the leading suit
+ */
 class PlayedCardWrapper(
     val card: Card,
     playerName: String,
@@ -23,7 +31,8 @@ class PlayedCardWrapper(
 
   val nameLabel: Label = new Label(playerName):
     style =
-      s"-fx-text-fill: ${WizardTheme.Colors.textSoft}; -fx-font-weight: bold; -fx-font-size: 30px;"
+      s"-fx-font-weight: bold; -fx-font-size: 30px;"
+    textFill = WizardTheme.Colors.white
 
   children = Seq(cardView, nameLabel)
 

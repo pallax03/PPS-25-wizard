@@ -15,6 +15,12 @@ import scalafx.stage.Stage
 import scala.annotation.nowarn
 import scala.jdk.CollectionConverters._
 
+/**
+ * Controller for the scoreboard page of the application, responsible for managing the scoreboard table and updating its data.
+ *
+ * @param stage the primary stage of the application
+ * @param context the application context providing access to various components
+ */
 class ScoreboardPageController(stage: Stage)(using context: WizardApplicationContext)
     extends Controller(stage):
 

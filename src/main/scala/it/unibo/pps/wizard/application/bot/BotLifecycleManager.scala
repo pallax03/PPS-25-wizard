@@ -7,6 +7,16 @@ import it.unibo.pps.wizard.engine.ports.WizardInboundPort
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
+/**
+ * Manages the lifecycle of bot managers within the application.
+ *
+ * This class is responsible for deploying and undeploying bot manager verticles,
+ * ensuring that only one bot manager is active at any given time.
+ *
+ * @param vertx        The Vert.x instance used for deploying verticles.
+ * @param inboundPort  The inbound port for receiving events from the game engine.
+ * @param aiPort       The AI port for handling bot decision-making.
+ */
 class BotLifecycleManager(
     private val vertx: Vertx,
     private val inboundPort: WizardInboundPort,
