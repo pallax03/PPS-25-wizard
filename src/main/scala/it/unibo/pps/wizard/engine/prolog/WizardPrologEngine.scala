@@ -30,7 +30,7 @@ class WizardPrologEngine:
 
   private def defineTheory: Theory =
     import PrologEngine.given
-    Using.resource(scala.io.Source.fromFile("prolog/all.pl"))(_.mkString)
+    Using.resource(scala.io.Source.fromResource("prolog/all.pl"))(_.mkString)
 
   /**
    * Uses Prolog logic to determine the best trump color to choose.
