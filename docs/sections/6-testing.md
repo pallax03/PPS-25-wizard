@@ -21,5 +21,5 @@ A supporto di questo processo, sono stati adottati i seguenti strumenti:
 - _Scoverage_: strumento per valutare la qualità dei test come percentuale di codice di produzione analizzato.
 
 [Back to index](/index.md) |
-[Previous Chapter](/docs/sections/5-implementation.md) |
+[Previous Chapter](/docs/sections/5-implementation/index.md) |
 [Next Chapter](/docs/sections/7-application.md)
