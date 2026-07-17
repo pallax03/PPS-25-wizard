@@ -11,6 +11,11 @@ import scalafx.scene.layout.HBox
 import scalafx.scene.paint.Color
 import scalafx.util.Duration
 
+/**
+ * The HandManager class is responsible for managing the display and updates of hand for current player in the game.
+ *
+ * @param container the HBox container that holds the hand views
+ */
 class HandManager(
     val container: HBox,
     onCardDragged: (Double, Double) => Unit,

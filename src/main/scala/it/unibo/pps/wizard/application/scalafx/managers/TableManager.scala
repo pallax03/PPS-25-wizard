@@ -6,6 +6,11 @@ import it.unibo.pps.wizard.engine.model.basic.PlayerName
 import it.unibo.pps.wizard.engine.model.basic.cards.Card
 import scalafx.scene.layout.HBox
 
+/**
+ * The TableManager class is responsible for managing the display and updates of the table in the game.
+ *
+ * @param container the HBox container that holds the table views
+ */
 class TableManager(val container: HBox):
   private val normalStyle = WizardTheme.Table.normalStyle
   private val hoverStyle = WizardTheme.Table.hoverStyle

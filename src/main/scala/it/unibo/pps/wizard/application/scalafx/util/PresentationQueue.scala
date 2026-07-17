@@ -6,11 +6,19 @@ import scalafx.util.Duration
 
 import scala.util.control.NonFatal
 
+/**
+ * The PresentationScript class encapsulates a sequence of presentation steps to be executed.
+ *
+ * @param steps the list of presentation steps (actions or delays) to execute
+ */
 final case class PresentationScript(steps: List[PresentationStep])
 
 object PresentationScript:
   def apply(steps: PresentationStep*): PresentationScript = PresentationScript(steps.toList)
 
+/**
+ * The PresentationStep trait represents a single step in a presentation, which can be either a runnable action or a time delay.
+ */
 sealed trait PresentationStep
 object PresentationStep:
   final case class Run(action: () => Unit) extends PresentationStep
@@ -19,6 +27,9 @@ object PresentationStep:
   def run(action: => Unit): PresentationStep = Run(() => action)
   def waitFor(delayMs: Double): PresentationStep = Wait(delayMs)
 
+/**
+ * The PresentationQueue class manages and executes a queue of presentation steps sequentially on the JavaFX application thread.
+ */
 class PresentationQueue:
   private val queue = scala.collection.mutable.Queue.empty[PresentationStep]
   private var running = false

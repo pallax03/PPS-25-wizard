@@ -8,6 +8,11 @@ import scalafx.scene.Node
 import scalafx.scene.control.Label
 import scalafx.scene.layout.StackPane
 
+/**
+ * The TrumpManager class is responsible for managing the display and updates of trump in the game.
+ *
+ * @param container the StackPane container that holds the trump views
+ */
 class TrumpManager(val container: StackPane, onColorSelected: Card.Color => Unit):
 
   private var trumpCardView: Option[CardView] = Option.empty

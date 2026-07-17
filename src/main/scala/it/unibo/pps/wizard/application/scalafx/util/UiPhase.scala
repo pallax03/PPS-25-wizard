@@ -1,5 +1,8 @@
 package it.unibo.pps.wizard.application.scalafx.util
 
+/**
+ * The UiPhase enum represents the various active phases of the game's user interface.
+ */
 enum UiPhase:
   case ChoosingTrump, Bidding, Playing, Ended, Unknown
 
@@ -13,6 +16,9 @@ enum UiPhase:
     case UiPhase.Ended         => "Ended"
     case UiPhase.Unknown       => ""
 
+/**
+ * The companion object for UiPhase, providing utility methods for string-to-phase conversion.
+ */
 object UiPhase:
   def fromName(name: String): UiPhase = name match
     case "ChoosingTrump" => ChoosingTrump
