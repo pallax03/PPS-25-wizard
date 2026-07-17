@@ -127,6 +127,8 @@ realizzare semplici interfacce grafiche molto velocemente, sfruttando la dichiar
 
 ![Application Package Diagram](/docs/diagrams/application_package.webp)
 
+---
+
 [Back to index](/index.md) |
 [Previous Chapter](/docs/sections/3-architectural.md) |
 [Next Chapter](/docs/sections/5-implementation/index.md)

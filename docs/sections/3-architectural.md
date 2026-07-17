@@ -27,6 +27,8 @@ Di seguito, si riporta l'architettura del sistema in cui l'engine può includere
 
 ![WizardGameAdpater & GameEngine](/docs/diagrams/engine.webp)
 
+---
+
 [Back to index](/index.md) |
 [Previous Chapter](/docs/sections/2-requirements.md) |
 [Next Chapter](/docs/sections/4-detailed.md)

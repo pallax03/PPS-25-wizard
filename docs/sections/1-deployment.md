@@ -51,11 +51,8 @@ Per il versionamento del sistema si adotta lo standard **Semantic Versioning**: 
 - la versione **MINOR** quando si aggiungono funzionalità, mantenendo il sistema retro compatibile
 - la versione **PATCH** quando si correggono bug, mantenendo il sistema retro compatibile
 
-## Quality Assurance
 
-Per il controllo della qualità del sistema sono stati adottati i seguenti strumenti:
-
-- Scala Formatter: controlla lo stile del codice scala
+---
 
 [Back to index](/index.md) |
 [Next Chapter](/docs/sections/2-requirements.md) |

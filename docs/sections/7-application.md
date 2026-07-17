@@ -4,10 +4,12 @@ L'implementazione in scalaFX, realizzata è una gui per poter giocare in modalit
 Una partita a Wizard si può giocare da un numero minimo di 3 a 6 persone totali.
 
 ## Mockups
-Sono statti realizzati dei mockups basilari, per capire 
+
+Sono stati realizzati dei mockups basilari, per capire come realizzare in maniera responsive e intuitiva una GUI basilar durante l'esecuzione di una partita. 
+
 ![Mockups](/docs/diagrams/mockups.webp)
 
-## Flusso di gioco
+## Flusso di Gioco
 
 ### Avvio della partita
 
@@ -19,9 +21,13 @@ cui vengono indicate le seguenti informazioni:
 - BotsDifficulty: indica la difficoltà dei bot presenti nella partita.
 
 
+### Inizio del Round
 
+#### Fase di Choosing Trump
 
+#### Fase di Bidding
 
+---
 
 [Back to index](/index.md) |
 [Previous Chapter](/docs/sections/6-testing.md) |
