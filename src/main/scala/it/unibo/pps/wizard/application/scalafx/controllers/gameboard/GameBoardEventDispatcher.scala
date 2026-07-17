@@ -167,6 +167,7 @@ class GameBoardEventDispatcher(private val view: GameBoardView)(using
               waitFor(3000),
               run(view.displayClearInvalidBid())
             )
+          case GameError.InvalidBid => PresentationScript()
           case error: GameError =>
             PresentationScript(run(view.displayErrorMessage(error.toString)))
 
