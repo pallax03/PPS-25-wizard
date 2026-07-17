@@ -81,3 +81,20 @@ class MainPageController(stage: Stage)(using context: WizardApplicationContext)
           startGame()
         case Failure(exception) =>
           throw exception
+
+  @FXML
+  def handleMouseEntered(): Unit =
+    btnStart.setStyle(
+      "-fx-background-color: radial-gradient(center 50% 50%, radius 60%," +
+        "rgba(0, 191, 255, 0.6) 0%, rgba(0, 191, 255, 0.2) 60%, transparent 100%); " +
+        "-fx-border-color: transparent; " +
+        "-fx-cursor: hand;"
+    )
+
+  @FXML
+  def handleMouseExited(): Unit =
+    btnStart.setStyle(
+      "-fx-background-color: transparent; " +
+        "-fx-border-color: transparent; " +
+        "-fx-cursor: hand;"
+    )

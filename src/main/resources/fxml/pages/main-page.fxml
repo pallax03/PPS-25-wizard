@@ -2,51 +2,54 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.collections.FXCollections?>
 <?import java.lang.Integer?>
 
-<VBox alignment="CENTER" spacing="25.0" prefWidth="1200.0" prefHeight="800.0"
-      style="-fx-background-color: #1e1e1e;"
-      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefWidth="1200.0" prefHeight="675.0"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1">
 
-    <!-- Titolo Principale -->
-    <Label text="THE WIZARD CARD GAME"
-           style="-fx-font-family: 'sans-serif'; -fx-font-weight: bold; -fx-font-size: 42px; -fx-text-fill: #e67e22; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 10, 0, 0, 4);"/>
+    <ImageView fitWidth="1200.0" fitHeight="775.0">
+        <Image url="@/pages/homepage-background.webp"/>
+    </ImageView>
 
-    <!-- Box Inserimento Nome -->
-    <VBox alignment="CENTER" spacing="5.0">
-        <Label text="Inserisci il tuo Nome:" style="-fx-text-fill: #b2bec3; -fx-font-size: 14px;"/>
-        <TextField fx:id="nameField" text="Player 1" maxWidth="250.0"
-                   style="-fx-font-size: 14px; -fx-background-color: #2d3436; -fx-text-fill: white; -fx-border-color: #636e72; -fx-border-radius: 5; -fx-background-radius: 5;"/>
-    </VBox>
+    <TextField fx:id="nameField" text="Player 1"
+               layoutX="500.0" layoutY="237.0"
+               prefWidth="200.0" prefHeight="35.0"
+               style="-fx-font-size: 14px; -fx-font-family: 'sans-serif'; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: #e2e8f0; -fx-alignment: center; -fx-border-color: transparent;"/>
 
-    <!-- Box Selezione Avversari -->
-    <VBox alignment="CENTER" spacing="5.0">
-        <Label text="Numero di Avversari (Max 5):" style="-fx-text-fill: #b2bec3; -fx-font-size: 14px;"/>
-        <ComboBox fx:id="opponentsCombo" maxWidth="100.0" style="-fx-font-size: 14px;">
-            <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <Integer fx:value="2"/>
-                    <Integer fx:value="3"/>
-                    <Integer fx:value="4"/>
-                    <Integer fx:value="5"/>
-                </FXCollections>
-            </items>
-            <value>
+    <ComboBox fx:id="botsDifficultyCombo"
+              layoutX="193.0" layoutY="543.0"
+              prefWidth="125.0" prefHeight="25.0"
+              style="-fx-font-size: 13px; -fx-text-fill: white; -fx-cursor: hand;"/>
+
+    <ComboBox fx:id="opponentsCombo"
+              layoutX="899.0" layoutY="543.0"
+              prefWidth="125.0" prefHeight="25.0"
+              style="-fx-font-size: 13px; -fx-text-fill: white;-fx-cursor: hand;">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <Integer fx:value="2"/>
+                <Integer fx:value="3"/>
+                <Integer fx:value="4"/>
                 <Integer fx:value="5"/>
-            </value>
-        </ComboBox>
-    </VBox>
+            </FXCollections>
+        </items>
+        <value>
+            <Integer fx:value="5"/>
+        </value>
+    </ComboBox>
 
-    <VBox alignment="CENTER" spacing="5.0">
-        <Label text="Difficoltà Bot:" style="-fx-text-fill: #b2bec3; -fx-font-size: 14px;"/>
-        <ComboBox fx:id="botsDifficultyCombo" maxWidth="120.0" style="-fx-font-size: 14px;"/>
-    </VBox>
+    <Button fx:id="btnStart"
+            onAction="#handleStartGameClick"
+            onMouseEntered="#handleMouseEntered"
+            onMouseExited="#handleMouseExited"
+            layoutX="500.0" layoutY="715.0"
+            prefWidth="200.0" prefHeight="45.0"
+            style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: hand;"/>
 
-    <!-- Pulsante Avvia -->
-    <Button fx:id="btnStart" text="CREA PARTITA" onAction="#handleStartGameClick"
-            style="-fx-font-family: 'sans-serif'; -fx-font-weight: bold; -fx-font-size: 16px; -fx-background-color: #2ecc71; -fx-text-fill: white; -fx-padding: 10 30 10 30; -fx-background-radius: 20; -fx-cursor: hand;"/>
-</VBox>
+</AnchorPane>

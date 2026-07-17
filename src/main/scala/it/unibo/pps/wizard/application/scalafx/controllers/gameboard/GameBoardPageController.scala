@@ -275,7 +275,7 @@ class GameBoardPageController(stage: Stage, currentPlayerId: PlayerId)(using
     currentPlayerView.showErrorEffect(false)
 
   @FXML
-  def openScoreboardWindow(): Unit =
+  private def openScoreboardWindow(): Unit =
     activeScoreboardStage match
       case stg if stg.isShowing =>
         stg.toFront()
