@@ -1,13 +1,13 @@
 name := "PPS-25-wizard"
-version := "0.9"
+version := "1.0"
 
 val scala3Version = "3.8.3"
 
 val scalatestVersion      = "3.2.20"
 val catsVersion           = "2.13.0"
 val scalafxVersion        = "26.0.0-R38"
-val twelvemonkeysVersion  = "3.13.1"
-val vertxVersion          = "5.1.3"
+val twelvemonkeysVersion  = "3.14.0"
+val vertxVersion          = "5.1.5"
 val tuPrologVersion       = "4.1.1"
 
 ThisBuild / scalaVersion := scala3Version
@@ -33,7 +33,6 @@ assembly / assemblyMergeStrategy := {
 }
 
 lazy val root = (project in file("."))
-  .enablePlugins(WartRemover)
   .settings(
     coverageExcludedPackages :=
       "<empty>;" +

@@ -51,7 +51,6 @@ Per il versionamento del sistema si adotta lo standard **Semantic Versioning**: 
 - la versione **MINOR** quando si aggiungono funzionalità, mantenendo il sistema retro compatibile
 - la versione **PATCH** quando si correggono bug, mantenendo il sistema retro compatibile
 
-
 ---
 
 [Back to index](/index.md) |

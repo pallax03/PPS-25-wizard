@@ -20,7 +20,6 @@ cui vengono indicate le seguenti informazioni:
 - NumeberOfBots: indica il numero di bot presenti nella partita.
 - BotsDifficulty: indica la difficoltà dei bot presenti nella partita.
 
-
 ### Inizio del Round
 
 #### Fase di Choosing Trump
