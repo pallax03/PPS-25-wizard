@@ -1,7 +1,9 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic._
+import it.unibo.pps.wizard.engine.model.basic.bidding.{Bid, Bids, Trick, Tricks}
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
+import it.unibo.pps.wizard.engine.model.basic.scoreboard.{Score, Scoreboard}
 
 /** Rules and calculations governing the scoring phase at the end of a round. */
 object ScoringRules:
@@ -34,9 +36,9 @@ object ScoringRules:
       val previousRoundNum = round.value - 1
       val previousScore =
         if previousRoundNum > 0 then sb.getStatsForRound(Round(previousRoundNum), player.id)._1
-        else Score.zero
+        else Score(0)
 
-      val cumulativePoints = Score(previousScore.value + roundPoints.value)
+      val cumulativePoints = Score(previousScore + roundPoints)
 
       sb.addScore(player.id, round, cumulativePoints, bid)
 

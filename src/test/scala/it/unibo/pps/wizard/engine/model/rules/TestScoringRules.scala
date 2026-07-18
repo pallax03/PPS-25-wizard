@@ -1,14 +1,13 @@
 package it.unibo.pps.wizard.engine.model.rules
 
-import it.unibo.pps.wizard.engine.model.basic._
+import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.bidding.{Bid, Bids, Trick, Tricks}
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
+import it.unibo.pps.wizard.engine.model.basic.scoreboard.{Score, Scoreboard}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class TestScoringRules extends AnyWordSpec with Matchers:
-
-  import ScoringRules.*
-
   val p0: Player = Player.human(PlayerId(0), PlayerName("Alice"))
   val p1: Player = Player.human(PlayerId(1), PlayerName("Bob"))
   val p2: Player = Player.human(PlayerId(2), PlayerName("Charlie"))
@@ -54,4 +53,4 @@ class TestScoringRules extends AnyWordSpec with Matchers:
         scoreboardAfterR2(p2.id)(round2) shouldBe (Score(20), Bid(0))
 
       "keep historical records for older rounds intact after the new round is processed" in:
-        scoreboardAfterR2(p0.id)(round1)._1.value shouldBe 20
+        scoreboardAfterR2(p0.id)(round1)._1 shouldBe 20

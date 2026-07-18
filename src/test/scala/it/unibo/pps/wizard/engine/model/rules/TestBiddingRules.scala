@@ -1,15 +1,14 @@
 package it.unibo.pps.wizard.engine.model.rules
 
-import it.unibo.pps.wizard.engine.model.basic._
+import it.unibo.pps.wizard.engine.model.basic.*
+import it.unibo.pps.wizard.engine.model.basic.bidding.Bid
+import it.unibo.pps.wizard.engine.model.basic.bidding.Bids
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
 import it.unibo.pps.wizard.engine.model.core.GameError
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class TestBiddingRules extends AnyWordSpec with Matchers:
-
-  import BiddingRules.*
-
   val p1: PlayerId = PlayerId(1)
   val p2: PlayerId = PlayerId(2)
   val p3: PlayerId = PlayerId(3)
