@@ -233,6 +233,8 @@ ricevere tutti i flussi di tipo `WizardEvent` generati dal nucleo applicativo. L
 sottoscrizione (`subscriptionIds`) vengono memorizzate localmente per consentire una rimozione pulita e priva di memory
 leak nel momento in cui la vista viene disattivata (`stopListening`).
 
+---
+
 [Back to index](/index.md) |
 [Previous Chapter](/docs/sections/5-implementation/index.md) |
 [Alex Mazzoni](/docs/sections/5-implementation/alex/index.md) |

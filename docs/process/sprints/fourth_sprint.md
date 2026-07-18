@@ -17,3 +17,11 @@ deadline: 03-07-2026 -> 17-07-2026 ~ 15 Ore
 | P6-16      |                                                            | GUI: refactoring della scoreboard e della main page                            | @framarcaa       |     4     |
 | P7-07      | Quality Assurance e DSL                                    | Scalafmt e CodeQL                                                              | Team             |     1     |
 | P7-08      |                                                            | Refactoring per scalatest e coverage                                           | @pallax03        |     2     |
+
+---
+
+[Back to index](/index.md) |
+[First Sprint](first_sprint.md) |
+[Second Sprint](second_sprint.md) |
+[Third Sprint](third_sprint.md) |
+[Previous Chapter](/docs/process/product_backlog.md)

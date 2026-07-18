@@ -18,3 +18,11 @@ deadline: 26-06-2026 -> 03-07-2026 ~ 15 Ore
 | P7-04      |                                                            | DSL for Scoring, Scoreboard                                       | @framarcaa       |     2     |
 | P7-05      |                                                            | DSL for Bid, BidCollection, BiddingManager                        | @framarcaa       |     4     |
 | P7-06      |                                                            | DSL for Player, Players                                           | @NicolaGraziotin |     2     |
+
+---
+
+[Back to index](/index.md) |
+[First Sprint](first_sprint.md) |
+[Second Sprint](second_sprint.md) |
+[Fourth Sprint](fourth_sprint.md) |
+[Previous Chapter](/docs/process/product_backlog.md)
