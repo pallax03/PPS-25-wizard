@@ -1,8 +1,8 @@
 # Implementazione
 
 - [Alex Mazzoni](alex/index.md)
-- [Nicola Graziotin]()
-- [Francesco Marcatelli]()
+- [Nicola Graziotin](nicola/index.md)
+- [Francesco Marcatelli](francesco/index.md)
 
 ---
 
