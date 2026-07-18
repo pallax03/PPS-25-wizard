@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.model.basic.bidding
 
-import it.unibo.pps.wizard.engine.model.basic.{PlayerId, Players}
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
+import it.unibo.pps.wizard.engine.model.basic.Players
 
 /** Represents the number of tricks won by a player. */
 type Trick = Int

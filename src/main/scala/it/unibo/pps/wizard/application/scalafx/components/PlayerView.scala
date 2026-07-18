@@ -2,8 +2,8 @@ package it.unibo.pps.wizard.application.scalafx.components
 
 import it.unibo.pps.wizard.application.scalafx.util.UiPhase
 import it.unibo.pps.wizard.application.scalafx.util.WizardTheme
-import it.unibo.pps.wizard.engine.model.basic.bidding.Bid
 import it.unibo.pps.wizard.engine.model.basic.Player
+import it.unibo.pps.wizard.engine.model.basic.bidding.Bid
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos
 import scalafx.scene.Node

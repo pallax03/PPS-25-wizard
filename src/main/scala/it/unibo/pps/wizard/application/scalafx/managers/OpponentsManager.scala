@@ -3,9 +3,9 @@ package it.unibo.pps.wizard.application.scalafx.managers
 import it.unibo.pps.wizard.application.scalafx.components.BasePlayerView
 import it.unibo.pps.wizard.application.scalafx.components.BotPlayerView
 import it.unibo.pps.wizard.application.scalafx.util.UiPhase
-import it.unibo.pps.wizard.engine.model.basic.bidding.Bid
 import it.unibo.pps.wizard.engine.model.basic.PlayerId
 import it.unibo.pps.wizard.engine.model.basic.Players
+import it.unibo.pps.wizard.engine.model.basic.bidding.Bid
 import scalafx.scene.Node
 import scalafx.scene.layout.HBox
 

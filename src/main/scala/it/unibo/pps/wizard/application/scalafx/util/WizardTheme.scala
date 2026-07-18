@@ -3,9 +3,7 @@ package it.unibo.pps.wizard.application.scalafx.util
 import it.unibo.pps.wizard.engine.model.basic.cards.{Card => WizardCard}
 import scalafx.scene.paint.Color
 
-/**
- * The WizardTheme object provides all the visual styling, colors, and CSS properties used throughout the game's UI.
- */
+/** The WizardTheme object provides all the visual styling, colors, and CSS properties used throughout the game's UI. */
 object WizardTheme:
   object Colors:
     val white: Color = Color.White

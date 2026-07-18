@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.model.basic.scoreboard
 
-import it.unibo.pps.wizard.engine.model.basic.{PlayerId, Players}
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
+import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.basic.bidding.Bid
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
 import it.unibo.pps.wizard.engine.model.basic.scoreboard.RoundRow

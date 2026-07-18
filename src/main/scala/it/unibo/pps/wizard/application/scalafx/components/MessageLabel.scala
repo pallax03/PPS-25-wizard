@@ -8,9 +8,7 @@ import scalafx.util.Duration
 
 import scala.compiletime.uninitialized
 
-/**
- * A label that displays messages with fade-in and fade-out animations.
- */
+/** A label that displays messages with fade-in and fade-out animations. */
 class MessageLabel extends Label:
   private val baseStyle = "-fx-background-color: rgba(0, 0, 0, 0); " +
     "-fx-font-size: 20px; " +

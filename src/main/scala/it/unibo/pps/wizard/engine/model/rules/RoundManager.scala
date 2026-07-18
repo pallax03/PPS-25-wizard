@@ -1,9 +1,9 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import cats.data.State
-import it.unibo.pps.wizard.engine.model.basic.bidding.Bids
 import it.unibo.pps.wizard.engine.model.basic.PlayerId
 import it.unibo.pps.wizard.engine.model.basic.Players
+import it.unibo.pps.wizard.engine.model.basic.bidding.Bids
 import it.unibo.pps.wizard.engine.model.basic.cards._
 import it.unibo.pps.wizard.engine.model.basic.gameplay._
 import it.unibo.pps.wizard.engine.model.core.CoreState

@@ -1,7 +1,8 @@
 package it.unibo.pps.wizard.engine.prolog
 
 import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL._
-import it.unibo.pps.wizard.engine.model.basic.bidding.{Bid, Trick}
+import it.unibo.pps.wizard.engine.model.basic.bidding.Bid
+import it.unibo.pps.wizard.engine.model.basic.bidding.Trick
 import it.unibo.pps.wizard.engine.model.basic.cards.Card._
 import it.unibo.pps.wizard.engine.model.basic.cards.Hand._
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Table

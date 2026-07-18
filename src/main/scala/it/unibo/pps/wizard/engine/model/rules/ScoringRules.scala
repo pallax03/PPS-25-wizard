@@ -1,9 +1,13 @@
 package it.unibo.pps.wizard.engine.model.rules
 
 import it.unibo.pps.wizard.engine.model.basic._
-import it.unibo.pps.wizard.engine.model.basic.bidding.{Bid, Bids, Trick, Tricks}
+import it.unibo.pps.wizard.engine.model.basic.bidding.Bid
+import it.unibo.pps.wizard.engine.model.basic.bidding.Bids
+import it.unibo.pps.wizard.engine.model.basic.bidding.Trick
+import it.unibo.pps.wizard.engine.model.basic.bidding.Tricks
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
-import it.unibo.pps.wizard.engine.model.basic.scoreboard.{Score, Scoreboard}
+import it.unibo.pps.wizard.engine.model.basic.scoreboard.Score
+import it.unibo.pps.wizard.engine.model.basic.scoreboard.Scoreboard
 
 /** Rules and calculations governing the scoring phase at the end of a round. */
 object ScoringRules:

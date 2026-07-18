@@ -1,7 +1,8 @@
 package it.unibo.pps.wizard.engine.model.basic.scoreboard
 
+import it.unibo.pps.wizard.engine.model.basic.PlayerId
+import it.unibo.pps.wizard.engine.model.basic.Players
 import it.unibo.pps.wizard.engine.model.basic.bidding.Bid
-import it.unibo.pps.wizard.engine.model.basic.{PlayerId, Players}
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
 
 /**
@@ -42,10 +43,10 @@ object RoundRow:
    * @return a map of player IDs to their optional round stats.
    */
   def getStatsForAllPlayers(
-                             round: Round,
-                             players: Players,
-                             sb: Scoreboard
-                           ): Map[PlayerId, Option[(Score, Bid)]] =
+      round: Round,
+      players: Players,
+      sb: Scoreboard
+  ): Map[PlayerId, Option[(Score, Bid)]] =
     players.toList.map { p =>
       val playerHistory = sb(p.id)
       p.id -> playerHistory.get(round)

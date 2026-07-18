@@ -56,5 +56,3 @@ object Bids:
      * @return the total number of bids.
      */
     def total: Bid = b.values.sum
-
-

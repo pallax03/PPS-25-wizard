@@ -3,13 +3,16 @@ package it.unibo.pps.wizard.engine.model.core
 import it.unibo.pps.wizard.engine.events.ActionEvent
 import it.unibo.pps.wizard.engine.events.LifecycleEvent
 import it.unibo.pps.wizard.engine.events.ProgressEvent
-import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL.*
-import it.unibo.pps.wizard.engine.model.basic.*
-import it.unibo.pps.wizard.engine.model.basic.bidding.{Bid, Bids, Trick, Tricks}
-import it.unibo.pps.wizard.engine.model.basic.cards.Card.*
+import it.unibo.pps.wizard.engine.model.basic.BasicTestDSL._
+import it.unibo.pps.wizard.engine.model.basic._
+import it.unibo.pps.wizard.engine.model.basic.bidding.Bid
+import it.unibo.pps.wizard.engine.model.basic.bidding.Bids
+import it.unibo.pps.wizard.engine.model.basic.bidding.Trick
+import it.unibo.pps.wizard.engine.model.basic.bidding.Tricks
+import it.unibo.pps.wizard.engine.model.basic.cards.Card._
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Table
-import it.unibo.pps.wizard.engine.model.core.GameError.*
+import it.unibo.pps.wizard.engine.model.core.GameError._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

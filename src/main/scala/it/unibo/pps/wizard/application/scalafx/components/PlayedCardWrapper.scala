@@ -30,8 +30,7 @@ class PlayedCardWrapper(
   cardView.prefHeight <== cardView.prefWidth * 1.4
 
   val nameLabel: Label = new Label(playerName):
-    style =
-      s"-fx-font-weight: bold; -fx-font-size: 30px;"
+    style = s"-fx-font-weight: bold; -fx-font-size: 30px;"
     textFill = WizardTheme.Colors.white
 
   children = Seq(cardView, nameLabel)
