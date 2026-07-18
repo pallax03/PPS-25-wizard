@@ -7,6 +7,7 @@ import it.unibo.pps.wizard.engine.model.basic.gameplay.{Round, Table, Trump}
 import it.unibo.pps.wizard.engine.model.core.InconsistentStateReasons.*
 import it.unibo.pps.wizard.engine.model.rules.*
 import GameError.*
+import it.unibo.pps.wizard.engine.model.basic.bidding.{Bid, Bids, Tricks}
 
 /**
  * The GameEngine is responsible for processing game actions and managing the game state.

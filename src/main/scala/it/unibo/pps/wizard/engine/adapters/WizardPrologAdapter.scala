@@ -1,7 +1,6 @@
 package it.unibo.pps.wizard.engine.adapters
 
-import it.unibo.pps.wizard.engine.model.basic.Bid
-import it.unibo.pps.wizard.engine.model.basic.Bids
+import it.unibo.pps.wizard.engine.model.basic.bidding.{Bid, Bids}
 import it.unibo.pps.wizard.engine.model.basic.PlayerId
 import it.unibo.pps.wizard.engine.model.basic.cards.Card
 import it.unibo.pps.wizard.engine.model.basic.cards.Hand

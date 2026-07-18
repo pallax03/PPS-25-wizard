@@ -1,6 +1,7 @@
 package it.unibo.pps.wizard.engine.model.core
 
 import it.unibo.pps.wizard.engine.model.basic._
+import it.unibo.pps.wizard.engine.model.basic.bidding.Bid
 import it.unibo.pps.wizard.engine.model.basic.cards.Card
 
 /**

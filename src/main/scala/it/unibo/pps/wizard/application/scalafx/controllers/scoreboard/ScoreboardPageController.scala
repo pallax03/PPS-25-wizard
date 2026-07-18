@@ -3,7 +3,7 @@ package it.unibo.pps.wizard.application.scalafx.controllers.scoreboard
 import it.unibo.pps.wizard.application.scalafx.WizardApplicationContext
 import it.unibo.pps.wizard.application.scalafx.controllers.Controller
 import it.unibo.pps.wizard.engine.model.basic.Players
-import it.unibo.pps.wizard.engine.model.basic.RoundRow
+import it.unibo.pps.wizard.engine.model.basic.scoreboard.RoundRow
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.scene.control.{TableColumn => FXTableColumn}

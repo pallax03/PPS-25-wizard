@@ -2,7 +2,7 @@ package it.unibo.pps.wizard.application.bot.strategy
 
 import it.unibo.pps.wizard.engine.events.FailureEvent
 import it.unibo.pps.wizard.engine.events.InvitationEvent
-import it.unibo.pps.wizard.engine.model.basic.Bid
+import it.unibo.pps.wizard.engine.model.basic.bidding.Bid
 import it.unibo.pps.wizard.engine.model.basic.cards.Card
 import it.unibo.pps.wizard.engine.model.basic.gameplay.Round
 import it.unibo.pps.wizard.engine.model.core.GameAction

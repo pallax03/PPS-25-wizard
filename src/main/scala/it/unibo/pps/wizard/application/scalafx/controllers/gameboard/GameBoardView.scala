@@ -1,14 +1,13 @@
 package it.unibo.pps.wizard.application.scalafx.controllers.gameboard
 
 import it.unibo.pps.wizard.application.scalafx.util.UiPhase
-import it.unibo.pps.wizard.engine.model.basic.Bid
+import it.unibo.pps.wizard.engine.model.basic.bidding.{Bid, Trick}
 import it.unibo.pps.wizard.engine.model.basic.PlayerId
 import it.unibo.pps.wizard.engine.model.basic.PlayerName
 import it.unibo.pps.wizard.engine.model.basic.Players
-import it.unibo.pps.wizard.engine.model.basic.Scoreboard
-import it.unibo.pps.wizard.engine.model.basic.Trick
 import it.unibo.pps.wizard.engine.model.basic.cards._
 import it.unibo.pps.wizard.engine.model.basic.gameplay._
+import it.unibo.pps.wizard.engine.model.basic.scoreboard.Scoreboard
 
 /** Represents the view of the game board, which is responsible for displaying the game state and handling user interactions. */
 trait GameBoardView:
