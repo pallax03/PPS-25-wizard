@@ -18,7 +18,7 @@ Oltre a quelle obbligatorie citate nei requisiti, sono state scelte ulteriori te
 Inoltre, altre due tecnologie sono state utilizzate per effettuare il _testing_ del sistema:
 
 - **_ScalaTest_**: tool per lo sviluppo di test idiomatico in _Scala_.
-- **_ScalaFmt_**: sistema lo stile visivo del codice .
+- **_ScalaFmt_**: sistema lo stile visivo del codice.
 - **_ScalaFix_**: è uno strumento di refactoring e linting per il codice in _Scala_.
 
 Infine, grazie alla **_SCoverage_** è possibile conoscere in maniera approssimativa la quantità di codice verificato.\
@@ -103,6 +103,10 @@ potendo reagire di conseguenza. I tipi di eventi che vengono generati estendono 
 
 * **ActionFailed:** Evento generato in caso di errore di gioco. Esso contiene l'ID del giocatore e il dettaglio dell'
   errore riscontrato.
+
+Un esempio di sottoscrizione agli eventi dell’engine è mostrato nel seguente diagramma degli stati:
+
+![Publish-Subscribe Architecture](/docs/diagrams/pub-sub-diagram.webp)
 
 ### Prolog Module
 

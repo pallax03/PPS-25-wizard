@@ -19,7 +19,6 @@ Di seguito, si riporta l'architettura del sistema in cui l'engine può includere
 
 ![Hexagonal Architecture](/docs/diagrams/hexagonal-diagram.webp)
 
-![Publish-Subscribe Architecture](/docs/diagrams/pub-sub-diagram.webp)
 
 ## WizardGameAdapter & GameEngine
 
