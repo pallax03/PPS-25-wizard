@@ -54,4 +54,4 @@ Per il versionamento del sistema si adotta lo standard **Semantic Versioning**: 
 ---
 
 [Back to index](/index.md) |
-[Next Chapter](/docs/sections/2-requirements.md) |
+[Next Chapter](/docs/sections/2-requirements.md)
