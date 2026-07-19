@@ -16,3 +16,11 @@ deadline: 22-05-2026 - 05-06-2026 ~ 15 Ore
 | P3-04      |                                              | Implementazione delle carte nell'interfaccia grafica                                            | @framarcaa       |     5     |
 | P3-05      |                                              | Modellazione dell'entità `player`: Un giocatore o un bot                                        | @NicolaGraziotin |     2     |
 | P3-06      |                                              | Implementazione del dominio `Hand`                                                              | @NicolaGraziotin |     3     |
+
+---
+
+[Back to index](/index.md) |
+[Second Sprint](second_sprint.md) |
+[Third Sprint](third_sprint.md) |
+[Fourth Sprint](fourth_sprint.md) |
+[Previous Chapter](/docs/process/product_backlog.md)

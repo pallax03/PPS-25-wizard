@@ -18,5 +18,7 @@
 - [Sprint 3](./sprints/third_sprint.md)
 - [Sprint 4](./sprints/fourth_sprint.md)
 
+---
+
 [Back to index](/index.md) |
-[Previous Chapter](/docs/sections/6-implementation.md)
+[Previous Chapter](/docs/sections/7-application/index.md)

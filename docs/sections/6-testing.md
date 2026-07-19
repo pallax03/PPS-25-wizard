@@ -2,9 +2,7 @@
 
 In questa sezione vengono descritte le metodologie di testing adottate durante lo sviluppo del sistema, con particolare attenzione al _Test-Driven Development (TDD)_ e al processo di _Red-Green-Refactor (RGR)_.
 
-## Metodologie di Testing
-
-### Test-Driven Development
+## Test-Driven Development
 
 Durante lo sviluppo del sistema è stato scelto di applicare il più possibile il _Test-Driven Development (TDD)_,
 il cui scopo è quello di anticipare il prima possibile la fase di testing per minimizzare i costi di manutenzione e
@@ -20,6 +18,19 @@ A supporto di questo processo, sono stati adottati i seguenti strumenti:
 - _ScalaTest_: framework per la definizione di unit test per scala.
 - _Scoverage_: strumento per valutare la qualità dei test come percentuale di codice di produzione analizzato.
 
+## Grado di copertura
+
+Durante il secondo sprint sono state definite le **Definition of Done** per i task, stabilendo di mantenere la percentuale di **coverage** costantemente sopra il 90%.
+Nel calcolo della copertura sono stati inclusi esclusivamente i package inerenti alla **logica di business** e alle **utility** riutilizzabili.
+
+Durante la fase finale, non appena abbiamo ottenuto un artefatto eseguibile, abbiamo introdotto flag di compilazione più rigidi (come `-Werror`) per limitare e risolvere proattivamente il debito tecnico del progetto.
+
+## Test Idiomatici
+
+Tutti i test sono stati scritti utilizzando ampiamente DSL specifici per il dominio e `AnyWordSpec`, in grado di definire dei test ben formattati e idiomatici.
+
+---
+
 [Back to index](/index.md) |
-[Previous Chapter](/docs/sections/5-implementation.md) |
-[Next Chapter](/docs/sections/7-application.md)
+[Previous Chapter](/docs/sections/5-implementation/index.md) |
+[Next Chapter](/docs/sections/7-application/index.md)
