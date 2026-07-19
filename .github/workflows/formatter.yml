@@ -5,17 +5,12 @@ on:
   pull_request:
     branches:
       - master
-      - develop
 
 jobs:
   build-and-test:
     permissions:
       contents: read
-      pull-requests: write
     runs-on: ubuntu-latest
-
-    env:
-      JAVA_OPTS: "-Xms2048M -Xmx2048M -Xss6M -XX:ReservedCodeCacheSize=256M -Dfile.encoding=UTF-8"
 
     steps:
       - name: Checkout Current Repo
@@ -31,8 +26,5 @@ jobs:
       - name: Install SBT
         uses: sbt/setup-sbt@v1
 
-      - name: Build, Test and Coverage
-        env:
-            JAVA_OPTIONS: "-Dglass.platform=Monocle -Dmonocle.platform=Headless -Dprism.order=sw"
-        shell: bash
-        run: sbt clean coverage test coverageReport
+      - name: Check formatting with Scalafmt
+        run: sbt scalafmtCheckAll

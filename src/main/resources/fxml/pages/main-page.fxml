@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.Integer?>
+
+<AnchorPane prefWidth="1200.0" prefHeight="675.0"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1">
+
+    <ImageView fitWidth="1200.0" fitHeight="775.0">
+        <Image url="@/pages/homepage-background.webp"/>
+    </ImageView>
+
+    <TextField fx:id="nameField" text="Player 1"
+               layoutX="500.0" layoutY="237.0"
+               prefWidth="200.0" prefHeight="35.0"
+               style="-fx-font-size: 14px; -fx-font-family: 'sans-serif'; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: #e2e8f0; -fx-alignment: center; -fx-border-color: transparent;"/>
+
+    <ComboBox fx:id="botsDifficultyCombo"
+              layoutX="193.0" layoutY="543.0"
+              prefWidth="125.0" prefHeight="25.0"
+              style="-fx-font-size: 13px; -fx-text-fill: white; -fx-cursor: hand;"/>
+
+    <ComboBox fx:id="opponentsCombo"
+              layoutX="899.0" layoutY="543.0"
+              prefWidth="125.0" prefHeight="25.0"
+              style="-fx-font-size: 13px; -fx-text-fill: white;-fx-cursor: hand;">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <Integer fx:value="2"/>
+                <Integer fx:value="3"/>
+                <Integer fx:value="4"/>
+                <Integer fx:value="5"/>
+            </FXCollections>
+        </items>
+        <value>
+            <Integer fx:value="5"/>
+        </value>
+    </ComboBox>
+
+    <Button fx:id="btnStart"
+            onAction="#handleStartGameClick"
+            onMouseEntered="#handleMouseEntered"
+            onMouseExited="#handleMouseExited"
+            layoutX="500.0" layoutY="715.0"
+            prefWidth="200.0" prefHeight="45.0"
+            style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: hand;"/>
+
+</AnchorPane>
