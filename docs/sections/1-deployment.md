@@ -39,6 +39,14 @@ Al termine della settimana si svolgono tre sessioni conclusive:
 Per mantenere un buon livello di qualità e affidabilità del codice sono stati sviluppati workflow che eseguono i test
 del sorgente e controllando che lo stile sia conforme in tutte le porzioni di codice.
 
+## Git Flow
+
+Per garantire un processo di sviluppo ordinato e collaborativo, abbiamo adottato il modello Git Flow.
+Ogni nuova funzionalità o task è stato isolato in un feature branch dedicato,
+creato a partire dal ramo `develop` e successivamente integrato tramite Pull Request.
+Questo meccanismo non solo ha favorito una costante revisione incrociata del codice,
+ma ha anche garantito l'integrità del sistema alla parte di Continuous Integration.
+
 ## Versioning
 
 Si è scelto di adottare di utilizzare la struttura dei **Conventional Commits** per mantenere uniformità nella parte di
@@ -54,4 +62,4 @@ Per il versionamento del sistema si adotta lo standard **Semantic Versioning**: 
 ---
 
 [Back to index](../../index.md) |
-[Next Chapter](./2-requirements.md) |
+[Next Chapter](./2-requirements.md)
