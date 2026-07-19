@@ -58,8 +58,13 @@ permette di accedere alle seguenti informazioni a seconda della specifica fase d
 
 #### Sottoscrizione agli eventi
 
-In ogni momento, è possibile sottoscriversi ai diversi eventi dell’engine, ricevendoli quando sono generati e quindi
-potendo reagire di conseguenza. I tipi di eventi che vengono generati estendono la classe WizardEvent e sono:
+In ogni momento, è possibile sottoscriversi ai diversi eventi **dell’engine**, ricevendoli in ordine di quando sono generati e quindi potendo reagire di conseguenza.
+
+Un esempio di sottoscrizione agli eventi dell’engine è mostrato nel seguente diagramma delle sequenze, dove l'**application** si registra per ricevere gli eventi generati dall’engine e reagisce di conseguenza:
+
+![Publish-Subscribe Architecture](../diagrams/pub-sub-diagram.webp)
+
+I tipi di eventi che vengono generati estendono la classe WizardEvent e sono:
 
 ##### Lifecycle Events (Eventi del Ciclo di Vita del Gioco)
 
@@ -101,10 +106,6 @@ potendo reagire di conseguenza. I tipi di eventi che vengono generati estendono 
 
 * **ActionFailed:** Evento generato in caso di errore di gioco. Esso contiene l'ID del giocatore e il dettaglio dell'
   errore riscontrato.
-
-Un esempio di sottoscrizione agli eventi dell’engine è mostrato nel seguente diagramma degli stati:
-
-![Publish-Subscribe Architecture](../diagrams/pub-sub-diagram.webp)
 
 ### Prolog Module
 
