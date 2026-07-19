@@ -17,14 +17,14 @@ vengono suddivisi a loro volta in altri sotto-componenti:
 
 Di seguito, si riporta l'architettura del sistema in cui l'engine può includere modelli, porte e adapter diversi.
 
-![Hexagonal Architecture](/docs/diagrams/hexagonal-diagram.webp)
+![Hexagonal Architecture](../diagrams/hexagonal-diagram.webp)
 
 
 ## WizardGameAdapter & GameEngine
 
 
 
-![WizardGameAdpater & GameEngine](/docs/diagrams/engine.webp)
+![WizardGameAdpater & GameEngine](../diagrams/engine.webp)
 
 ---
 

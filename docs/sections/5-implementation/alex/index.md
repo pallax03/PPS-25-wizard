@@ -10,7 +10,7 @@ Nell'ambito dei componenti di [model.basic](#enginemodel), ho implementato in au
 Successivamente ho coordinato e revisionato la sezione relativa alle [model.rules](#enginemodel), 
 implementando nello specifico: `TableRules` la cui responsabilità sono le regole operative legate alla giocata di una carta e alla valutazione della presa.
 
-Il mio compito successivo ha riguardato l'intera [implementazione dei bot](#bot), a partire dall'integrazione con [prolog](#prolog) fino alla realizzazione dei [suggerimenti (hint) per i giocatori](#...).
+Il mio compito successivo ha riguardato l'intera [implementazione dei bot](#bot), a partire dall'integrazione con [prolog](#prolog) fino alla realizzazione dei suggerimenti (hint) per i giocatori.
 Come anticipato, ho coordinato l'architettura del GameEngine con l'obiettivo di garantire un netto disaccoppiamento tra player e bot, facilitando così la creazione di un'unica API esterna al GameEngine utilizzata da entrambi.
 Grazie all'architettura finale dell'intero progetto, implementata da [@NicolaGraziotin](/docs/sections/5-implementation/nicola/index.md), il disaccoppiamento tra i due componenti attivi è risultato immediato. 
 Questo approccio mi ha permesso di valorizzare la sua struttura, approfondendo e applicando il pattern _ports-and-adapters_; 
@@ -107,7 +107,7 @@ agli eventi pubblicati dal sistema e inviare normali `GameAction`.
 
 Per questo motivo i bot sono stati progettati come componenti applicativi, collegati all'engine tramite porte.
 
-![Bots Architecture](/docs/diagrams/bots.webp)
+![Bots Architecture](../../../diagrams/bots.webp)
 
 ### BotManagerVerticle / BotStrategy
 

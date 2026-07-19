@@ -8,13 +8,13 @@ Una partita a Wizard si può giocare da un numero minimo di 3 a 6 persone totali
 Sono stati realizzati dei mockups basilari, per capire come realizzare in maniera responsive e intuitiva una GUI basilare, 
 durante l'esecuzione di una partita. 
 
-![Mockups](/docs/diagrams/mockups.webp)
+![Mockups](../../diagrams/mockups.webp)
 
 ## Flusso di Gioco
 
 ### Avvio della partita
 
-![Main Page View](images/main_page.webp)
+![Main Page View](./images/main_page.webp)
 
 Per poter avviare una partita, è necessaria una configurazione iniziale, modellata dalla classe `GameConfiguration`, in
 cui vengono indicate le seguenti informazioni:
@@ -32,14 +32,14 @@ L'interfaccia fornisce un feedback visivo immediato per ogni azione,
 
 #### Fase di Choosing Trump
 
-![Resolving Trump View](images/resolve_trump.webp)
+![Resolving Trump View](./images/resolve_trump.webp)
 
 In questa fase, qualora venga pescata una carta che richiede la scelta del seme di briscola,
 l'interfaccia permette al giocatore di selezionare il colore desiderato tramite gli appositi pulsanti colorati situati sul lato sinistro della carta.
 
 #### Fase di Bidding & Invalid Bid
 
-![Place & Invalid Bid View](images/invalid_bid.webp)
+![Place & Invalid Bid View](./images/invalid_bid.webp)
 
 All'inizio di ogni round, i giocatori devono effettuare le loro previsioni (bids) sul numero di prese che stimano di vincere.
 L'interfaccia integra un sistema di validazione in tempo reale:
@@ -48,7 +48,7 @@ l'azione viene bloccata e compare il messaggio di avviso "Invalid bid.", richied
 
 #### Playing a Card & Best Card Hint 
 
-![Hint and Playing View](images/hint.webp)
+![Hint and Playing View](./images/hint.webp)
 
 Durante la fase di gioco vera e propria, gli utenti selezionano e calano le carte dalla propria mano.
 È stata implementata una funzionalità di supporto per il giocatore: cliccando sul pulsante "HINT" sulla destra,
@@ -57,7 +57,7 @@ suggerendo la carta ottimale da giocare, evidenziandola graficamente all'interno
 
 #### Trick Won
 
-![Trick Won View](images/trick_won.webp)
+![Trick Won View](./images/trick_won.webp)
 
 Al termine di ogni mano, l'interfaccia mette in risalto la carta vincente al centro del tavolo.
 Un testo a schermo indica esplicitamente quale giocatore o bot si è aggiudicato la presa,
@@ -65,7 +65,7 @@ e le relative statistiche "Tricks Won" nei pannelli dei giocatori vengono aggior
 
 ### Fine del gioco e Scoreboard
 
-![Game Ended View and Scoreboard](images/end.webp)
+![Game Ended View and Scoreboard](./images/end.webp)
 
 Una volta concluso l'ultimo round previsto, compare una finestra di dialogo "Game Over" che segnala la fine della partita.
 Da qui, cliccando su "Show Scoreboard", l'utente può consultare la classifica finale:

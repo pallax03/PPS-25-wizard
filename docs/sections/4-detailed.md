@@ -31,8 +31,6 @@ Volontariamente, e per mancanze di tempistiche, non sono stati sviluppati test p
 Il servizio è stato realizzato attraverso la libreria _Vertx_, che facilita la creazione di sistemi
 reattivi a certi eventi.
 
-![Engine Package Diagram](/docs/diagrams/engine_package.webp)
-
 ### WizardGameAdapter & GameEngine
 
 
@@ -106,14 +104,14 @@ potendo reagire di conseguenza. I tipi di eventi che vengono generati estendono 
 
 Un esempio di sottoscrizione agli eventi dell’engine è mostrato nel seguente diagramma degli stati:
 
-![Publish-Subscribe Architecture](/docs/diagrams/pub-sub-diagram.webp)
+![Publish-Subscribe Architecture](../diagrams/pub-sub-diagram.webp)
 
 ### Prolog Module
 
 Per agevolare la testabilità delle query, le teorie sono strutturate in un unico file sorgente, 
 ma i commenti e l'indentazione delineano la separazione logica dei moduli e la loro gerarchia di dipendenze.
 
-![Prolog Package Diagram](/docs/diagrams/prolog.webp)
+![Prolog Package Diagram](../diagrams/prolog.webp)
 
 - **Utils**: predicati di base utilizzati da tutti gli altri packages, funge da supporto alla libreria standard.
 - **Engine_Basic**: Definisce le teorie di base del gioco di Wizard.
@@ -121,15 +119,6 @@ ma i commenti e l'indentazione delineano la separazione logica dei moduli e la l
 - **Strategy_Helper**: Presenta varie utility per il calcolo delle strategie calcolando informazioni aggiuntive derivate dalle regole del gioco e dalle teorie di base.
 - **Strategy**: Descrive le tattiche di gioco utilizzate nelle API finali.
 - **Wizard_API**: Interfaccia pubblica, espone i predicati che l'applicazione chiamante dovrà utilizzare per interagire con l'intelligenza.
-
----
-
-## Application Module
-
-L’applicazione è stata realizzata utilizzando la libreria ScalaFX, la quale è un wrapper di JavaFX che permette di
-realizzare semplici interfacce grafiche molto velocemente, sfruttando la dichiaratività di Scala.
-
-![Application Package Diagram](/docs/diagrams/application_package.webp)
 
 ---
 
