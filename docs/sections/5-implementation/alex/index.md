@@ -193,8 +193,8 @@ Senza il cut, il motore Prolog, tramite il meccanismo di backtracking, potrebbe 
 
 ---
 
-[Back to index](/index.md) |
-[Previous Chapter](/docs/sections/5-implementation/index.md) |
-[Nicola Graziotin](/docs/sections/5-implementation/nicola/index.md) |
-[Francesco Marcatelli](/docs/sections/5-implementation/francesco/index.md) |
-[Next Chapter](/docs/sections/6-testing.md)
+[Back to index](../../../../index.md) |
+[Previous Chapter](../index.md) |
+[Nicola Graziotin](../nicola/index.md) |
+[Francesco Marcatelli](../francesco/index.md) |
+[Next Chapter](../../6-testing.md)

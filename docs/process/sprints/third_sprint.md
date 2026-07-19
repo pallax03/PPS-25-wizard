@@ -21,8 +21,8 @@ deadline: 26-06-2026 -> 03-07-2026 ~ 15 Ore
 
 ---
 
-[Back to index](/index.md) |
-[First Sprint](first_sprint.md) |
-[Second Sprint](second_sprint.md) |
-[Fourth Sprint](fourth_sprint.md) |
-[Previous Chapter](/docs/process/product_backlog.md)
+[Back to index](../../../index.md) |
+[First Sprint](./first_sprint.md) |
+[Second Sprint](./second_sprint.md) |
+[Fourth Sprint](./fourth_sprint.md) |
+[Previous Chapter](../product_backlog.md)

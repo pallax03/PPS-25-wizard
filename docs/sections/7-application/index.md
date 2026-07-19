@@ -73,6 +73,6 @@ una tabella di riepilogo dettagliata che mostra l'evoluzione dei punteggi e dell
 
 ---
 
-[Back to index](/index.md) |
-[Previous Chapter](/docs/sections/6-testing.md) |
-[Next Chapter](/docs/process/product_backlog.md)
+[Back to index](../../../index.md) |
+[Previous Chapter](../6-testing.md) |
+[Next Chapter](../../process/product_backlog.md)

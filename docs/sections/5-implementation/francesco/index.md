@@ -193,8 +193,8 @@ Il processo si articola in modo lineare e sicuro per rispondere a precise necess
 
 ---
 
-[Back to index](/index.md) |
-[Previous Chapter](/docs/sections/5-implementation/index.md) |
-[Alex Mazzoni](/docs/sections/5-implementation/alex/index.md) |
-[Nicola Graziotin](/docs/sections/5-implementation/nicola/index.md) |
-[Next Chapter](/docs/sections/6-testing.md)
+[Back to index](../../../../index.md) |
+[Previous Chapter](../index.md) |
+[Nicola Graziotin](../nicola/index.md) |
+[Alex Mazzoni](../alex/index.md) |
+[Next Chapter](../../6-testing.md)

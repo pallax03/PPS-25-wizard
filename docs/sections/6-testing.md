@@ -31,6 +31,6 @@ Tutti i test sono stati scritti utilizzando ampiamente DSL specifici per il domi
 
 ---
 
-[Back to index](/index.md) |
-[Previous Chapter](/docs/sections/5-implementation/index.md) |
-[Next Chapter](/docs/sections/7-application/index.md)
+[Back to index](../../index.md) |
+[Previous Chapter](./5-implementation/index.md) |
+[Next Chapter](./7-application/index.md)

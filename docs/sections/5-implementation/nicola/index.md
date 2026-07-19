@@ -256,8 +256,8 @@ leak nel momento in cui la vista viene disattivata (`stopListening`).
 
 ---
 
-[Back to index](/index.md) |
-[Previous Chapter](/docs/sections/5-implementation/index.md) |
-[Alex Mazzoni](/docs/sections/5-implementation/alex/index.md) |
-[Francesco Marcatelli](/docs/sections/5-implementation/francesco/index.md) |
-[Next Chapter](/docs/sections/6-testing.md)
+[Back to index](../../../../index.md) |
+[Previous Chapter](../index.md) |
+[Alex Mazzoni](../alex/index.md) |
+[Francesco Marcatelli](../francesco/index.md) |
+[Next Chapter](../../6-testing.md)

@@ -28,6 +28,6 @@ Di seguito, si riporta l'architettura del sistema in cui l'engine può includere
 
 ---
 
-[Back to index](/index.md) |
-[Previous Chapter](/docs/sections/2-requirements.md) |
-[Next Chapter](/docs/sections/4-detailed.md)
+[Back to index](../../index.md) |
+[Previous Chapter](./2-requirements.md) |
+[Next Chapter](./4-detailed.md)

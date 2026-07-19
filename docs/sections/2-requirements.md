@@ -54,6 +54,6 @@ Durante l'analisi del problema sono stati identificati i seguenti requisiti del 
 
 ---
 
-[Back to index](/index.md) |
-[Previous Chapter](/docs/sections/1-deployment.md) |
-[Next Chapter](/docs/sections/3-architectural.md)
+[Back to index](../../index.md) |
+[Previous Chapter](./1-deployment.md) |
+[Next Chapter](./3-architectural.md)

@@ -133,6 +133,6 @@ realizzare semplici interfacce grafiche molto velocemente, sfruttando la dichiar
 
 ---
 
-[Back to index](/index.md) |
-[Previous Chapter](/docs/sections/3-architectural.md) |
-[Next Chapter](/docs/sections/5-implementation/index.md)
+[Back to index](../../index.md) |
+[Previous Chapter](./3-architectural.md) |
+[Next Chapter](./5-implementation/index.md)

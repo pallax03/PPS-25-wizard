@@ -1,6 +1,9 @@
 # Retrospettiva:
 
+
+
 ## Product Backlog:
+
 | Product Id | Item                                                       | Initial Size Est. | Real Size |
 |------------|------------------------------------------------------------|:-----------------:|:---------:|
 | P1         | Organizzazione del progetto.                               |         2         |     -     |
@@ -20,5 +23,5 @@
 
 ---
 
-[Back to index](/index.md) |
-[Previous Chapter](/docs/sections/7-application/index.md)
+[Back to index](../../index.md) |
+[Previous Chapter](../sections/7-application/index.md)

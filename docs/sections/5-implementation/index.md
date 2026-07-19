@@ -6,6 +6,6 @@
 
 ---
 
-[Back to index](/index.md) |
-[Previous Chapter](/docs/sections/4-detailed.md) |
-[Next Chapter](/docs/sections/6-testing.md)
+[Back to index](../../../index.md) |
+[Previous Chapter](../4-detailed.md) |
+[Next Chapter](../6-testing.md)
