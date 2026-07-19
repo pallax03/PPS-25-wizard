@@ -10,6 +10,8 @@ Nell'ambito dei componenti di [model.basic](#enginemodel), ho implementato in au
 - `cards`, rappresentano il dominio delle carte da gioco: `Card / SpecialCard`.
 - `players`, rappresenta il dominio dei giocatori: `Player / Players`.
 
+Successivamente, mi sono occupato della progettazione e dello sviluppo dell'[architettura esagonale](#architettura-esagonale-e-gestione-della-concorrenza), definendo le porte di ingresso/uscita e realizzando gli adattatori per la comunicazione asincrona con la GUI e i bot. Ho inoltre progettato il [contesto applicativo](#application-context) e il [dispatcher degli eventi](#gestione-degli-eventi-lato-client) lato client, garantendo un flusso di dati coerente e thread-safe. Sfruttando la base solida del [GameEngine](#il-gameengine) coordinato da @pallax03, ho integrato la logica funzionale e le regole del gioco Wizard, ottimizzando la gestione degli eventi asincroni per renderla efficiente e facilmente testabile. Infine, con la collaborazione del team, ho contribuito alla realizzazione della GUI in ScalaFX, sviluppando le schermate principali e i relativi controller, e ho finalizzato l'integrazione dell'interfaccia con il modello di eventi asincroni.
+
 I file implementati in collaborazione con gli altri membri del team includono:
 - La `GameConfiguration` per l'aggiunta del numero di bots e la loro difficoltà.
 - Interfaccia generica di `Event` per la gestione dei flussi di eventi asincroni.
@@ -22,20 +24,19 @@ I file implementati in collaborazione con gli altri membri del team includono:
 
 ## engine.model
 
-L'obiettivo primario che ha guidato il design di questo modulo è stato l'ottenimento del massimo livello di type
+L'obiettivo primario che ha guidato il design di questo modulo è stato il raggiungimento della massima type
 safety possibile a tempo di compilazione.
 
 Invece di demandare il controllo di coerenza delle entità a validazioni runtime, il compilatore stesso si fa carico
-di validare la correttezza strutturale del modello. Per raggiungere questo traguardo senza introdurre penalizzazioni
-prestazionali, il design si è basato su una combinazione sinergica di due potenti costrutti del type system di Scala 3:
+di garantire la correttezza strutturale del modello. Per raggiungere questo traguardo senza introdurre penalizzazioni
+prestazionali, il design si è basato su una combinazione di due potenti costrutti del type system di Scala:
 gli **Algebraic Data Types (ADT)** e gli **Opaque Types**.
 
 ### Players
 
 Le identità e i concetti fondamentali come `PlayerId`, `PlayerName` e la collezione `Players` sono stati definiti
-come `opaque type`. Questo garantisce che a tempo di esecuzione non vi sia overhead (vengono trattati come primitive
-o liste standard), ma a tempo di compilazione il type system previene scambi accidentali (ad esempio, passare un `Int`
-qualsiasi al posto di un `PlayerId`).
+come `opaque type`. Questo garantisce che a tempo di esecuzione non vi sia _overhead_ (vengono trattati come primitive
+o liste standard), ma a tempo di compilazione il type system previene scambi accidentali come ad esempio, passare un `Int` qualsiasi al posto di un `PlayerId`.
 
 ```scala
 opaque type PlayerId = Int
@@ -52,7 +53,7 @@ del codice.
 
 Per quanto riguarda il dominio delle carte (`Card`, `SpecialCard`, `Color`, `Rank`), ho implementato una gerarchia chiusa
 tramite **Algebraic Data Types (ADT)**. La modellazione cartesiana (prodotto e somma) si sposa perfettamente con
-le regole del gioco Wizard, strutturando in Scala 3 attraverso l'uso congiunto di `sealed trait` ed `enum`.
+le regole del gioco Wizard, strutturando in Scala attraverso l'uso congiunto di `sealed trait` ed `enum`.
 
 ```scala
 sealed trait Card
@@ -99,14 +100,14 @@ tracciabilità univoca di ogni singola entità durante le fasi di gioco e di cal
 
 ---
 
-## Il GameEngine: Macchina a Stati
+## Il GameEngine
 
-La responsabilità principale della gestione delle regole di business, dell'invarianza del gioco e della transizione
-tra le fasi risiede nel componente `GameEngine`. In piena aderenza ai dettami del paradigma funzionale (FP) e al fine di
+La responsabilità principale della gestione delle regole di business, dell'invarianza del gioco e delle transizioni
+di fase risiede nel componente `GameEngine`. In piena aderenza ai principi del paradigma funzionale (FP) e al fine di
 garantire la totale thread-safety in contesti asincroni, l'engine è stato progettato come una **macchina a stati finiti
 deterministica e puramente funzionale**. Esso non altera mai uno stato interno globale tramite side-effect o mutazioni
-in-place, ma opera come una funzione pura che accetta in input la configurazione corrente del sistema (`GameState`) e una
-azione esterna (`GameAction`), computando e restituendo in modo atomico il blocco informativo successivo.
+in-place, ma opera come una funzione pura: accetta in input la configurazione corrente del sistema (`GameState`) e un'azione
+esterna (`GameAction`), computando e restituendo in modo atomico lo stato e gli eventi successivi.
 
 Per ottimizzare la pipeline di elaborazione e disaccoppiare la logica computazionale pura dagli strati di notifica
 periferici (come la GUI in ScalaFX), ho implementato un pattern architetturale strettamente correlato ai principi
@@ -119,42 +120,62 @@ opaque type GameEngine = (GameState, List[WizardEvent])
 
 Per mappare le computazioni fallibili (es. un giocatore che tenta di giocare una carta fuori dal proprio turno o non
 conforme alle regole della tavola), l'engine rifiuta l'uso di eccezioni runtime, che violerebbero il principio di
-trasparenza referenziale. La funzione di transizione principale `processAction` solleva il tipo di ritorno nel contesto
+_trasparenza referenziale_. La funzione di transizione principale `processAction` solleva il tipo di ritorno nel contesto
 monadico di `Either[GameError, GameEngine]`:
 
 ```scala
 def processAction(state: GameState, action: GameAction): Either[GameError, GameEngine] =
   (state, action) match
-    case (currentState: GameState.ChoosingTrump, GameAction.ResolveTrumpColor(playerId, color)) =>
-      handleResolveTrump(currentState, playerId, color)
-
     case (currentState: GameState.Bidding, GameAction.PlaceBid(playerId, bid)) =>
       handlePlaceBid(currentState, playerId, bid)
-
-    case (currentState: GameState.Playing, GameAction.PlayCard(playerId, card)) =>
-      handlePlayCard(currentState, playerId, card)
-
-    case (_, _) => Left(InvalidAction)
+  // ...
 ```
 
-sfruttando il pattern matching tipizzato sulle tuple composte dallo stato corrente e dall'azione, il compilatore valida
+Sfruttando il pattern matching tipizzato sulle tuple composte dallo stato corrente e dall'azione, il compilatore valida
 le ramificazioni ammissibili. Qualsiasi accoppiamento non previsto dalle regole del gioco (es. il tentativo di piazzare
 una scommessa durante la fase di gioco attivo) ricade nel ramo catch-all e produce un fallimento controllato sollevando
 un `Left(InvalidAction)`. Questo approccio garantisce la totalità della funzione, rendendo esplicito il flusso d'errore
 nel type system.
 
+```scala
+private def handlePlaceBid(...): Either[GameError, GameEngine] =
+    val totalPlayers = currentState.core.players.totalPlayers
+
+    for
+      _ <- currentState.currentPlayer.validateTurnOf(playerId)
+      updatedBids <- BiddingRules.processBid(
+        bid,
+        currentState.currentBids,
+        playerId,
+        currentState.core.round,
+        currentState.core.players.totalPlayers
+      )
+      bidPlacedEvent = ActionEvent.BidPlaced(playerId, bid)
+
+      finalEngine <-
+        if updatedBids.isComplete(totalPlayers) then
+          advanceToPlayingPhase(currentState, updatedBids, bidPlacedEvent)
+        else advanceToNextBidder(currentState, updatedBids, playerId, bidPlacedEvent)
+    yield finalEngine
+```
+
+L'uso combinato di `for-comprehension` e `Either` consente di propagare in modo elegante gli errori, interrompendo
+la computazione (_short-circuited_) al primo fallimento e restituendo un `Left` con il dettaglio dell'errore.
+In caso di successo, viene restituito un `Right` contenente la nuova istanza di `GameEngine` con lo stato aggiornato
+e gli eventi generati.
+
 ---
 
 ## Architettura Esagonale e Gestione della Concorrenza
 
-Il disaccoppiamento tra il nucleo funzionale del dominio (`GameEngine`) e le interfacce esterne
+Il disaccoppiamento tra il core funzionale del dominio (`GameEngine`) e le interfacce esterne
 (la GUI sviluppata in ScalaFX ed i Bot intelligenti) è stato formalizzato applicando il pattern architetturale
 **Ports and Adapters (Architettura Esagonale)**. Questo approccio garantisce che la logica di business rimanga del tutto
 indipendente rispetto ai canali di I/O o ai framework di persistenza e notifica applicati alla periferia del sistema.
 
 ### Inbound e Outbound Ports
 
-I confini dell'esagono di gioco sono descritti rigidamente da due `trait` fondamentali all'interno del package `engine.ports`:
+I confini dell'architettura esagonale sono descritti rigidamente da due `trait` fondamentali all'interno del package `engine.ports`:
 1. `WizardInboundPort`: modella i canali d'ingresso primari per stimolare il dominio. Tutte le sue firme sollevano il
 tipo di ritorno nel contesto asincrono di un `Future`. Questo impone un contratto non bloccante a qualsiasi client esterno,
 garantendo la reattività dei thread chiamanti. Abilita inoltre un pattern di **pubblicazione / sottoscrizione** per i
@@ -166,24 +187,23 @@ il mondo esterno.
 ### WizardGameAdapter e VertxEventBusAdapter
 
 L'implementazione concreta di queste porte è strutturata nel package `engine.adapters`:
-- `VertxEventBusAdapter`: adatta la `WizardOutboundPort` instanziando un meccanismo di messaggistica asincrono basato
+- `VertxEventBusAdapter`: adatta la `WizardOutboundPort` istanziando un meccanismo di messaggistica asincrono basato
 sull'EventBus di Vert.x. Per ogni evento generato, il metodo `eventAddresses` calcola dinamicamente le stringhe di
-routing tipizzate (es. per gerarchia di classi o nome specifico della classe), distribuendolo in modo non bloccante
-sul bus locale (`this.vertx.eventBus().publish(address, event)`).
-- `WizardGameAdapter`: estende `WizardInboundPort` e agisce come coordinatore dello stato globale mutable dell'applicazione
+routing tipizzate, distribuendolo in modo non bloccante sul bus locale (`this.vertx.eventBus().publish(address, event)`).
+- `WizardGameAdapter`: estende `WizardInboundPort` e agisce come coordinatore dello stato globale mutabile dell'applicazione
 (`var currentState: WizardGameState`). Riceve le azioni esterne, interroga l'engine funzionale passando lo stato corrente,
 memorizza la nuova configurazione calcolata dall'engine e attiva la propagazione degli eventi verso l'adattatore di output.
 
 ### Event Loop
 
-Poiché la UI e molteplici agenti robotici (`Bot`) possono invocare concorrentemente il metodo `submitAction` dell'adattatore,
-emerge una problematica cruciale: evitare race conditions sulla variabile globale `currentState` del modulo adapter.
+Poiché la UI e molteplici (`Bot`) possono invocare concorrentemente il metodo `submitAction` dell'adattatore,
+emerge una problematica cruciale: evitare _race conditions_ sulla variabile globale `currentState` del modulo adapter.
 Per risolvere radicalmente la problematica senza ricorrere a costose o rischiose barriere di sincronizzazione,
 ho implementato il pattern della **Thread Confinement** sviluppando la classe di utility `VerticleExecutor`.
 L'idea cardine è delegare l'esecuzione di qualunque operazione che legga o modifichi lo stato a un unico ed esclusivo
-Event Loop gestito da **Vert.x**.
+**Event Loop** gestito da **Vert.x**.
 
-Il funzionamento computazionale segue un flusso rigoroso:
+Il funzionamento segue un flusso rigoroso:
 1. **Sospensione del Task (`runLater`):** il task da eseguire viene incapsulato in un `PendingTask` e registrato
 in una mappa concorrente (`TrieMap`) con un identificativo univoco. Il task non viene eseguito immediatamente,
 ma viene schedulato per l'esecuzione futura.
@@ -214,18 +234,19 @@ La separazione temporale del caricamento delle dipendenze è coordinata in modo 
 e del motore `Vertx` all'interno del builder, avviando subito dopo l'inizializzazione del framework grafico.
 - **Configurazione dello Stage (`start`):** All'attivazione del thread grafico (`start`), viene configurata la finestra principale
 (`PrimaryStage`) e il suo riferimento viene iniettato nel builder per completare la configurazione delle dipendenze.
-- **Risoluzione Implicit Context:** Da questo istante in poi, l'intero contesto viene esposto sotto forma di
-`given applicationContext: WizardApplicationContext`. Questo sfrutta il meccanismo dei parametri impliciti (_Context Parameters_)
-di Scala per distribuire le dipendenze in modo pulito e sicuro a tutte le pagine grafiche dell'applicazione,
-garantendo al contempo un'elevatissima modularità e una predisposizione ottimale per i test di integrazione automatizzati
-tramite il mocking programmabile delle porte.
+- **Risoluzione del Context:** Da questo istante in poi, l'intero contesto viene esposto sotto forma di
+`given applicationContext: WizardApplicationContext`. Questo sfrutta le **Using Clauses** (_Context Parameters_)
+di Scala per iniettare le dipendenze in modo pulito e sicuro a tutte le pagine grafiche dell'applicazione. Tale approccio
+garantisce un'elevata modularità e predisposizione in modo ottimale il sistema di test di integrazione automatizzati,
+abilitando il mocking programmabile delle porte.
 
 ### Gestione degli Eventi Lato Client
 
 Per garantire il completo disaccoppiamento tra il flusso asincrono degli eventi distribuiti dall'infrastruttura
 sottostante e la manipolazione dello stato grafico, l'architettura client introduce la classe `GameBoardEventDispatcher`.
 Questo componente funge da mediatore all'interno del sottosistema della UI, isolando la `GameBoardView` dalle logiche
-di sottoscrizione ed esecuzione asincrona dei messaggi.
+di sottoscrizione ed esecuzione asincrona dei messaggi, integrando un utility `PresentationQueue` sviluppato da @pallax03
+in grado di garantire animazioni e una coda per gli eventi.
 
 Il dispatcher si interfaccia con il mondo esterno sfruttando i meccanismi di pubblicazione / sottoscrizione definiti
 dall'astrazione dell'Inbound Port. All'attivazione del ciclo di ascolto (`startListening`), il dispatcher si registra per
